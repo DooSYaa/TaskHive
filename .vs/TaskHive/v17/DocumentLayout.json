@@ -1,0 +1,91 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\sasha\\RiderProjects\\TaskHive\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7CAE4A65-9D5F-47B1-B0A4-45A1CF9E61BE}|TaskHiveApi\\TaskHiveApi.csproj|c:\\users\\sasha\\riderprojects\\taskhive\\taskhiveapi\\controllers\\friendcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7CAE4A65-9D5F-47B1-B0A4-45A1CF9E61BE}|TaskHiveApi\\TaskHiveApi.csproj|solutionrelative:taskhiveapi\\controllers\\friendcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7CAE4A65-9D5F-47B1-B0A4-45A1CF9E61BE}|TaskHiveApi\\TaskHiveApi.csproj|c:\\users\\sasha\\riderprojects\\taskhive\\taskhiveapi\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7CAE4A65-9D5F-47B1-B0A4-45A1CF9E61BE}|TaskHiveApi\\TaskHiveApi.csproj|solutionrelative:taskhiveapi\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7CAE4A65-9D5F-47B1-B0A4-45A1CF9E61BE}|TaskHiveApi\\TaskHiveApi.csproj|c:\\users\\sasha\\riderprojects\\taskhive\\taskhiveapi\\service\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7CAE4A65-9D5F-47B1-B0A4-45A1CF9E61BE}|TaskHiveApi\\TaskHiveApi.csproj|solutionrelative:taskhiveapi\\service\\tokenservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "FriendController.cs",
+              "DocumentMoniker": "C:\\Users\\sasha\\RiderProjects\\TaskHive\\TaskHiveApi\\Controllers\\FriendController.cs",
+              "RelativeDocumentMoniker": "TaskHiveApi\\Controllers\\FriendController.cs",
+              "ToolTip": "C:\\Users\\sasha\\RiderProjects\\TaskHive\\TaskHiveApi\\Controllers\\FriendController.cs",
+              "RelativeToolTip": "TaskHiveApi\\Controllers\\FriendController.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAA8wBoAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-04T11:17:30.803Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "TokenService.cs",
+              "DocumentMoniker": "C:\\Users\\sasha\\RiderProjects\\TaskHive\\TaskHiveApi\\Service\\TokenService.cs",
+              "RelativeDocumentMoniker": "TaskHiveApi\\Service\\TokenService.cs",
+              "ToolTip": "C:\\Users\\sasha\\RiderProjects\\TaskHive\\TaskHiveApi\\Service\\TokenService.cs",
+              "RelativeToolTip": "TaskHiveApi\\Service\\TokenService.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACsAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-04T11:03:44.357Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AccountController.cs",
+              "DocumentMoniker": "C:\\Users\\sasha\\RiderProjects\\TaskHive\\TaskHiveApi\\Controllers\\AccountController.cs",
+              "RelativeDocumentMoniker": "TaskHiveApi\\Controllers\\AccountController.cs",
+              "ToolTip": "C:\\Users\\sasha\\RiderProjects\\TaskHive\\TaskHiveApi\\Controllers\\AccountController.cs",
+              "RelativeToolTip": "TaskHiveApi\\Controllers\\AccountController.cs",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAawE0AAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-04T11:01:00.565Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
