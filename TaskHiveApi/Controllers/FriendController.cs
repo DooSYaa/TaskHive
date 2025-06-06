@@ -50,20 +50,22 @@ namespace TaskHiveApi.Controllers
         public async Task<IActionResult> AddFriend([FromBody] string friendName)
         {
             var friend = await _context.Users.FirstOrDefaultAsync(f => f.UserName == friendName);
-            var userName = User.Identity.Name;
+            var userName = User.FindFirstValue(ClaimTypes.Name);
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
             
             if (friend == null)
                 return NotFound(friendName);
             if (currentUser == null)
                 return NotFound(currentUser);
-            
-            var existingRecord = await _context.Friends.FirstOrDefaultAsync(f => f.UserId == friend.Id && 
-                                                                           f.FriendId == currentUser.Id &&
-                                                                           f.Status == Status.Pending);
+            var existingRecord = await _context.Friends.FirstOrDefaultAsync(f => (f.UserId == currentUser.Id &&
+                                                                             f.FriendId == friend.Id &&
+                                                                             f.Status == Status.Pending) || 
+                                                                            (f.UserId == friend.Id && 
+                                                                             f.FriendId == currentUser.Id &&
+                                                                             f.Status == Status.Pending)
+                                                                            );
             if (existingRecord != null)
             {
-                existingRecord.Status = Status.Accepted;
                 var newFriend = new Friends
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -73,7 +75,7 @@ namespace TaskHiveApi.Controllers
                 };
                 await _context.Friends.AddAsync(newFriend);
                 await _context.SaveChangesAsync();
-                return Ok("Friend added");
+                return Ok(new {message = "Friend added"});
             }
             else
             {
@@ -86,7 +88,7 @@ namespace TaskHiveApi.Controllers
                 };
                 await _context.Friends.AddAsync(q);
                 await _context.SaveChangesAsync();
-                return Ok("Friend added. Wait for answer");
+                return Ok(new {message = "Friend added. Wait for answer"});
             }
         }
     }

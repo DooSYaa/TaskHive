@@ -267,3 +267,4 @@ C:\Users\sasha\RiderProjects\TaskHive\TaskHiveApi\bin\Debug\net8.0\Microsoft.Ext
 C:\Users\sasha\RiderProjects\TaskHive\TaskHiveApi\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
 C:\Users\sasha\RiderProjects\TaskHive\TaskHiveApi\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
 C:\Users\sasha\RiderProjects\TaskHive\TaskHiveApi\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
+C:\Users\sasha\RiderProjects\TaskHive\TaskHiveApi\obj\Debug\net8.0\TaskHiveApi.sourcelink.json
