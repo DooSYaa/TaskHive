@@ -23,7 +23,7 @@ namespace TaskHiveApi.Controllers
             _logger = logger;
         }
         [HttpGet("getFriends")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetFriends()
         {
             // var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
             // var friends = _context.Friends.Where(f => f.UserId == currentUser.Id && 
@@ -66,6 +66,7 @@ namespace TaskHiveApi.Controllers
                                                                             );
             if (existingRecord != null)
             {
+                existingRecord.Status = Status.Accepted;
                 var newFriend = new Friends
                 {
                     Id = Guid.NewGuid().ToString(),
@@ -73,6 +74,7 @@ namespace TaskHiveApi.Controllers
                     FriendId = friend.Id,
                     Status = Status.Accepted
                 };
+                _context.Update(existingRecord);
                 await _context.Friends.AddAsync(newFriend);
                 await _context.SaveChangesAsync();
                 return Ok(new {message = "Friend added"});
@@ -90,6 +92,16 @@ namespace TaskHiveApi.Controllers
                 await _context.SaveChangesAsync();
                 return Ok(new {message = "Friend added. Wait for answer"});
             }
+        }
+        [Authorize]
+        [HttpGet("getFriendsRequest")]
+        public async Task<IActionResult> GetFriendsRequest()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var friendsRequests = _context.Friends.Where(f => f.FriendId == userId &&
+                                                              f.Status == Status.Pending)
+                .Select(f => f.User.UserName);
+            return Ok(friendsRequests);
         }
     }
 }

@@ -11,31 +11,31 @@ namespace TaskHiveApi.Hubs
     {
         private readonly ChatService _chatService;
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<ChatHub> _logger;
 
-        public ChatHub(ChatService chatService, ApplicationDbContext context)
+        public ChatHub(ChatService chatService, ApplicationDbContext context, ILogger<ChatHub> logger)
         {
             _chatService = chatService;
             _context = context;
+            _logger = logger;
         }
-
-        public override async Task OnConnectedAsync()
-        {
-            var userId = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!string.IsNullOrEmpty(userId))
-            {
-                await Groups.AddToGroupAsync(Context.ConnectionId, userId);
-            }
-            await base.OnConnectedAsync();
-        }
-
         public async Task SendMessage(string message, string userName)
         {
             await Clients.All.SendAsync("ReceiveMessage", message, userName);
         }
 
-        public async Task SendPrivateMessage(string message, string to)
+        public async Task SendPrivateMessage(string from, string to, string message)
         {
-            
+            var userId = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var friendId = _context.Users.Where(f => f.UserName == to).Select(f => f.Id).FirstOrDefault();
+            _logger.LogInformation($"from {from} to {to}: {message}");
+            _logger.LogInformation($"friend {friendId}");
+            _logger.LogInformation($"userId {userId}");
+            if (string.IsNullOrEmpty(userId))
+                throw new NullReferenceException("User is null");
+
+            var users = new[] { to, from };
+            await Clients.Users(userId, friendId).SendAsync("ReceivePrivateMessage", message, from);
         }
     }
 }
