@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using TaskHiveApi.Data;
@@ -15,38 +14,28 @@ namespace TaskHiveApi.Hubs
 
         public ChatHub(ChatService chatService, ApplicationDbContext context)
         {
-            _context = context;
             _chatService = chatService;
+            _context = context;
         }
 
-        public async Task SendMessage(string sender, string message)
+        public override async Task OnConnectedAsync()
         {
             var userId = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(userId))
             {
-                throw new HubException("User not authenticated");
+                await Groups.AddToGroupAsync(Context.ConnectionId, userId);
             }
-        
-            await _chatService.SaveMessageAsync(userId, sender, message);
-            await Clients.All.SendAsync("ReceiveMessage", sender, message);
+            await base.OnConnectedAsync();
         }
-        public async Task SendPrivateMessage(string sender, string receiverUserName, string message)
+
+        public async Task SendMessage(string message, string userName)
         {
-            var userId = Context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new HubException("User not authenticated");
-            }
+            await Clients.All.SendAsync("ReceiveMessage", message, userName);
+        }
 
-            var receiver = await _context.Users.FirstOrDefaultAsync(u => u.UserName == receiverUserName);
-            if (receiver == null)
-            {
-                throw new HubException("Receiver not found");
-            }
-
-            await Clients.User(receiver.Id).SendAsync("ReceiveMessage", sender, message);
-            await _chatService.SaveMessageAsync(userId, sender, message);
+        public async Task SendPrivateMessage(string message, string to)
+        {
+            
         }
     }
 }
-    
