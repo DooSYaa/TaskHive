@@ -61,7 +61,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseMySQL(connectionString);
+    options.UseSqlServer(connectionString);
 });
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -102,32 +102,6 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddAuthorization();
 builder.Services.AddSignalR();
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-// {
-//     options.TokenValidationParameters = new TokenValidationParameters
-//     {
-//         ValidateIssuer = true,
-//         ValidateAudience = true,
-//         ValidateLifetime = true,
-//         ValidateIssuerSigningKey = true,
-//         ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//         ValidAudience = builder.Configuration["Jwt:Audience"],
-//         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-//     };
-//     options.Events = new JwtBearerEvents
-//     {
-//         OnAuthenticationFailed = context =>
-//         {
-//             Console.WriteLine($"AUTH FAILED: {context.Exception.Message}");
-//             return Task.CompletedTask;
-//         },
-//         OnTokenValidated = context =>
-//         {
-//             Console.WriteLine($"TOKEN VALIDATED: {context.Principal.Identity.Name}");
-//             return Task.CompletedTask;
-//         }
-//     };
-// });
 
 var app = builder.Build();
 app.UseCors("AllowReactApp");
