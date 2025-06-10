@@ -1,11 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using TaskHiveApi.Data;
 using TaskHiveApi.Interfaces;
 using TaskHiveApi.Models;
 using TaskHiveApi.Models.DTO;
@@ -50,7 +47,6 @@ public class AccountController : ControllerBase
                 UserName = registerDto.UserName,
                 Email = registerDto.Email,
             };
-
             var createdUser = await _userManager.CreateAsync(user, registerDto.Password);
             if (!createdUser.Succeeded)
                 return BadRequest(createdUser.Errors);
@@ -68,7 +64,6 @@ public class AccountController : ControllerBase
         }
         catch (Exception ex)
         {
-            //return StatusCode(500, ex.Message);
             return StatusCode(500, "An error occurred during registration.");
         }
     }
@@ -87,26 +82,8 @@ public class AccountController : ControllerBase
             return NotFound(loginDto.Email);
         if (!await _userManager.CheckPasswordAsync(user, loginDto.Password))
             return Unauthorized("Invalid credentials");
-        // var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, false, false);
-        // if (!result.Succeeded)
-        // {
-        //     if (result.IsLockedOut)
-        //         return Unauthorized("Your account is locked out");
-        //     if (result.IsNotAllowed)
-        //         return Unauthorized("You are not allowed to login");
-        //     return Unauthorized("Invalid email or password");
-        // }
-        
         var token = _jwtService.GenerateJwtToken(user);
 
-        // Распечатать все claims, которые были включены в токен
-        var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(token);
-        foreach (var claim in jwtToken.Claims)
-        {
-            Console.WriteLine($"CLAIM TYPE: {claim.Type}, VALUE: {claim.Value}");
-            _logger.LogInformation($"CLAIM TYPE: {claim.Type}, VALUE: {claim.Value}");
-        }
         return Ok(new NewUserDto
         {
             UserName = user.UserName, 
@@ -120,14 +97,5 @@ public class AccountController : ControllerBase
     {
         await _signInManager.SignOutAsync();
         return Ok();
-    }
-    [Authorize]
-    [HttpGet("whoami")]
-    public IActionResult WhoAmI()
-    {
-        var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var name = User.Identity?.Name;
-
-        return Ok(new { id, name });
     }
 }

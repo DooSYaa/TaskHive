@@ -1,8 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskHiveApi.Data;
@@ -25,16 +22,10 @@ namespace TaskHiveApi.Controllers
         [HttpGet("getFriends")]
         public async Task<IActionResult> GetFriends()
         {
-            // var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
-            // var friends = _context.Friends.Where(f => f.UserId == currentUser.Id && 
-            //                                           f.Status == Status.Accepted)
-            //     .Select(f => f.Friend.UserName);
-            // return Ok(friends);
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             _logger.LogInformation($"userId: {userId}, \n {DateTime.Now}");
             if (string.IsNullOrEmpty(userId))
             {
-                _logger.LogError("User not found");
                 return Unauthorized("User not found in token");
             }
             var friends = await _context.Friends
@@ -42,7 +33,6 @@ namespace TaskHiveApi.Controllers
                 .Select(f => f.Friend.UserName)
                 .ToListAsync();
             
-            _logger.LogInformation("Success");
             return Ok(friends);
         }
         [Authorize]
