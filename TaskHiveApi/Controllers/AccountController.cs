@@ -79,7 +79,7 @@ public class AccountController : ControllerBase
         
         var user = await _userManager.FindByEmailAsync(loginDto.Email);
         if (user == null)
-            return NotFound(loginDto.Email);
+            return NotFound("user not found");
         if (!await _userManager.CheckPasswordAsync(user, loginDto.Password))
             return Unauthorized("Invalid credentials");
         var token = _jwtService.GenerateJwtToken(user);
