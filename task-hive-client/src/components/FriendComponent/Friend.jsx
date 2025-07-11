@@ -12,7 +12,7 @@ export default function Freind(){
     const {user} = useAuth();
     useEffect(()=>{
         if(user){
-            fetch('http://localhost:5291/api/Friend/getFriends', {
+            fetch('http://localhost:5292/api/Friend/getFriends', {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export default function Freind(){
             return;
         }
         try {
-            await fetch('http://localhost:5291/api/Friend/addFriend', {
+            await fetch('http://localhost:5292/api/Friend/addFriend', {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export default function Freind(){
         }
     };
     useEffect(() => {
-         fetch('http://localhost:5291/api/Friend/getFriendsRequest', {
+         fetch('http://localhost:5292/api/Friend/getFriendsRequest', {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export default function Freind(){
     }, [user]);
 
     function acceptFriendRequest(friendName){
-        fetch('http://localhost:5291/api/Friend/addFriend', {
+        fetch('http://localhost:5292/api/Friend/addFriend', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",

@@ -14,7 +14,7 @@ export default function Chat(){
     const messagesEndRef = useRef(null);
     const {user} = useAuth();
     useEffect(()=>{
-        fetch('http://localhost:5291/api/Friend/getFriends', {
+        fetch('http://localhost:5292/api/Friend/getFriends', {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json",
@@ -35,7 +35,7 @@ export default function Chat(){
         if(user && user.token)
         {
             const conn = new HubConnectionBuilder()
-                .withUrl("http://localhost:5291/hubs/chat", {
+                .withUrl("http://localhost:5292/hubs/chat", {
                     accessTokenFactory: () => user.token,
                 })
                 .configureLogging(LogLevel.Information)

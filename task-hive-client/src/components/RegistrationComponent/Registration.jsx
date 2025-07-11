@@ -15,7 +15,7 @@ export default function Registration(){
 
     function handleSubmit(e){
         e.preventDefault()
-        fetch('http://localhost:5291/api/Account/registration', {
+        fetch('http://localhost:5292/api/Account/registration', {
             method: 'POST',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({

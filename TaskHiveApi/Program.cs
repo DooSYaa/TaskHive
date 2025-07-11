@@ -12,13 +12,15 @@ using TaskHiveApi.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseUrls("http://0.0.0.0:5292");
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", builder =>
     {
-        builder.WithOrigins("http://localhost:5173")
+        builder.WithOrigins("http://localhost:4173")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -55,11 +57,13 @@ builder.Services.AddScoped<IJwtService, TokenService>();
 builder.Services.AddScoped<ChatService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("Connection string not found");
+Console.WriteLine($"Using DB: {connectionString}");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(connectionString);
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0 ,34)));
 });
+
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -102,6 +106,11 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 app.UseCors("AllowReactApp");
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate(); // Применит все миграции при запуске
+}
 
 if (app.Environment.IsDevelopment())
 {

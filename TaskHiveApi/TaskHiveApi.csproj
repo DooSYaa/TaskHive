@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,10 +24,16 @@
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.12.0" />
         <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.12.0" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
-        <PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.3" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
