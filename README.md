@@ -12,3 +12,5 @@
    - Tworzenie migracji: ``` dotnet ef migrations add _Dowolna nazwa migracji_ ```
    - Rozpoczęcie migracji: ``` dotnet ef database update ```
    - (Oprional) Możesz zalogować się do serwera MySql i sprawdzić, czy baza danych została utworzona
+
+Jeśli do tego momentu nie pojawiły się żadne błędy, można uruchomić api: `dotnet run` lub `dotnet watch`
