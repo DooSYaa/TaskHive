@@ -15,6 +15,6 @@
 
 Jeśli do tego momentu nie pojawiły się żadne błędy, można uruchomić api: `dotnet run` lub `dotnet watch`
 
-##Strona kliencka React
+## Strona kliencka React
 - `npm install`
 - `npm start`
