@@ -18,3 +18,5 @@ Jeśli do tego momentu nie pojawiły się żadne błędy, można uruchomić api:
 ## Strona kliencka React
 - `npm install`
 - `npm start`
+
+## Lub użyć Docker:
