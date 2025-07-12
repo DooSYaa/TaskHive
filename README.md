@@ -14,3 +14,7 @@
    - (Oprional) Możesz zalogować się do serwera MySql i sprawdzić, czy baza danych została utworzona
 
 Jeśli do tego momentu nie pojawiły się żadne błędy, można uruchomić api: `dotnet run` lub `dotnet watch`
+
+##Strona kliencka React
+`npm install`
+`npm start`
