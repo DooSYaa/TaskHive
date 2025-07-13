@@ -20,3 +20,7 @@ Jeśli do tego momentu nie pojawiły się żadne błędy, można uruchomić api:
 - `npm start`
 
 ## Lub użyć Docker:
+- Klonowanie repozytorium `git clone https://github.com/DooSYaa/TaskHive.git`
+- w folderze głównym, wprowadź polecenie `docker-compose up -d --build`
+- poczekać kilka sekund na uruchomienie kontenera bazy danych i uruchomić kontener backendu
+- przetestować aplikację
