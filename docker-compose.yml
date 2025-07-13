@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: taskhive_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+  backend:
+    build:
+      context: ./TaskHiveApi
+      dockerfile: Dockerfile
+    ports:
+      - "5292:5292"
+    depends_on:
+      - db
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=db;Database=taskhive_db;User=user;Password=password;"
+  frontend:
+    build:
+      context: ./task-hive-client
+      dockerfile: Dockerfile
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend
+volumes:
+  db_data: {}
