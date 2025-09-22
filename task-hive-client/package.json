@@ -26,5 +26,5 @@
     "globals": "^16.0.0",
     "vite": "^6.3.5"
   },
-  "start": "HOST=0.0.0.0 PORT=3000 react-scripts start"
+  "start": "react-scripts start"
 }

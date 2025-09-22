@@ -1,0 +1,42 @@
+.create-group-container {
+    margin: 10px 10px 0 0;
+    display: flex;
+    justify-content: end;
+}
+.create-group{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.create-group-form{
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+}
+
+.group-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    margin: 10px 10px 10px 10px;
+    gap: 10px;
+}
+.group-block{
+    border: 1px solid black;
+    padding-left: 10px;
+    text-align: start;
+}
+.group-block:hover {
+    background-color: cadetblue;
+    cursor: pointer;
+}
+.group-block-name{
+    text-decoration: none;
+    color: inherit;
+}

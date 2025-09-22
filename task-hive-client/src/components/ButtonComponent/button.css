@@ -51,3 +51,12 @@
 .button.chat:hover{
     background-color: rgba(136, 207, 1, 0.53);
 }
+.button.kanban{
+    padding: 10px 5px 10px 5px;
+    height: auto;
+    width: 90%;
+    background-color: rgba(255, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

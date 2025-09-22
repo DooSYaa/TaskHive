@@ -98,7 +98,6 @@ export default function Freind(){
         <>
             <div className="friend-main-container">
                 <div className="friend-container">
-                    <h1>Welcome to Freind component</h1>
                     <p>Your friends: </p>
                         {friends.length > 0 ? (
                             friends.map((friend, index) => (
@@ -108,34 +107,35 @@ export default function Freind(){
                             <h4>No friends found</h4>
                         )}
                 </div>
-                <div className="box">
-                    <h3>Add friends</h3>
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Enter username"
-                        className="friend-input"
-                    />
-                    <br/>
-                    <Button variant={'primary'} onClick={handleAddFriend} className="friend-button">
-                        Add Friend
-                    </Button>
-                    {error && <p className="error-message">{error}</p>}
-                    {success && <p className="success-message">{success}</p>}
-                </div>
-                <div className="friends-requests">
-                    <h4>Friend request</h4>
-                    {friendsRequest.length > 0 ? (
-                        friendsRequest.map((friend, index) => (
-                            <div className="friends-request-list">
-                                <p key={index}>{friend}</p>
-                                <Button variant={'accept'} onClick={() => acceptFriendRequest(friend)}>Accept</Button>
-                            </div>
-                        ))
-                    ) : (
-                        <h4>No requests found</h4>
-                    )}
+                <div className="main-box">
+                    <div className="box">
+                        Input friends name
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Enter username"
+                            className="friend-input"
+                        />
+                        <Button variant={'primary'} onClick={handleAddFriend} className="friend-button">
+                            Add Friend
+                        </Button>
+                        {error && <p className="error-message">{error}</p>}
+                        {success && <p className="success-message">{success}</p>}
+                    </div>
+                    <div className="friends-requests">
+                        <h4>Friend request</h4>
+                        {friendsRequest.length > 0 ? (
+                            friendsRequest.map((friend, index) => (
+                                <div className="friends-request-list">
+                                    <p key={index}>{friend}</p>
+                                    <Button variant={'accept'} onClick={() => acceptFriendRequest(friend)}>Accept</Button>
+                                </div>
+                            ))
+                        ) : (
+                            <h4>No requests found</h4>
+                        )}
+                    </div>
                 </div>
             </div>
         </>

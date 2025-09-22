@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TaskHiveApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+26f55d083095483f0bcdcc8742c86e5431278e00")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a1495aa257b817e5622e96dd07ecb551b91a9c92")]
 [assembly: System.Reflection.AssemblyProductAttribute("TaskHiveApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TaskHiveApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -10,6 +10,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
         : base(options) {}
     public DbSet<Friends> Friends { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<GroupUser> GroupUsers { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         
@@ -33,5 +35,18 @@ public class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<Friends>()
             .HasIndex(f => new { f.UserId, f.FriendId })
             .IsUnique();
+
+        modelBuilder.Entity<GroupUser>(entity =>
+        {
+            entity.HasKey(gu => new { gu.UserId, gu.GroupId });
+            entity.HasOne(gu => gu.User)
+                .WithMany(u => u.GroupUsers)
+                .HasForeignKey(gu => gu.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(gu => gu.Group)
+                .WithMany(gu => gu.GroupUsers)
+                .HasForeignKey(gu => gu.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }

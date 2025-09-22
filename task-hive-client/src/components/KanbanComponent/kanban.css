@@ -1,0 +1,17 @@
+.kanban {
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: start;
+}
+.kanban-block{
+    margin: 15px 10px 0 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+    min-height: 150px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

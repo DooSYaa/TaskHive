@@ -12,7 +12,7 @@ using TaskHiveApi.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://0.0.0.0:5292");
+//builder.WebHost.UseUrls("http://0.0.0.0:5292");
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", builder =>
     {
-        builder.WithOrigins("http://localhost:4173")
+        builder.WithOrigins("http://localhost:5173")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -57,7 +57,6 @@ builder.Services.AddScoped<IJwtService, TokenService>();
 builder.Services.AddScoped<ChatService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("Connection string not found");
-Console.WriteLine($"Using DB: {connectionString}");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

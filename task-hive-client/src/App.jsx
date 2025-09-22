@@ -7,6 +7,8 @@ import Home from "./components/HomeComponent/Home.jsx";
 import Account from "./components/AccountComponent/Account.jsx";
 import Friend from "./components/FriendComponent/Friend.jsx";
 import Chat from "./components/ChatComponent/Chat.jsx";
+import Kanban from "./components/KanbanComponent/Kanban.jsx";
+import Group from "./components/GroupComponent/Group.jsx";
 
 
 export default function App() {
@@ -22,6 +24,8 @@ export default function App() {
                     <Route path='/user' element={<Account />} />
                     <Route path='/friends' element={<Friend />} />
                     <Route path='/chat' element={<Chat />} />
+                    <Route path='/kanban' element={<Kanban />}/>
+                    <Route path='/group' element={<Group />} />
                 </Routes>
             </div>
         </>

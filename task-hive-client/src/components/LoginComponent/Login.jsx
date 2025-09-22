@@ -29,6 +29,8 @@ export default function Login(){
                 }),
             });
             if(!response.ok){
+                localStorage.clear()
+                navigate('/')
                 throw new Error(`Error occured: ${response.status}`);
             }
             const data = await response.json();
@@ -68,33 +70,40 @@ export default function Login(){
     return (
         <div className={styles.loginMainContainer}>
             <div className={styles.loginContainer}>
-                <h1>Sign in</h1>
-                <form onSubmit={handleSubmit}>
-                    <label className={styles.formLabel} htmlFor="email">Email</label> <br/>
-                    <input
-                        className={styles.formInput}
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    /> <br/>
-                    {emailError && (
-                        <span id="email-error" className={styles.errorMessage}>
-                            {emailError}
-                        </span>
-                    )}
-                    <br/>
-                    <label className={styles.formLabel} htmlFor="password">Password</label> <br/>
-                    <input
-                        className={styles.formInput}
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)} //setPassword(e.target.value)
-                    /> <br/>
-                    <br/>
-                    <Button variant={'login'}>Sign in</Button>
-                </form>
+                <div className={styles.rectangleContainer}>
+                    <svg className={styles.rectangle} width={400} height={400} version="1.1" xmlns="http://www.w3.org/2000/svg">
+                        <rect width={400} height={400}  />
+                    </svg>
+                </div>
+                <div className={styles.loginFormContainer}>
+                    <h1>Sign in</h1>
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            className={styles.formInput}
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Email"
+                        /> <br/>
+                        {emailError && (
+                            <span id="email-error" className={styles.errorMessage}>
+                                {emailError}
+                            </span>
+                        )}
+                        <br/>
+                        <input
+                            className={styles.formInput}
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
+                        /> <br/>
+                        <br/>
+                        <Button variant={'login'}>Sign in</Button>
+                    </form>
+                </div>
             </div>
         </div>
     )

@@ -3,7 +3,7 @@ import styles from "../RegistrationComponent/registration.module.css";
 import Button from "../ButtonComponent/Button.jsx";
 import {useEffect, useState} from "react";
 import {useAuth} from "../Context/AuthContext.jsx";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 export default function Registration(){
     const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
@@ -55,53 +55,65 @@ export default function Registration(){
     }, [email]);
     return (
         <div className={styles.registrationMainContainer}>
+
             <div className={styles.registrationContainer}>
-                <h1>Sign up</h1>
-                <form onSubmit={handleSubmit}>
-                    <label className={styles.formLabel} htmlFor="username">User name</label> <br/>
-                    <input className={styles.formInput}
-                           id="username"
-                           type="text"
-                           value={userName}
-                           onChange={(e) => setUserName(e.target.value)}
-                    />
-                    <br/>
-                    <br/>
-                    <label className={styles.formLabel} htmlFor="email">Email</label> <br/>
-                    <input className={styles.formInput}
-                           id="email"
-                           type="email"
-                           value={email}
-                           onChange={(e) => setEmail(e.target.value)}
-                    /> <br/>
-                    {emailError && (
-                        <span id="email-error" className={styles.errorMessage}>
-                            {emailError}
-                        </span>
-                    )}
-                    <br/>
-                    <label className={styles.formLabel} htmlFor="password">Password</label> <br/>
-                    <input
-                        className={styles.formInput}
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <br/>
-                    {passwordError && (
-                        <span id="password-error" className={styles.errorMessage}>
-                            {passwordError.split('\n').map((line, index) => (
-                                <span key={index}>
-                            {line}
-                                    <br />
-                        </span>
-                            ))}
-                        </span>
-                    )}
-                    <br/>
-                    <Button variant={'login'}>Sign up</Button>
-                </form>
+                <div className={styles.rectangleContainer}>
+                    <svg className={styles.rectangle} width={400} height={400} version="1.1" xmlns="http://www.w3.org/2000/svg">
+                        <rect width={400} height={400}  />
+                    </svg>
+                </div>
+                <div className={styles.registrationFormContainer}>
+                    <h1>Sign up</h1>
+                    <form onSubmit={handleSubmit}>
+                        <input className={styles.formInput}
+                               id="username"
+                               type="text"
+                               value={userName}
+                               onChange={(e) => setUserName(e.target.value)}
+                               placeholder="User Name"
+                        />
+                        <br/>
+                        <br/>
+                        <input className={styles.formInput}
+                               id="email"
+                               type="email"
+                               value={email}
+                               onChange={(e) => setEmail(e.target.value)}
+                               placeholder="Email"
+                        /> <br/>
+                        {emailError && (
+                            <span id="email-error" className={styles.errorMessage}>
+                                {emailError}
+                            </span>
+                        )}
+                        <br/>
+                        <input
+                            className={styles.formInput}
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
+                        />
+                        <br/>
+                        {passwordError && (
+                            <span id="password-error" className={styles.errorMessage}>
+                                {passwordError.split('\n').map((line, index) => (
+                                    <span key={index}>
+                                {line}
+                                        <br />
+                            </span>
+                                ))}
+                            </span>
+                        )}
+                        <br/>
+                        <Button variant={'login'}>Sign up</Button>
+                        <div className={styles.qwrt}>
+                            <p>Already have an account?</p>
+                            <Link to="/login">Sign In</Link>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     )

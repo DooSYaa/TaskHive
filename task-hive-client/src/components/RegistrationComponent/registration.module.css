@@ -1,19 +1,26 @@
 .registrationMainContainer{
     width: 100%;
+    height: 100%;
     display: flex;
-    justify-content: center;
-}
-.registrationContainer {
-    height: 500px;
-    width: 400px;
-    margin: 20px 0 0 0;
-    border: 2px solid black;
-    border-radius: 90px;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    align-content: center;
+}
+.registrationContainer {
+    height: auto;
+    width: 820px;
+    margin-top: 100px;
+    padding: 20px 20px 20px 20px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 5px 5px 25px black;
+}
+.registrationFormContainer{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .formLabel{
     font-size: 20px;
@@ -26,4 +33,15 @@
 .errorMessage{
     font-size: 10px;
     color: red;
+}
+
+.rectangle{
+    border-radius: 15px;
+    fill: #5fa2ad;
+}
+.qwrt{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
 }

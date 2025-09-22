@@ -1,26 +1,24 @@
 .main-chat-container {
+    height: 90vh;
     display: flex;
     flex-direction: row;
-    border: 1px solid black;
 }
 .friends-container{
-    height: 400px;
+    height: 100%;
     width: 250px;
     display: flex;
     align-items: center;
     flex-direction: column;
-    border: 1px solid black;
 }
 
 .chat-main-container{
-    border: 1px solid black;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 .chat-container{
-    height: 500px;
-    border: 1px solid black;
+    height: 100%;
+    background-image: url("src/assets/messages_light_colour_background.jpg");
     width: auto;
     display: flex;
     justify-content: center;
@@ -40,7 +38,6 @@
 .messages{
     white-space: pre-wrap;
     width: 1000px;
-    border: 1px solid black;
     overflow-y: auto;
 }
 .chat-input-container{
@@ -59,7 +56,6 @@
 .input-chat__input{
     height: 40px;
     width: 600px;
-    border: 1px solid black;
     font-size: 16px;
     border-radius: 5px;
     resize: none;
