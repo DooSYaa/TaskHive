@@ -105,11 +105,7 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 app.UseCors("AllowReactApp");
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate(); // Применит все миграции при запуске
-}
+
 
 if (app.Environment.IsDevelopment())
 {

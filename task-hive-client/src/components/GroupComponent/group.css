@@ -33,7 +33,7 @@
     text-align: start;
 }
 .group-block:hover {
-    background-color: cadetblue;
+    background-color: #00b4d8;
     cursor: pointer;
 }
 .group-block-name{
