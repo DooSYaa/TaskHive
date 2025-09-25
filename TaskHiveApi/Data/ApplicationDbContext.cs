@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TaskHiveApi.Models;
+using TaskHiveApi.Models.Kanban;
 
 namespace TaskHiveApi.Data;
 
@@ -48,5 +49,6 @@ public class ApplicationDbContext : IdentityDbContext<User>
                 .HasForeignKey(gu => gu.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+        
     }
 }
