@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "owYvc7gcqxg=",
+  "dgSpecHash": "5nREzh91F1U=",
   "success": true,
-  "projectFilePath": "C:\\Users\\sasha\\TaskHive\\TaskHiveApi\\TaskHiveApi.csproj",
+  "projectFilePath": "C:\\Users\\sasha\\RiderProjects\\TaskHive\\TaskHiveApi\\TaskHiveApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\sasha\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\sasha\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
