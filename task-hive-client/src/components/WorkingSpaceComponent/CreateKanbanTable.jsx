@@ -5,7 +5,7 @@ export default function CreateKanbanTable({KanbanTableName, setKanbanTableName, 
     return(
         <div className="createKanbanTable">
             <div className="createKanbanTableForm">
-                <h2>Create new group</h2>
+                <h2>Create new kanban</h2>
                 <form onSubmit={handleSubmit}>
                     <input
                         type="text"

@@ -6,7 +6,7 @@ public class KanbanStatus
     public string KanbanTableId { get; set; }
     public KanbanTable KanbanTable { get; set; } = null!;
     public string StatusName { get; set; }
-    public string Position { get; set; }
+    public int Position { get; set; }
 
     public List<KanbanData> Cards { get; set; } = new List<KanbanData>();
 }

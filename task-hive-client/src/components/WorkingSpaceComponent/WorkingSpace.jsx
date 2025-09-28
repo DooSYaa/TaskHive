@@ -4,19 +4,35 @@ import {useAuth} from "../Context/AuthContext.jsx";
 import {useEffect, useState} from "react";
 import Button from "../ButtonComponent/Button.jsx";
 import GroupModal from "../GroupComponent/GroupModal.jsx";
+import CreateKanbanTable from "./CreateKanbanTable.jsx";
 
 export default function WorkingSpace() {
     const {groupId} = useParams();
     const {user} = useAuth();
-    const [kanbanTables, setkanbanTables] = useState(null);
+    const [kanbanTables, setKanbanTables] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [KanbanTableName, setKanbanTableName] = useState(null);
+    const [KanbanTableName, setKanbanTableName] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const response = await fetch('http://localhost:5292/api/Kanban/CreateKanbanTable',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
+            },
+            body: JSON.stringify({
+                'kanbanTableName': KanbanTableName,
+                'groupId': groupId,
+            })
+        });
+        if (!response.ok) {
+            throw new Error('Failed to create KanbanTable\n' + response.status);
+        }
+        fetchData();
+        setShowModal(false);
     }
 
-    useEffect(() => {
         const fetchData = async () => {
             const response = await fetch(`http://localhost:5292/api/Kanban/GetKanbanTables?groupId=${groupId}`, {
                 method: "GET",
@@ -29,9 +45,9 @@ export default function WorkingSpace() {
                 throw new Error('Failed to fetch Kanban', response.status);
             }
             const data = await response.json();
-            console.log(data);
-            setkanbanTables(data);
+            setKanbanTables(data);
         }
+    useEffect(() => {
         fetchData();
     }, [])
 
@@ -50,9 +66,9 @@ export default function WorkingSpace() {
             </div>
 
             {showModal && (
-                <GroupModal
-                    groupName={KanbanTableName}
-                    setGroupName={setKanbanTableName}
+                <CreateKanbanTable
+                    KanbanTableName={KanbanTableName}
+                    setKanbanTableName={setKanbanTableName}
                     setShowModal={setShowModal}
                     handleSubmit={handleSubmit}
                 />

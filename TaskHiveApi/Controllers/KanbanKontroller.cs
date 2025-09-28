@@ -26,24 +26,34 @@ public class KanbanController : ControllerBase
     }
 
     [HttpPost("CreateKanbanTable")]
-    public IActionResult CreateKanbanTable([FromBody]CreateKanbanTableDto KanbanTableDto)
+    public IActionResult CreateKanbanTable([FromBody]CreateKanbanTableDto kanbanTableDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        var KanbanTable = new KanbanTable
+        var kanbanTable = new KanbanTable
         {
-            KanbanTableName = KanbanTableDto.KanbanTableName,
-            GroupId = KanbanTableDto.GroupId,
+            KanbanTableName = kanbanTableDto.KanbanTableName,
+            GroupId = kanbanTableDto.GroupId,
         };
-        _context.KanbanTables.Add(KanbanTable);
+        _context.KanbanTables.Add(kanbanTable);
+        _context.SaveChanges();
+
+        var defaultStatuses = new List<KanbanStatus>
+        {
+            new KanbanStatus { KanbanTableId = kanbanTable.Id, StatusName = "To Do", Position = 0 },
+            new KanbanStatus { KanbanTableId = kanbanTable.Id, StatusName = "Doing", Position = 1 },
+            new KanbanStatus { KanbanTableId = kanbanTable.Id, StatusName = "Done", Position = 2 },
+        };
+        
+        _context.KanbanStatuses.AddRange(defaultStatuses);
         _context.SaveChanges();
         
         return Ok(new
         {
-            id = KanbanTableDto.GroupId,
-            name = KanbanTableDto.KanbanTableName,
+            id = kanbanTableDto.GroupId,
+            name = kanbanTableDto.KanbanTableName,
         });
     }
 
