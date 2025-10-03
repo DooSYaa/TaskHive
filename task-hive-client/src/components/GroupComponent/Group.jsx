@@ -57,11 +57,11 @@ export default function Group()
             <div className="group-list">
 
                 {groupData ? (groupData.map((group) => (
-                    <div className="group-block" key={group.id}>
-                        <Link className='group-block-name' to={`/group/${group.id}`}>
+                    <Link className='group-block-name' to={`/group/${group.id}`} key={group.id}>
+                        <div className="group-block">
                             <h2>{group.name}</h2>
-                        </Link>
-                    </div>
+                        </div>
+                    </Link>
                 ))) : null}
             </div>
 

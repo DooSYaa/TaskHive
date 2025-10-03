@@ -1,5 +1,5 @@
 import './workingSpace.css';
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext.jsx";
 import {useEffect, useState} from "react";
 import Button from "../ButtonComponent/Button.jsx";
@@ -59,9 +59,11 @@ export default function WorkingSpace() {
                     <Button variant={'group'} onClick={() => setShowModal(true)}>Create kanban</Button>
                 </div>
                 {kanbanTables ? (kanbanTables.map((kanban) => (
-                    <div className='kanbanTablesList' key={kanban.id}>
-                        {kanban.kanbanTableName}
-                    </div>
+                    <Link to={`/${groupId}/${kanban.id}`} key={kanban.id}>
+                        <div className='kanbanTablesList'>
+                            {kanban.kanbanTableName}
+                        </div>
+                    </Link>
                 ))) : (null)}
             </div>
 
