@@ -46,9 +46,6 @@ export default function Header() {
                                     </g>
                                 </svg>
                             </Link>
-                            <Link className="nav-link" to="/kanban">
-                                Kanban
-                            </Link>
                             <Link className="nav-link" to="/group">
                                 Group
                             </Link>

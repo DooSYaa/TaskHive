@@ -64,7 +64,7 @@ export default function WorkingSpace() {
                             {kanban.kanbanTableName}
                         </div>
                     </Link>
-                ))) : (null)}
+                ))) : null}
             </div>
 
             {showModal && (

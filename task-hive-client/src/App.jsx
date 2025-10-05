@@ -25,9 +25,9 @@ export default function App() {
                     <Route path='/user' element={<Account />} />
                     <Route path='/friends' element={<Friend />} />
                     <Route path='/chat' element={<Chat />} />
-                    <Route path='/kanban' element={<Kanban />}/>
                     <Route path='/group' element={<Group />} />
                     <Route path='/group/:groupId' element={<WorkingSpace />} />
+                    <Route path='/:groupId/:kanbanId' element={<Kanban />} />
                 </Routes>
             </div>
         </>
