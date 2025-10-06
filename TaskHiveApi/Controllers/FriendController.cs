@@ -24,7 +24,7 @@ namespace TaskHiveApi.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             _logger.LogInformation($"userId: {userId}, \n {DateTime.Now}");
-            if (string.IsNullOrEmpty(userId))
+              if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized("User not found in token");
             }
