@@ -8,5 +8,5 @@ public class KanbanData
     public KanbanTable KanbanTable { get; set; }
     public KanbanStatus KanbanStatus { get; set; }
     public string Title { get; set; }
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
 }

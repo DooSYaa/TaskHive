@@ -41,17 +41,15 @@ public class KanbanController : ControllerBase
             Id = currentKanbanTable.Id,
             Statuses = currentKanbanTable.Statuses.Select(x => new
             {
-                x.Id, 
-                x.Cards, 
-                x.Position, 
+                x.Id,
                 x.StatusName,
+                x.Position, 
+                Cards = x.Cards.Select(x => new {
+                    x.Id,
+                    x.Title,
+                    x.Description,
+                }),
             }),
-            // Cards =  currentKanbanTable.Cards.Select(x => new
-            // {
-            //     x.Id,
-            //     x.Title,
-            //     x.Description,
-            // })
         };
         return Ok(newResult);
     }
@@ -85,6 +83,30 @@ public class KanbanController : ControllerBase
         {
             id = kanbanTableDto.GroupId,
             name = kanbanTableDto.KanbanTableName,
+        });
+    }
+    [HttpPost("CreateKanbanCard")]
+    public IActionResult CreateKanbanCard(
+        [FromQuery] string kanbanTableId,
+        [FromQuery] string kanbanStatusId,
+        [FromBody] CreateKanbanCardDto kanbanCardDto)
+    {
+        if(!ModelState.IsValid)
+            return BadRequest(ModelState);
+        var newKanbanCard = new KanbanData
+        {
+            KanbanTableId = kanbanTableId,
+            KanbanStatusId = kanbanStatusId,
+            Title = kanbanCardDto.Title,
+        };
+        _context.KanbanCards.Add(newKanbanCard);
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            id = newKanbanCard.Id,
+            title = newKanbanCard.Title,
+            description = newKanbanCard.Description,
         });
     }
 
