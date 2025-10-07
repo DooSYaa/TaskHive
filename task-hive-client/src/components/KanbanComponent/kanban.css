@@ -11,19 +11,35 @@
     border: 1px solid black;
     border-radius: 10px;
     min-height: auto;
+    max-height: 70%;
     width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.kanban-block-list{
+    width: 100%;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: auto;
+}
+.kanban-block-list-container{
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 .task-card{
     width: 80%;
-    margin: 5px 0 5px 0;
     padding: 5px 5px 5px 5px;
+    margin-bottom: 10px;
     border: 1px solid blue;
     display: flex;
     flex-direction: column;
     align-items: center;
+    cursor: grab;
 }
 .task-card button{
     margin-top: 5px;
@@ -36,9 +52,6 @@
     align-items: center;
 }
 .kanban-input__input{
-    /*margin: 5px 10px 5px 10px;*/
-    /*resize: none;*/
-    /*overflow: hidden;*/
     margin: 5px;
     width: 90%;
     resize: none;

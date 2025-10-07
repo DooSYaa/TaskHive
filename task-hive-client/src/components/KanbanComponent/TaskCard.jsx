@@ -1,12 +1,11 @@
 
 
-export default function TaskCard() {
-    return (
-        <div className="task-card">
+export default function TaskCard({card}) {
 
+    return (
+        <div className="task-card" draggable={true}>
             <div>
-                <button>Save</button>
-                <button>X</button>
+                <p>{card.title}</p>
             </div>
         </div>
     );
