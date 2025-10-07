@@ -8,10 +8,9 @@
 .kanban-block{
     margin: 15px 10px 0 10px;
     padding-bottom: 5px;
-;
     border: 1px solid black;
     border-radius: 10px;
-    min-height: 150px;
+    min-height: auto;
     width: 300px;
     display: flex;
     flex-direction: column;
@@ -29,4 +28,36 @@
 .task-card button{
     margin-top: 5px;
     width: 50%;
+}
+.kanban-input-block{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.kanban-input__input{
+    /*margin: 5px 10px 5px 10px;*/
+    /*resize: none;*/
+    /*overflow: hidden;*/
+    margin: 5px;
+    width: 90%;
+    resize: none;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: #00b4d8 solid 2px;
+    transition: height 0.5s ease;
+}
+.kanban-input__input:hover{
+    outline: none;
+}
+.kanban-input-buttons-container{
+    width: 100%;
+    margin: 2px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }

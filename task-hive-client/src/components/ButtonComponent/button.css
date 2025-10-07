@@ -45,6 +45,12 @@
     justify-content: center;
     align-items: center;
 }
+.button.kanban-input{
+    background-color: #e0e0e0;
+}
+.button.kanban-input-cancel{
+    width: 30px;
+}
 button.group{
     background-color: white;
     padding: 5px;
@@ -76,4 +82,10 @@ button.group{
 }
 button.group:hover{
     border: 1px solid #00b4d8;
+}
+.button.kanban-input:hover{
+    background-color: #00b4d8;
+}
+.button.kanban-input-cancel:hover{
+    background-color: #e6363f;
 }
