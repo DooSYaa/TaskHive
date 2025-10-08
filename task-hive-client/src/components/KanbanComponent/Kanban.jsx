@@ -4,6 +4,9 @@ import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useAuth} from "../Context/AuthContext.jsx";
 
+import {DndContext, closestCorners} from '@dnd-kit/core';
+import {arrayMove} from '@dnd-kit/sortable';
+
 
 export default function Kanban()
 {
@@ -29,16 +32,32 @@ export default function Kanban()
         fetchData()
     }, []);
 
+
+
+
+    const handleDragEnd = (event) => {
+        const {active, over} = event;
+        if(!over) return;
+    }
+
+   
+  
     return (
-        <div className="kanban">
-            {kanbanStatuses.length > 0 ? (
-                kanbanStatuses.map((status) => (
-                    <KanbanBlock
+        <DndContext
+            collisionDetection={closestCorners}
+            onDragEnd={handleDragEnd}
+        >
+
+            <div className="kanban">
+                {kanbanStatuses.length > 0 ? (
+                    kanbanStatuses.map((status) => (
+                        <KanbanBlock
                         key={status.position}
                         status={status}
-                    />
-                ))
-            ): null}
-        </div>
-    )
+                        />
+                    ))
+                ): null}
+            </div>
+        </DndContext>
+    );
 }

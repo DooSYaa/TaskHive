@@ -4,6 +4,8 @@ import {useState, useEffect, Fragment} from "react";
 import KanbanInput from "./KanbanInput.jsx";
 import DropArea from "../DragAreaComponent/DropArea.jsx";
 
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+
 export default function KanbanBlock({status}) {
     const [showInput, setShowInput] = useState(false);
     const [cards, setCards] = useState(status.cards || []);
@@ -20,13 +22,16 @@ export default function KanbanBlock({status}) {
             {status.statusName}
                 <div className="kanban-block-list">
                     <div className="kanban-block-list-container">
-                        <DropArea />
+                        <SortableContext
+                            id={status.id}
+                            items={cards.map((c) => c.id)}
+                            strategy={verticalListSortingStrategy}
+                            >
+
                         {cards?.map((card) => (
-                            <Fragment key={card.id}>
-                                <TaskCard card={card} />
-                                <DropArea />
-                            </Fragment>
+                            <TaskCard card={card} />
                         ))}
+                        </SortableContext>
                         {showInput ? (
                             <KanbanInput
                                 onCancel={() => setShowInput(false)}
