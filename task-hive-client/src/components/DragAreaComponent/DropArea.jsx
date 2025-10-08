@@ -1,11 +1,13 @@
 import './dropArea.css';
-import {useState} from "react";
+
+import {useDroppable } from '@dnd-kit/core';
 
 export default function DropArea() {
-    const [showDrop, setShowDrop] = useState(false);
+    const {setNodeRef} = useDroppable({
+        
+    })
     return (
-        <div>
-            Drop here
+        <div >
         </div>
     )
 }

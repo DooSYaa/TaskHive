@@ -4,9 +4,13 @@ import {useState, useEffect, Fragment} from "react";
 import KanbanInput from "./KanbanInput.jsx";
 import DropArea from "../DragAreaComponent/DropArea.jsx";
 
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
 
 export default function KanbanBlock({status}) {
+    const {setNodeRef} = useDroppable({
+        id: status.id
+    })
+
     const [showInput, setShowInput] = useState(false);
     const [cards, setCards] = useState(status.cards || []);
 
@@ -18,31 +22,28 @@ export default function KanbanBlock({status}) {
         setCards(status.cards || []);
     }, [status.cards]);
     return (
-        <div className="kanban-block" draggable={true}>
+        <div className="kanban-block">
+        {/* <div className="kanban-block-list"> */}
             {status.statusName}
-                <div className="kanban-block-list">
-                    <div className="kanban-block-list-container">
-                        <SortableContext
-                            id={status.id}
-                            items={cards.map((c) => c.id)}
-                            strategy={verticalListSortingStrategy}
-                            >
+            <div
+                ref={setNodeRef} 
 
-                        {cards?.map((card) => (
-                            <TaskCard card={card} />
-                        ))}
-                        </SortableContext>
-                        {showInput ? (
-                            <KanbanInput
-                                onCancel={() => setShowInput(false)}
-                                kanbanCardId={status.id}
-                                onCardCreated={handleCardCreated}
-                            />
-                        ) : null
-                        }
-                    </div>
+                className="kanban-block-list-container">
+                    {cards?.map((card) => (
+                        <TaskCard key={card.id} card={card} />
+                    ))}
+                    {showInput ? (
+                        <KanbanInput
+                            onCancel={() => setShowInput(false)}
+                            kanbanCardId={status.id}
+                            onCardCreated={handleCardCreated}
+                        />
+                    ) : null
+                }
+                <Button variant={'kanban'} onClick={() => setShowInput(true)}>+ add card</Button>
             </div>
-            <Button variant={'kanban'} onClick={() => setShowInput(true)}>+ add card</Button>
+
+            {/* </div> */}
         </div>
     )
 }

@@ -4,12 +4,11 @@ import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useAuth} from "../Context/AuthContext.jsx";
 
-import {DndContext, closestCorners} from '@dnd-kit/core';
-import {arrayMove} from '@dnd-kit/sortable';
-
+import {DndContext} from '@dnd-kit/core';
 
 export default function Kanban()
 {
+    const [activeId, setActiveId] = useState(null);
     const {kanbanId} = useParams();
     const [kanbanStatuses, setKanbanStatuses] = useState([]);
     const {user} = useAuth();
@@ -31,23 +30,38 @@ export default function Kanban()
         }
         fetchData()
     }, []);
+   
+    
+    const handleDragStart = (event) => {
+        const { active } = event;
+        setActiveId(active.id);
+        console.log("Drag started:", active.id);
+    }
+    function handleDragEnd(event) {
+        const { active, over } = event;
 
+        if (!over) return;
+        console.log('active ' + active.id)
+        console.log('over ' + over.id)
+        console.log(kanbanStatuses)
+        let sourceColumn = null;
+        for (let col in kanbanStatuses) {
+            if (kanbanStatuses[col].some(card => card.id === activeId)) {
+            sourceColumn = col;
+            break;
+            }
+        }
+        const destinationColumn = over.id;
 
-
-
-    const handleDragEnd = (event) => {
-        const {active, over} = event;
-        if(!over) return;
+        console.log(sourceColumn)
+        console.log(destinationColumn)
     }
 
-   
-  
     return (
         <DndContext
-            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
         >
-
             <div className="kanban">
                 {kanbanStatuses.length > 0 ? (
                     kanbanStatuses.map((status) => (
