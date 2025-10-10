@@ -8,7 +8,7 @@ import {DndContext} from '@dnd-kit/core';
 
 export default function Kanban()
 {
-    const [activeId, setActiveId] = useState(null);
+    const [activeId, setActiveId] = useState(null);             
     const {kanbanId} = useParams();
     const [kanbanStatuses, setKanbanStatuses] = useState([]);
     const {user} = useAuth();
@@ -44,26 +44,35 @@ export default function Kanban()
 
         console.log('active ' + active.id)
         console.log('over ' + over.id)
-        console.log(kanbanStatuses)
-        const sourceColumn = findCard(kanbanStatuses, active.id);
+        const sourceColumn = findBoard(kanbanStatuses, active.id);
         const destinationColumn = over.id
 
-        console.log(`source ${sourceColumn}\ndestination ${destinationColumn}`)
         if(sourceColumn === destinationColumn) return;
+        const currentTable = kanbanStatuses.find(x => x.id === sourceColumn); // получаем таблицу их которой мы взяли карточку
+        const cardsId = currentTable.cards.find(x => x.id === active.id); // полные данные о карточе которую мы двигаем
+        
+        
+        console.log("Start!");
+        setKanbanStatuses(prev =>
+            prev.map(table => {
+                if (table.id === sourceColumn) {
+                return {
+                    ...table,
+                    cards: table.cards.filter(card => card.id !== cardsId.id),
+                };
+                }
+                if (table.id === destinationColumn) {
+                return {
+                    ...table,
+                    cards: [...table.cards, cardsId],
+                };
+                }
+                return table;
+            })
+            );
+        }
 
-        setKanbanStatuses(prev => {
-            const newBoard = {...prev};
-            console.log('qwer', newBoard[0]);
-
-            // const cardToMove = newBoard[sourceColumn].find(c => c.id === active.id);
-            // console.log('card to move', cardToMove);
-            // newBoard[sourceColumn] = newBoard[sourceColumn].filter(c => c.id !== active.id);
-            // newBoard[destinationColumn] = [...newBoard[destinationColumn], cardToMove];
-            // return newBoard;
-        })
-    }
-
-    const findCard = (board, cardId) => {
+    const findBoard = (board, cardId) => {
         for(const column of board) {
             const card = column.cards.find(c => c.id === cardId);
             if (card) return column.id;
