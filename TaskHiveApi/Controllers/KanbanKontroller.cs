@@ -110,4 +110,34 @@ public class KanbanController : ControllerBase
         });
     }
 
+    [HttpPut("MoveCard")]
+    public IActionResult MoveCard(
+        [FromBody] MoveKanbanCardDto kanbanCardDto
+    )
+    {
+        var sourceColumn = _context.KanbanStatuses
+            .Where(x => x.Id == kanbanCardDto.SourceKanbanBlockId)
+            .Include(c => c.Cards)
+            .FirstOrDefault();
+
+        if (sourceColumn == null)
+            return BadRequest("Kanban table not found");
+
+        var card = sourceColumn.Cards
+            .FirstOrDefault(x => x.Id == kanbanCardDto.KanbanCardId);
+
+        if (card == null)
+            return NotFound("Card not found");
+        var targetColumn = _context.KanbanStatuses
+            .Include(c => c.Cards)
+            .FirstOrDefault(x => x.Id == kanbanCardDto.TargetKanbanBlockId);
+        if (targetColumn == null)
+            return NotFound("Target not found");
+        sourceColumn.Cards.Remove(card);
+        targetColumn.Cards.Add(card);
+        _context.SaveChanges();
+
+        return Ok("Success!");
+    }
+
 }

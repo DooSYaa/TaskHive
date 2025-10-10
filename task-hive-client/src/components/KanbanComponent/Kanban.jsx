@@ -8,7 +8,6 @@ import {DndContext} from '@dnd-kit/core';
 
 export default function Kanban()
 {
-    const [activeId, setActiveId] = useState(null);             
     const {kanbanId} = useParams();
     const [kanbanStatuses, setKanbanStatuses] = useState([]);
     const {user} = useAuth();
@@ -30,12 +29,21 @@ export default function Kanban()
         }
         fetchData()
     }, []);
-   
-    
-    const handleDragStart = (event) => {
-        const { active } = event;
-        setActiveId(active.id);
-        console.log("Drag started:", active.id);
+    const handleUpdateCardPosition = async (sourceColumn, destinationColumn, cardId) => {
+        const request = await fetch('http://localhost:5292/api/Kanban/MoveCard', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
+            },
+            body: JSON.stringify({
+                "sourceKanbanBlockId": sourceColumn,
+                "targetKanbanBlockId": destinationColumn,
+                "kanbanCardId": cardId
+            })
+        });
+        if(!request.ok)
+            throw new Error(request.status);
     }
     function handleDragEnd(event) {
         const { active, over } = event;
@@ -52,7 +60,6 @@ export default function Kanban()
         const cardsId = currentTable.cards.find(x => x.id === active.id); // полные данные о карточе которую мы двигаем
         
         
-        console.log("Start!");
         setKanbanStatuses(prev =>
             prev.map(table => {
                 if (table.id === sourceColumn) {
@@ -70,31 +77,32 @@ export default function Kanban()
                 return table;
             })
             );
+        handleUpdateCardPosition(sourceColumn, destinationColumn, active.id);
         }
 
-    const findBoard = (board, cardId) => {
-        for(const column of board) {
-            const card = column.cards.find(c => c.id === cardId);
-            if (card) return column.id;
+        
+        const findBoard = (board, cardId) => {
+            for(const column of board) {
+                const card = column.cards.find(c => c.id === cardId);
+                if (card) return column.id;
+            }
+            return null;
         }
-        return null;
-    }
-
-    return (
-        <DndContext
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-        >
-            <div className="kanban">
-                {kanbanStatuses.length > 0 ? (
-                    kanbanStatuses.map((status) => (
-                        <KanbanBlock
-                        key={status.position}
-                        status={status}
-                        />
-                    ))
-                ): null}
-            </div>
-        </DndContext>
-    );
+        
+        return (
+            <DndContext
+                onDragEnd={handleDragEnd}
+            >
+                <div className="kanban">
+                    {kanbanStatuses.length > 0 ? (
+                        kanbanStatuses.map((status) => (
+                            <KanbanBlock
+                            key={status.position}
+                            status={status}
+                            />
+                        ))
+                    ): null}
+                </div>
+            </DndContext>
+        );
 }
