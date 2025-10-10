@@ -41,20 +41,34 @@ export default function Kanban()
         const { active, over } = event;
 
         if (!over) return;
+
         console.log('active ' + active.id)
         console.log('over ' + over.id)
         console.log(kanbanStatuses)
-        let sourceColumn = null;
-        for (let col in kanbanStatuses) {
-            if (kanbanStatuses[col].some(card => card.id === activeId)) {
-            sourceColumn = col;
-            break;
-            }
-        }
-        const destinationColumn = over.id;
+        const sourceColumn = findCard(kanbanStatuses, active.id);
+        const destinationColumn = over.id
 
-        console.log(sourceColumn)
-        console.log(destinationColumn)
+        console.log(`source ${sourceColumn}\ndestination ${destinationColumn}`)
+        if(sourceColumn === destinationColumn) return;
+
+        setKanbanStatuses(prev => {
+            const newBoard = {...prev};
+            console.log('qwer', newBoard[0]);
+
+            // const cardToMove = newBoard[sourceColumn].find(c => c.id === active.id);
+            // console.log('card to move', cardToMove);
+            // newBoard[sourceColumn] = newBoard[sourceColumn].filter(c => c.id !== active.id);
+            // newBoard[destinationColumn] = [...newBoard[destinationColumn], cardToMove];
+            // return newBoard;
+        })
+    }
+
+    const findCard = (board, cardId) => {
+        for(const column of board) {
+            const card = column.cards.find(c => c.id === cardId);
+            if (card) return column.id;
+        }
+        return null;
     }
 
     return (
