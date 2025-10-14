@@ -45,13 +45,18 @@ export default function Kanban()
         if(!request.ok)
             throw new Error(request.status);
     }
+    const findBoard = (board, cardId) => {
+            for(const column of board) {
+                const card = column.cards.find(c => c.id === cardId);
+                if (card) return column.id;
+            }
+            return null;
+        }
     function handleDragEnd(event) {
         const { active, over } = event;
 
         if (!over) return;
 
-        console.log('active ' + active.id)
-        console.log('over ' + over.id)
         const sourceColumn = findBoard(kanbanStatuses, active.id);
         const destinationColumn = over.id
 
@@ -79,14 +84,13 @@ export default function Kanban()
             );
         handleUpdateCardPosition(sourceColumn, destinationColumn, active.id);
         }
-
-        
-        const findBoard = (board, cardId) => {
-            for(const column of board) {
-                const card = column.cards.find(c => c.id === cardId);
-                if (card) return column.id;
-            }
-            return null;
+        function handleDragStart(){
+            console.log("start");
+        }
+        function handleDragOver(event) {
+            const {over} = event;
+            console.log("start");
+            console.log(over.id);
         }
         
         return (

@@ -9,11 +9,9 @@ import { useDroppable } from "@dnd-kit/core";
 export default function KanbanBlock({status}) {
     const {setNodeRef} = useDroppable({
         id: status.id
-    })
-
+    });
     const [showInput, setShowInput] = useState(false);
     const [cards, setCards] = useState(status.cards || []);
-
     const handleCardCreated = (newCard) => {
         setCards((prev) => [...prev, newCard]);
         setShowInput(false);
@@ -27,7 +25,6 @@ export default function KanbanBlock({status}) {
             {status.statusName}
             <div
                 ref={setNodeRef} 
-
                 className="kanban-block-list-container">
                     {cards?.map((card) => (
                         <TaskCard key={card.id} card={card} />
@@ -42,7 +39,6 @@ export default function KanbanBlock({status}) {
                 }
                 <Button variant={'kanban'} onClick={() => setShowInput(true)}>+ add card</Button>
             </div>
-
             {/* </div> */}
         </div>
     )
