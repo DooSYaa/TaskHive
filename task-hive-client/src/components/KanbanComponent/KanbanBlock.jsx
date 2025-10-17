@@ -6,19 +6,20 @@ import DropArea from "../DragAreaComponent/DropArea.jsx";
 
 import { useDroppable } from "@dnd-kit/core";
 
-export default function KanbanBlock({status}) {
+export default function KanbanBlock({status, onUpdate}) {
+    const [showInput, setShowInput] = useState(false);
+    const [cards, setCards] = useState(status.cards || []);
     const {setNodeRef} = useDroppable({
         id: status.id
     });
-    const [showInput, setShowInput] = useState(false);
-    const [cards, setCards] = useState(status.cards || []);
     const handleCardCreated = (newCard) => {
         setCards((prev) => [...prev, newCard]);
         setShowInput(false);
     };
+    
     useEffect(() => {
         setCards(status.cards || []);
-    }, [status.cards]);
+    }, [status.cards, status]);
     return (
         <div className="kanban-block">
         {/* <div className="kanban-block-list"> */}

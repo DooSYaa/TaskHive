@@ -103,6 +103,11 @@ export default function Kanban()
                             <KanbanBlock
                             key={status.position}
                             status={status}
+                            onUpdate={(newStatus) => {
+                                setKanbanStatuses((prev) => {
+                                    prev.map((s) => (s.id === newStatus.id ? newStatus : s))
+                                })
+                            }}
                             />
                         ))
                     ): null}
