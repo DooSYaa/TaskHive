@@ -1,67 +1,170 @@
+
+/* ====== Основной контейнер ====== */
 .main-chat-container {
     height: 90vh;
     display: flex;
     flex-direction: row;
-}
-.friends-container{
-    height: 100%;
-    width: 250px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+    background-color: #f4f7fb;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-.chat-main-container{
+/* ====== Левая панель друзей ====== */
+.friends-container {
+    width: 260px;
+    background: linear-gradient(180deg, #4a90e2, #357ab8);
+    color: white;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-}
-.chat-container{
-    height: 100%;
-    background-image: url("src/assets/messages_light_colour_background.jpg");
-    width: auto;
-    display: flex;
-    justify-content: center;
-}
-.message.sent{
-    padding-right: 10px;
-    display: flex;
-    justify-content: end;
-    background-color: cadetblue;
-}
-.message.received{
-    padding-left: 10px;
-    display: flex;
-    justify-content: start;
-    background-color: moccasin;
-}
-.messages{
-    white-space: pre-wrap;
-    width: 1000px;
+    align-items: stretch;
+    padding: 20px 0;
     overflow-y: auto;
 }
-.chat-input-container{
-    height: auto;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
-    flex-basis: auto;
+
+.friend-name-container {
+    padding: 12px 20px;
+    margin: 4px 12px;
+    border-radius: 10px;
+    background-color: rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    font-weight: 500;
 }
 
-.input-chat-container{
+.friend-name-container:hover {
+    background-color: rgba(255,255,255,0.3);
+    transform: scale(1.02);
+}
+
+.friend-name-container.active {
+    background-color: rgba(255,255,255,0.5);
+    color: #1a3c6e;
+}
+
+/* ====== Правая часть с чатом ====== */
+.chat-main-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #e9eef5;
+}
+
+/* ====== Контейнер сообщений ====== */
+.chat-container {
+    flex-grow: 1;
+    background-image: url("src/assets/messages_light_colour_background.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ====== Сами сообщения ====== */
+.messages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    white-space: pre-wrap;
+}
+
+.message {
+    padding: 10px 16px;
+    border-radius: 12px;
+    max-width: 70%;
+    font-size: 15px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.message.sent {
+    align-self: flex-end;
+    background-color: #4a90e2;
+    color: #fff;
+    border-bottom-right-radius: 2px;
+}
+
+.message.received {
+    align-self: flex-start;
+    background-color: #ffffff;
+    color: #333;
+    border-bottom-left-radius: 2px;
+}
+
+/* Время сообщений */
+.message sub {
+    display: block;
+    text-align: right;
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 4px;
+}
+
+/* ====== Ввод и кнопка ====== */
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    padding: 15px;
+    border-top: 1px solid #d3dae1;
+}
+
+.input-chat-container {
     margin-right: 10px;
 }
-.input-chat__input{
-    height: 40px;
+
+.input-chat__input {
+    height: 45px;
     width: 600px;
     font-size: 16px;
-    border-radius: 5px;
-    resize: none;
+    border: 1px solid #c9d4e2;
+    border-radius: 10px;
+    padding: 0 15px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-.friend-name-container {
-    display: flex;
-    flex-grow: 1;
-    background-color: #8ec5ff;
+
+.input-chat__input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+}
+
+/* ====== Адаптивность ====== */
+@media (max-width: 900px) {
+    .friends-container {
+        width: 200px;
+    }
+
+    .input-chat__input {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .main-chat-container {
+        flex-direction: column;
+    }
+
+    .friends-container {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .friend-name-container {
+        margin: 6px;
+    }
+
+    .input-chat__input {
+        width: 100%;
+    }
 }

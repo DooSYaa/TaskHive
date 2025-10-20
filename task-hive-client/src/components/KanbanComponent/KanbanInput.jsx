@@ -15,7 +15,6 @@ export default function KanbanInput({onCancel, kanbanCardId, onCardCreated}) {
         textarea.style.height = "auto";
         textarea.style.height = textarea.scrollHeight + "px";
     }
-    console.log(kanbanCardId);
     const handleSubmit = async () => {
         const request = await fetch(`http://localhost:5292/api/Kanban/CreateKanbanCard?kanbanTableId=${kanbanId}&kanbanStatusId=${kanbanCardId}`, {
             method: "POST",

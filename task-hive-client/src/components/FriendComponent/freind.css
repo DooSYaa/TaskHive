@@ -1,4 +1,4 @@
-.friend-main-container{
+/* .friend-main-container{
     height: 80vh;
     display: flex;
     justify-content: center;
@@ -54,4 +54,195 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+} */
+
+/* ====== Общий контейнер ====== */
+.friend-main-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    padding: 40px;
+    min-height: 85vh;
+    background: linear-gradient(145deg, #f4f7fb, #e8ecf3);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ====== Блок списка друзей ====== */
+.friend-container {
+    flex: 1;
+    max-width: 300px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.friend-container p {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.friend-container ol {
+    list-style: none;
+    padding: 10px 14px;
+    margin: 8px 0;
+    border-radius: 8px;
+    background-color: #f0f5ff;
+    color: #2b4a7a;
+    font-weight: 500;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    transition: transform 0.15s ease;
+}
+
+.friend-container ol:hover {
+    transform: scale(1.03);
+    background-color: #e2edff;
+}
+
+/* ====== Правая часть ====== */
+.main-box {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    gap: 30px;
+}
+
+/* ====== Блок добавления друга ====== */
+.box {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.box input.friend-input {
+    margin-top: 10px;
+    padding: 10px 16px;
+    border: 1px solid #cdd8e6;
+    border-radius: 8px;
+    font-size: 15px;
+    width: 60%;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.box input.friend-input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+}
+
+.friend-button {
+    margin-top: 14px;
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.friend-button:hover {
+    background-color: #357ab8;
+    transform: translateY(-1px);
+}
+
+/* ====== Сообщения об ошибке и успехе ====== */
+.error-message {
+    color: #d9534f;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+.success-message {
+    color: #4BB543;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+/* ====== Блок запросов в друзья ====== */
+.friends-requests {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.friends-requests h4 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.friends-request-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f7f9fc;
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.friends-request-list p {
+    margin: 0;
+    color: #1a3c6e;
+    font-weight: 500;
+}
+
+.friends-request-list button {
+    background-color: #4BB543;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.friends-request-list button:hover {
+    background-color: #3a9537;
+}
+
+/* ====== Адаптивность ====== */
+@media (max-width: 900px) {
+    .friend-main-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .main-box {
+        width: 100%;
+    }
+
+    .box input.friend-input {
+        width: 80%;
+    }
+}
+
+@media (max-width: 600px) {
+    .friend-main-container {
+        padding: 20px;
+    }
+
+    .friend-container,
+    .friends-requests,
+    .box {
+        width: 100%;
+    }
+
+    .box input.friend-input {
+        width: 100%;
+    }
 }

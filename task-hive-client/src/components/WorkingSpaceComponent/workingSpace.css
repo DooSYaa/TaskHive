@@ -1,4 +1,4 @@
-
+/* 
 .kanbanTablesList {
     border: 1px solid black;
 }
@@ -23,4 +23,117 @@
     padding: 20px;
     border-radius: 8px;
     width: 300px;
+} */
+
+/* 🌿 Контейнер списка таблиц */
+.kanbanTablesList {
+    border: 1px solid #d0d7de;
+    border-radius: 10px;
+    background-color: #ffffff;
+    padding: 15px;
+    margin: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+.kanbanTablesList:hover {
+    box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+}
+
+/* ➕ Кнопка создания новой таблицы */
+.createKanbanContainer {
+    margin: 10px 20px 0 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.createKanbanButton {
+    background-color: #0077b6;
+    color: white;
+    padding: 10px 18px;
+    font-size: 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.1s ease;
+}
+.createKanbanButton:hover {
+    background-color: #0096c7;
+    transform: translateY(-2px);
+}
+.createKanbanButton:active {
+    background-color: #005f73;
+    transform: translateY(0);
+}
+
+/* 🌫️ Модальное окно создания таблицы */
+.createKanbanTable {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+/* 📋 Форма создания */
+.createKanbanTableForm {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    width: 340px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeIn 0.3s ease;
+}
+
+/* ✍️ Поля ввода */
+.createKanbanTableForm input[type="text"],
+.createKanbanTableForm textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.25s ease;
+}
+.createKanbanTableForm input[type="text"]:focus,
+.createKanbanTableForm textarea:focus {
+    border-color: #0077b6;
+}
+
+/* 🧩 Кнопки внутри формы */
+.createKanbanTableForm button {
+    padding: 10px;
+    font-size: 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.25s ease;
+}
+.createKanbanTableForm button.create {
+    background-color: #0077b6;
+    color: white;
+}
+.createKanbanTableForm button.create:hover {
+    background-color: #0096c7;
+}
+.createKanbanTableForm button.cancel {
+    background-color: #e0e0e0;
+    color: #333;
+}
+.createKanbanTableForm button.cancel:hover {
+    background-color: #cccccc;
+}
+
+/* 🌟 Анимация появления формы */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
 }
