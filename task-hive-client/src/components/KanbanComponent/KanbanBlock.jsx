@@ -6,10 +6,10 @@ import DropArea from "../DragAreaComponent/DropArea.jsx";
 
 import { useDroppable } from "@dnd-kit/core";
 
-export default function KanbanBlock({status, onUpdate}) {
+export default function KanbanBlock({status}) {
     const [showInput, setShowInput] = useState(false);
     const [cards, setCards] = useState(status.cards || []);
-    const {setNodeRef} = useDroppable({
+    const {setNodeRef, isOver} = useDroppable({
         id: status.id
     });
     const handleCardCreated = (newCard) => {
@@ -21,26 +21,28 @@ export default function KanbanBlock({status, onUpdate}) {
         setCards(status.cards || []);
     }, [status.cards, status]);
     return (
-        <div className="kanban-block">
-        {/* <div className="kanban-block-list"> */}
-            {status.statusName}
-            <div
-                ref={setNodeRef} 
-                className="kanban-block-list-container">
-                    {cards?.map((card) => (
-                        <TaskCard key={card.id} card={card} />
-                    ))}
-                    {showInput ? (
-                        <KanbanInput
-                            onCancel={() => setShowInput(false)}
-                            kanbanCardId={status.id}
-                            onCardCreated={handleCardCreated}
-                        />
-                    ) : null
-                }
-                <Button variant={'kanban'} onClick={() => setShowInput(true)}>+ add card</Button>
-            </div>
+        <div 
+            className={`kanban-block ${isOver ? "kanban-block-active" : ""}`}
+        >
+            {/* <div className="kanban-block-list"> */}
+                {status.statusName}
+                <div
+                    ref={setNodeRef}
+                    className="kanban-block-list-container">
+                        {cards?.map((card) => (
+                            <TaskCard key={card.id} card={card} />
+                        ))}
+                        {showInput ? (
+                            <KanbanInput
+                                onCancel={() => setShowInput(false)}
+                                kanbanCardId={status.id}
+                                onCardCreated={handleCardCreated}
+                            />
+                        ) : null
+                    }
+                </div>
             {/* </div> */}
+                <Button variant={'kanban'} onClick={() => setShowInput(true)}>+ add card</Button>
         </div>
     )
 }

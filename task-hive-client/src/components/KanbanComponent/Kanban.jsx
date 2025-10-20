@@ -4,13 +4,15 @@ import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {useAuth} from "../Context/AuthContext.jsx";
 
-import {DndContext} from '@dnd-kit/core';
+import {DndContext, DragOverlay} from '@dnd-kit/core';
+import TaskCard from './TaskCard.jsx';
 
 export default function Kanban()
 {
     const {kanbanId} = useParams();
     const [kanbanStatuses, setKanbanStatuses] = useState([]);
     const {user} = useAuth();
+    const [activeId, setActiveId] = useState(null);
     useEffect(() =>  {
         const fetchData = async () => {
             const response = await fetch(`http://localhost:5292/api/Kanban/GetCurrentKanbanTable?kanbanId=${kanbanId}`, {
@@ -51,7 +53,7 @@ export default function Kanban()
                 if (card) return column.id;
             }
             return null;
-        }
+    }
     function handleDragEnd(event) {
         const { active, over } = event;
 
@@ -82,36 +84,49 @@ export default function Kanban()
                 return table;
             })
             );
-        handleUpdateCardPosition(sourceColumn, destinationColumn, active.id);
+            handleUpdateCardPosition(sourceColumn, destinationColumn, active.id);
         }
-        function handleDragStart(){
-            console.log("start");
+        function handleDragStart(event){
+            const {active} = event;
+            const cardId = active.id;
+
+            for(const column of kanbanStatuses) {
+                const found = column.cards.find((c) => c.id === cardId);
+
+                if(found) {
+                    console.log(`Your card:`);
+                    console.log(found);
+                    setActiveId(found);
+                    return;
+                }
+            }
         }
-        function handleDragOver(event) {
-            const {over} = event;
-            console.log("start");
-            console.log(over.id);
-        }
-        
         return (
             <DndContext
+                onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
             >
                 <div className="kanban">
                     {kanbanStatuses.length > 0 ? (
                         kanbanStatuses.map((status) => (
                             <KanbanBlock
-                            key={status.position}
-                            status={status}
-                            onUpdate={(newStatus) => {
-                                setKanbanStatuses((prev) => {
-                                    prev.map((s) => (s.id === newStatus.id ? newStatus : s))
-                                })
-                            }}
+                                key={status.position}
+                                status={status}
+                                onUpdate={(newStatus) => {
+                                    setKanbanStatuses((prev) => {
+                                        prev.map((s) => (s.id === newStatus.id ? newStatus : s))
+                                    })
+                                }}
                             />
                         ))
                     ): null}
                 </div>
+
+                <DragOverlay>
+                    {activeId ? (
+                        <TaskCard card={activeId} />
+                    ) : null}
+                </DragOverlay>
             </DndContext>
         );
 }

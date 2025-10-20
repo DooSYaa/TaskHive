@@ -17,6 +17,9 @@
     flex-direction: column;
     align-items: center;
 }
+.kanban-block-active{
+    border-color: aquamarine;
+}
 .kanban-block-list{
     width: 100%;
     margin-bottom: 5px;
@@ -30,6 +33,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-x: hidden;
 }
 .task-card{
     width: 80%;
