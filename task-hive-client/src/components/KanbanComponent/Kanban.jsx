@@ -61,8 +61,8 @@ export default function Kanban()
         const destinationColumn = over.id
 
         if(sourceColumn === destinationColumn) return;
-        const currentTable = kanbanStatuses.find(x => x.id === sourceColumn); // получаем таблицу их которой мы взяли карточку
-        const cardsId = currentTable.cards.find(x => x.id === active.id); // полные данные о карточе которую мы двигаем
+        const currentTable = kanbanStatuses.find(x => x.id === sourceColumn);
+        const cardsId = currentTable.cards.find(x => x.id === active.id); 
         
         
         setKanbanStatuses(prev =>
@@ -84,15 +84,16 @@ export default function Kanban()
             );
         handleUpdateCardPosition(sourceColumn, destinationColumn, active.id);
         }
-        function handleDragStart(){
-            console.log("start");
-        }
-        function handleDragOver(event) {
-            const {over} = event;
-            console.log("start");
-            console.log(over.id);
-        }
-        
+        const handleCardCreated = (newCard, statusId) => {
+        setKanbanStatuses(prev =>
+            prev.map(status => {
+                if (status.id === statusId) {
+                    return { ...status, cards: [...status.cards, newCard] };
+                }
+                return status;
+            })
+        );
+    };
         return (
             <DndContext
                 onDragEnd={handleDragEnd}
@@ -103,11 +104,7 @@ export default function Kanban()
                             <KanbanBlock
                             key={status.position}
                             status={status}
-                            onUpdate={(newStatus) => {
-                                setKanbanStatuses((prev) => {
-                                    prev.map((s) => (s.id === newStatus.id ? newStatus : s))
-                                })
-                            }}
+                            onCardCreated={handleCardCreated}
                             />
                         ))
                     ): null}

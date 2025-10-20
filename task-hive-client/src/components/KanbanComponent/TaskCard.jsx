@@ -17,7 +17,7 @@ export default function TaskCard({card}) {
             {...listeners}
             {...attributes} 
             className="task-card">
-            <div>
+            <div className='task-card-content'>
                 <p>{card.title}</p>
             </div>
         </div>
