@@ -1,6 +1,7 @@
 import Button from "../ButtonComponent/Button.jsx";
 import TaskCard from "./TaskCard.jsx";
-import {useState, useEffect, Fragment} from "react";
+import {useState, Fragment} from "react";
+import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
 import KanbanInput from "./KanbanInput.jsx";
 
 import { useDroppable } from "@dnd-kit/core";
@@ -17,34 +18,42 @@ export default function KanbanBlock({status, onCardCreated}) {
         setShowInput(false);
     };
     return (
-        <div 
-            className={`kanban-block ${isOver ? "kanban-block-active" : ""}`}
-        >
-            <div className="kanban-block-header">
-                {status.statusName}
-            </div>
-                <div
-                    ref={setNodeRef}
-                    className="kanban-block-list-container">
-                        {status.cards?.map((card) => (
-                            <TaskCard key={card.id} card={card} />
-                        ))}
-                        {showInput ? (
-                            <KanbanInput
+        <SortableContext 
+            items={status.cards.map((c) => c.id)}
+            strategy={verticalListSortingStrategy}
+            >
+
+            <div 
+                ref={setNodeRef}
+                className={`kanban-block ${isOver ? "kanban-block-active" : ""}`}
+                >
+                <div className="kanban-block-header">
+                    {status.statusName}
+                </div>
+                <div className="kanban-block-list">
+                    <div
+                        className="kanban-block-list-container">
+                            {status.cards?.map((card) => (
+                                <TaskCard key={card.id} card={card} />
+                            ))}
+                            {showInput ? (
+                                <KanbanInput
                                 onCancel={() => setShowInput(false)}
                                 kanbanCardId={status.id}
                                 onCardCreated={handleCardCreatedLocal}
-                            />
-                        ) : null
-                    }
+                                />
+                            ) : null
+                        }
+                    </div>
                 </div>
                 <div className="kanban-block-button">
-                <Button 
-                    variant={'kanban'} 
-                    onClick={() => setShowInput(true)}
-                    >+ add card
-                </Button>
+                    <Button 
+                        variant={'kanban'} 
+                        onClick={() => setShowInput(true)}
+                        >+ add card
+                    </Button>
+                </div>
             </div>
-        </div>
+        </SortableContext>
     )
 }

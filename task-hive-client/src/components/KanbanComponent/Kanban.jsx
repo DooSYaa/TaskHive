@@ -12,7 +12,7 @@ export default function Kanban()
     const {kanbanId} = useParams();
     const [kanbanStatuses, setKanbanStatuses] = useState([]);
     const {user} = useAuth();
-    //const [activeId, setActiveId] = useState(null);
+    const [activeCard, setActiveCard] = useState(null);
     useEffect(() =>  {
         const fetchData = async () => {
             const response = await fetch(`http://localhost:5292/api/Kanban/GetCurrentKanbanTable?kanbanId=${kanbanId}`, {
@@ -30,7 +30,7 @@ export default function Kanban()
                 .sort((a, b) => a.position - b.position));
         }
         fetchData()
-    }, []);
+    }, [user.token, kanbanId]);
     const handleUpdateCardPosition = async (sourceColumn, destinationColumn, cardId) => {
         const request = await fetch('http://localhost:5292/api/Kanban/MoveCard', {
             method: 'PUT',
@@ -56,6 +56,7 @@ export default function Kanban()
     }
     function handleDragEnd(event) {
         const { active, over } = event;
+        setActiveCard(null);
 
         if (!over) return;
 
@@ -65,8 +66,8 @@ export default function Kanban()
         if(sourceColumn === destinationColumn) return;
         const currentTable = kanbanStatuses.find(x => x.id === sourceColumn);
         const cardsId = currentTable.cards.find(x => x.id === active.id); 
-        
-        
+        console.log("Cards: ");
+        console.log(cardsId);        
         setKanbanStatuses(prev =>
             prev.map(table => {
                 if (table.id === sourceColumn) {
@@ -96,9 +97,27 @@ export default function Kanban()
             })
         );
     };
+    const handleDragStart = (event) => {
+        const { active } = event;
+        const cardId = active.id;
+
+        // Находим карточку, которую начинаем тянуть
+        for (const column of kanbanStatuses) {
+            const found = column.cards.find((c) => c.id === cardId);
+            if (found) {
+                setActiveCard(found);
+                return;
+            }
+        }
+    };
+    const handleDragCancel = () => {
+        setActiveCard(null);
+    };
         return (
             <DndContext
                 onDragEnd={handleDragEnd}
+                onDragStart={handleDragStart}
+                onDragCancel={handleDragCancel}
             >
                 <div className="kanban">
                     {kanbanStatuses.length > 0 ? (
@@ -113,8 +132,8 @@ export default function Kanban()
                 </div>
 
                 <DragOverlay>
-                    {activeId ? (
-                        <TaskCard card={activeId} />
+                    {activeCard ? (
+                        <TaskCard card={activeCard} />
                     ) : null}
                 </DragOverlay>
             </DndContext>

@@ -59,7 +59,7 @@ export default function WorkingSpace() {
                     <Button variant={'group'} onClick={() => setShowModal(true)}>Create kanban</Button>
                 </div>
                 {kanbanTables ? (kanbanTables.map((kanban) => (
-                    <Link to={`/${groupId}/${kanban.id}`} key={kanban.id}>
+                    <Link style={{textDecoration: "none"}} to={`/${groupId}/${kanban.id}`} key={kanban.id}>
                         <div className='kanbanTablesList'>
                             {kanban.kanbanTableName}
                         </div>

@@ -12,7 +12,7 @@ using TaskHiveApi.Data;
 namespace TaskHiveApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251007193711_Init")]
+    [Migration("20251021110136_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -213,6 +213,9 @@ namespace TaskHiveApi.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("GroupName")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -245,6 +248,9 @@ namespace TaskHiveApi.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -257,9 +263,15 @@ namespace TaskHiveApi.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -298,6 +310,9 @@ namespace TaskHiveApi.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("GroupId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
@@ -305,6 +320,9 @@ namespace TaskHiveApi.Migrations
                     b.Property<string>("KanbanTableName")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 

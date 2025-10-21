@@ -39,17 +39,22 @@ public class KanbanController : ControllerBase
         var newResult = new
         {
             Id = currentKanbanTable.Id,
-            Statuses = currentKanbanTable.Statuses.Select(x => new
-            {
-                x.Id,
-                x.StatusName,
-                x.Position, 
-                Cards = x.Cards.Select(x => new {
+            Statuses = currentKanbanTable.Statuses
+                .OrderBy(x => x.Position)
+                .Select(x => new
+                {
                     x.Id,
-                    x.Title,
-                    x.Description,
+                    x.StatusName,
+                    x.Position, 
+                    Cards = x.Cards
+                        .OrderBy(x => x.Position)
+                        .Select(x => new {
+                            x.Id,
+                            x.Title,
+                            x.Description,
+                            x.Position,
+                        }),
                 }),
-            }),
         };
         return Ok(newResult);
     }
@@ -65,6 +70,7 @@ public class KanbanController : ControllerBase
         {
             KanbanTableName = kanbanTableDto.KanbanTableName,
             GroupId = kanbanTableDto.GroupId,
+            CreatedAt = DateTime.Now,
         };
         _context.KanbanTables.Add(kanbanTable);
         _context.SaveChanges();
@@ -81,8 +87,9 @@ public class KanbanController : ControllerBase
         
         return Ok(new
         {
-            id = kanbanTableDto.GroupId,
-            name = kanbanTableDto.KanbanTableName,
+            id = kanbanTable.GroupId,
+            name = kanbanTable.KanbanTableName,
+            createdAt = kanbanTable.CreatedAt
         });
     }
     [HttpPost("CreateKanbanCard")]
@@ -93,11 +100,17 @@ public class KanbanController : ControllerBase
     {
         if(!ModelState.IsValid)
             return BadRequest(ModelState);
+
+        var lastCardPosition = _context.KanbanCards
+            .Where(x => x.KanbanTableId == kanbanTableId)
+            .Select(x => (int?)x.Position)
+            .Max() ?? 0;
         var newKanbanCard = new KanbanData
         {
             KanbanTableId = kanbanTableId,
             KanbanStatusId = kanbanStatusId,
             Title = kanbanCardDto.Title,
+            Position = lastCardPosition + 1,
         };
         _context.KanbanCards.Add(newKanbanCard);
         _context.SaveChanges();
@@ -107,6 +120,7 @@ public class KanbanController : ControllerBase
             id = newKanbanCard.Id,
             title = newKanbanCard.Title,
             description = newKanbanCard.Description,
+            position = newKanbanCard.Position,
         });
     }
 
@@ -116,25 +130,31 @@ public class KanbanController : ControllerBase
     )
     {
         var sourceColumn = _context.KanbanStatuses
-            .Where(x => x.Id == kanbanCardDto.SourceKanbanBlockId)
             .Include(c => c.Cards)
-            .FirstOrDefault();
-
+            .FirstOrDefault(x => x.Id == kanbanCardDto.SourceKanbanBlockId);
         if (sourceColumn == null)
             return BadRequest("Kanban table not found");
 
         var card = sourceColumn.Cards
             .FirstOrDefault(x => x.Id == kanbanCardDto.KanbanCardId);
-
         if (card == null)
             return NotFound("Card not found");
+        
         var targetColumn = _context.KanbanStatuses
             .Include(c => c.Cards)
             .FirstOrDefault(x => x.Id == kanbanCardDto.TargetKanbanBlockId);
         if (targetColumn == null)
             return NotFound("Target not found");
+
+        var targetCards = targetColumn.Cards.ToList();
+        var insertIndex = Math.Clamp(kanbanCardDto.Position - 1, 0, targetCards.Count);
+        targetCards.Insert(insertIndex, card);
+
+        for (int i = 0; i < targetCards.Count; i++)
+            targetCards[i].Position = i;
+
+        targetColumn.Cards = targetCards;
         sourceColumn.Cards.Remove(card);
-        targetColumn.Cards.Add(card);
         _context.SaveChanges();
 
         return Ok("Success!");

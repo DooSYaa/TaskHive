@@ -34,6 +34,7 @@
     margin: 15px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     transition: all 0.3s ease;
+    text-decoration: none;
 }
 .kanbanTablesList:hover {
     box-shadow: 0 6px 14px rgba(0,0,0,0.1);

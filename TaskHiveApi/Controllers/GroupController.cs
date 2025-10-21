@@ -58,7 +58,8 @@ namespace TaskHiveApi.Controllers
             {
                 newGroup.Id,
                 newGroup.GroupName,
-                AdminId = user.Id
+                AdminId = user.Id,
+                DateTime = DateTime.Now,
             });
         }
         [HttpGet("getMyGroups")]
