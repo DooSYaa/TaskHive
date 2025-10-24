@@ -86,7 +86,7 @@ export default function Kanban() {
       return arrayMove(blocks, activeBlockIndex, overBlockIndex);
     });
   }
-  const handleCardCreated = (newCard, statusId) => {
+  const handleCardCreated = (newCard) => {
     setKanbanBlocks((prev) =>
       prev.map((status) => {
         if (status.id === statusId) {
