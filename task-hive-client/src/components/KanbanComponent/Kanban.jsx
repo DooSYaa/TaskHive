@@ -1,141 +1,189 @@
-import './kanban.css';
+import "./kanban.css";
 import KanbanBlock from "./KanbanBlock.jsx";
-import {useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
-import {useAuth} from "../Context/AuthContext.jsx";
+import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "../Context/AuthContext.jsx";
+import { createPortal } from "react-dom";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
+import TaskCard from "./TaskCard.jsx";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 
-import {DndContext, DragOverlay} from '@dnd-kit/core';
-import TaskCard from './TaskCard.jsx';
-
-export default function Kanban()
-{
-    const {kanbanId} = useParams();
-    const [kanbanStatuses, setKanbanStatuses] = useState([]);
-    const {user} = useAuth();
-    const [activeCard, setActiveCard] = useState(null);
-    useEffect(() =>  {
-        const fetchData = async () => {
-            const response = await fetch(`http://localhost:5292/api/Kanban/GetCurrentKanbanTable?kanbanId=${kanbanId}`, {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
-                },
-            });
-            if(!response.ok) {
-                throw new Error("Kanban not found.", response.status);
-            }
-            const data = await response.json();
-            setKanbanStatuses(data.statuses
-                .sort((a, b) => a.position - b.position));
+export default function Kanban() {
+  const { kanbanId } = useParams();
+  const [kanbanBlocks, setKanbanBlocks] = useState([]);
+  const [kanbanCards, setKanbanCards] = useState([]);
+  const { user } = useAuth();
+  const [activeCard, setActiveCard] = useState(null);
+  const [activeBlock, setActiveBlock] = useState([]);
+  const blocksId = useMemo(
+    () => kanbanBlocks.map((blocks) => blocks.id),
+    [kanbanBlocks]
+  );
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(
+        `http://localhost:5292/api/Kanban/GetCurrentKanbanTable?kanbanId=${kanbanId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
         }
-        fetchData()
-    }, [user.token, kanbanId]);
-    const handleUpdateCardPosition = async (sourceColumn, destinationColumn, cardId) => {
-        const request = await fetch('http://localhost:5292/api/Kanban/MoveCard', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user.token}`
-            },
-            body: JSON.stringify({
-                "sourceKanbanBlockId": sourceColumn,
-                "targetKanbanBlockId": destinationColumn,
-                "kanbanCardId": cardId
-            })
-        });
-        if(!request.ok)
-            throw new Error(request.status);
+      );
+      if (!response.ok) {
+        throw new Error("Kanban not found.", response.status);
+      }
+      const data = await response.json();
+      setKanbanBlocks(data.statuses || []);
+      setKanbanCards(data.cards || []);
+    };
+    fetchData();
+  }, [user.token, kanbanId]);
+  const handleUpdateCardPosition = async (
+    sourceColumn,
+    destinationColumn,
+    cardId
+  ) => {
+    try {
+      const request = await fetch("http://localhost:5292/api/Kanban/MoveCard", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          sourceKanbanBlockId: sourceColumn,
+          targetKanbanBlockId: destinationColumn,
+          kanbanCardId: cardId.id,
+          position: cardId.position,
+        }),
+      });
+      if (!request.ok) throw new Error(request.status);
+    } catch (error) {
+      console.error("Error request", error);
     }
-    const findBoard = (board, cardId) => {
-            for(const column of board) {
-                const card = column.cards.find(c => c.id === cardId);
-                if (card) return column.id;
-            }
-            return null;
+  };
+
+  function handleDragEnd(event) {
+    const { active, over } = event;
+    setActiveBlock(null);
+    setActiveCard(null);
+    if (!over) return;
+
+    const activeBlock = active.id;
+    const overBlock = over.id;
+
+    if (activeBlock === overBlock) return;
+
+    setKanbanBlocks((blocks) => {
+      const activeBlockIndex = blocks.findIndex(
+        (block) => block.id === activeBlock
+      );
+      const overBlockIndex = blocks.findIndex(
+        (block) => block.id === overBlock
+      );
+      return arrayMove(blocks, activeBlockIndex, overBlockIndex);
+    });
+  }
+  const handleCardCreated = (newCard, statusId) => {
+    setKanbanBlocks((prev) =>
+      prev.map((status) => {
+        if (status.id === statusId) {
+          return { ...status, cards: [...status.cards, newCard] };
+        }
+        return status;
+      })
+    );
+  };
+  const handleDragStart = (event) => {
+    if (event.active.data.current?.type === "Column") {
+      setActiveBlock(event.active.data.current?.status);
+      return;
     }
-    function handleDragEnd(event) {
-        const { active, over } = event;
-        setActiveCard(null);
 
-        if (!over) return;
+    if (event.active.data.current?.type === "Task") {
+      setActiveCard(event.active.data.current.card);
+      return;
+    }
+  };
+  const handleDragCancel = () => {
+    setActiveCard(null);
+  };
+  const handleDragOver = (event) => {
+    // Добавлено: обработка onDragOver для улучшения isOver
+    const { active, over } = event;
+    if (!over) return;
 
-        const sourceColumn = findBoard(kanbanStatuses, active.id);
-        const destinationColumn = over.id
+    const activeId = active.id;
+    const overId = over.id;
 
-        if(sourceColumn === destinationColumn) return;
-        const currentTable = kanbanStatuses.find(x => x.id === sourceColumn);
-        const cardsId = currentTable.cards.find(x => x.id === active.id); 
-        console.log("Cards: ");
-        console.log(cardsId);        
-        setKanbanStatuses(prev =>
-            prev.map(table => {
-                if (table.id === sourceColumn) {
-                return {
-                    ...table,
-                    cards: table.cards.filter(card => card.id !== cardsId.id),
-                };
-                }
-                if (table.id === destinationColumn) {
-                return {
-                    ...table,
-                    cards: [...table.cards, cardsId],
-                };
-                }
-                return table;
-            })
-            );
-            handleUpdateCardPosition(sourceColumn, destinationColumn, active.id);
-        }
-        const handleCardCreated = (newCard, statusId) => {
-        setKanbanStatuses(prev =>
-            prev.map(status => {
-                if (status.id === statusId) {
-                    return { ...status, cards: [...status.cards, newCard] };
-                }
-                return status;
-            })
-        );
-    };
-    const handleDragStart = (event) => {
-        const { active } = event;
-        const cardId = active.id;
+    if (activeId === overId) return;
 
-        // Находим карточку, которую начинаем тянуть
-        for (const column of kanbanStatuses) {
-            const found = column.cards.find((c) => c.id === cardId);
-            if (found) {
-                setActiveCard(found);
-                return;
-            }
-        }
-    };
-    const handleDragCancel = () => {
-        setActiveCard(null);
-    };
-        return (
-            <DndContext
-                onDragEnd={handleDragEnd}
-                onDragStart={handleDragStart}
-                onDragCancel={handleDragCancel}
-            >
-                <div className="kanban">
-                    {kanbanStatuses.length > 0 ? (
-                        kanbanStatuses.map((status) => (
-                            <KanbanBlock
-                            key={status.position}
-                            status={status}
-                            onCardCreated={handleCardCreated}
-                            />
-                        ))
-                    ): null}
-                </div>
+    const isActiveACard = active.data.current?.type === "Task";
+    const isOverACard = over.data.current?.type === "Task";
 
-                <DragOverlay>
-                    {activeCard ? (
-                        <TaskCard card={activeCard} />
-                    ) : null}
-                </DragOverlay>
-            </DndContext>
-        );
+    if (!isActiveACard) return;
+    if (isActiveACard && isOverACard) {
+      setKanbanCards((cards) => {
+        const activeIndex = cards.findIndex((t) => t.id === activeId);
+        const overIndex = cards.findIndex((t) => t.id === overId);
+
+        cards[activeIndex].kanbanStatusId = cards[overIndex].kanbanStatusId;
+
+        return arrayMove(cards, activeIndex, overIndex);
+      });
+    }
+
+    const isOverABlock = over.data.current?.type === "Column";
+    if (isActiveACard && isOverABlock) {
+      setKanbanCards((cards) => {
+        const activeIndex = cards.findIndex((t) => t.id === activeId);
+
+        cards[activeIndex].kanbanStatusId = overId;
+
+        return arrayMove(cards, activeIndex, activeIndex);
+      });
+    }
+  };
+  return (
+    <DndContext
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+      onDragOver={handleDragOver}
+    >
+      <div className="kanban">
+        <SortableContext items={blocksId}>
+          {kanbanBlocks.length > 0
+            ? kanbanBlocks.map((status) => (
+                <KanbanBlock
+                  key={status.position}
+                  status={status}
+                  cards={kanbanCards.filter(
+                    (card) => card.kanbanStatusId === status.id
+                  )}
+                  onCardCreated={handleCardCreated}
+                />
+              ))
+            : null}
+        </SortableContext>
+      </div>
+      {createPortal(
+        <DragOverlay>
+          {activeBlock && (
+            <KanbanBlock
+              status={activeBlock}
+              cards={kanbanCards.filter(
+                (card) => card.kanbanStatusId === activeBlock.id
+              )}
+            />
+          )}
+          {activeCard && <TaskCard card={activeCard} />}
+        </DragOverlay>,
+        document.body
+      )}
+      {/* {activeCard && <TaskCard card={activeCard}/>} */}
+    </DndContext>
+  );
 }

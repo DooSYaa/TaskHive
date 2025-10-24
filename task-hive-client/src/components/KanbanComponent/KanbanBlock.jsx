@@ -1,59 +1,79 @@
 import Button from "../ButtonComponent/Button.jsx";
 import TaskCard from "./TaskCard.jsx";
-import {useState, Fragment} from "react";
-import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
+import { useState, useMemo } from "react";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import KanbanInput from "./KanbanInput.jsx";
+import { CSS } from "@dnd-kit/utilities";
 
-import { useDroppable } from "@dnd-kit/core";
-
-
-
-export default function KanbanBlock({status, onCardCreated}) {
-    const [showInput, setShowInput] = useState(false);
-    const {setNodeRef, isOver} = useDroppable({
-        id: status.id
-    });
-    const handleCardCreatedLocal = (newCard) => {
-        onCardCreated(newCard, status.id);
-        setShowInput(false);
-    };
+export default function KanbanBlock({ status, cards, onCardCreated }) {
+  const [showInput, setShowInput] = useState(false);
+  const cardsIds = useMemo(() => {
+    return cards.map((card) => card.id);
+  }, [cards]);
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isOver,
+    isDragging,
+  } = useSortable({
+    id: status.id,
+    data: {
+      type: "Column",
+      status,
+    },
+  });
+  const style = {
+    transition,
+    transform: CSS.Transform.toString(transform),
+  };
+  if (isDragging) {
     return (
-        <SortableContext 
-            items={status.cards.map((c) => c.id)}
-            strategy={verticalListSortingStrategy}
-            >
-
-            <div 
-                ref={setNodeRef}
-                className={`kanban-block ${isOver ? "kanban-block-active" : ""}`}
-                >
-                <div className="kanban-block-header">
-                    {status.statusName}
-                </div>
-                <div className="kanban-block-list">
-                    <div
-                        className="kanban-block-list-container">
-                            {status.cards?.map((card) => (
-                                <TaskCard key={card.id} card={card} />
-                            ))}
-                            {showInput ? (
-                                <KanbanInput
-                                onCancel={() => setShowInput(false)}
-                                kanbanCardId={status.id}
-                                onCardCreated={handleCardCreatedLocal}
-                                />
-                            ) : null
-                        }
-                    </div>
-                </div>
-                <div className="kanban-block-button">
-                    <Button 
-                        variant={'kanban'} 
-                        onClick={() => setShowInput(true)}
-                        >+ add card
-                    </Button>
-                </div>
-            </div>
+      <div
+        ref={setNodeRef}
+        style={style}
+        className={"dragging-kanban-block"}
+      ></div>
+    );
+  }
+  const handleCardCreatedLocal = (newCard) => {
+    onCardCreated(newCard);
+    setShowInput(false);
+  };
+  return (
+    <div ref={setNodeRef} style={style} className={"kanban-block"}>
+      <div {...attributes} {...listeners} className="kanban-block-header">
+        {status.statusName}
+      </div>
+      <div className="kanban-block-list">
+        <SortableContext
+          id={cardsIds}
+          items={cardsIds}
+          strategy={verticalListSortingStrategy}
+        >
+          {cards?.map((card) => (
+            <TaskCard key={card.id} card={card} />
+          ))}
         </SortableContext>
-    )
+      </div>
+      {showInput ? (
+        <KanbanInput
+          onCancel={() => setShowInput(false)}
+          kanbanCardId={status.id}
+          onCardCreated={handleCardCreatedLocal}
+        />
+      ) : null}
+      <div className="kanban-block-button">
+        <Button variant={"kanban"} onClick={() => setShowInput(true)}>
+          + add card
+        </Button>
+      </div>
+    </div>
+  );
 }

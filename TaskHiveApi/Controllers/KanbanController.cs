@@ -27,7 +27,7 @@ public class KanbanController : ControllerBase
     }
 
     [HttpGet("GetCurrentKanbanTable")]
-    public IActionResult GetCurrentKanbanTable([FromQuery] GetCurrentKanbanTableDto id)
+    public async Task<IActionResult> GetCurrentKanbanTable([FromQuery] GetCurrentKanbanTableDto id)
     {
         var currentKanbanTable = _context.KanbanTables
             .Where(i => i.Id == id.kanbanId)
@@ -45,22 +45,24 @@ public class KanbanController : ControllerBase
                 {
                     x.Id,
                     x.StatusName,
-                    x.Position, 
-                    Cards = x.Cards
-                        .OrderBy(x => x.Position)
-                        .Select(x => new {
-                            x.Id,
-                            x.Title,
-                            x.Description,
-                            x.Position,
-                        }),
+                    x.Position,
+                }),
+            Cards = currentKanbanTable.Cards
+                .OrderBy(x => x.Position)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.KanbanStatusId,
+                    x.Title,
+                    x.Description,
+                    x.Position,
                 }),
         };
         return Ok(newResult);
     }
 
     [HttpPost("CreateKanbanTable")]
-    public IActionResult CreateKanbanTable([FromBody]CreateKanbanTableDto kanbanTableDto)
+    public async Task<IActionResult> CreateKanbanTable([FromBody]CreateKanbanTableDto kanbanTableDto)
     {
         if (!ModelState.IsValid)
         {
@@ -72,8 +74,9 @@ public class KanbanController : ControllerBase
             GroupId = kanbanTableDto.GroupId,
             CreatedAt = DateTime.Now,
         };
-        _context.KanbanTables.Add(kanbanTable);
-        _context.SaveChanges();
+
+        await _context.KanbanTables.AddAsync(kanbanTable);
+        await _context.SaveChangesAsync();
 
         var defaultStatuses = new List<KanbanStatus>
         {
@@ -82,8 +85,8 @@ public class KanbanController : ControllerBase
             new KanbanStatus { KanbanTableId = kanbanTable.Id, StatusName = "Done", Position = 2 },
         };
         
-        _context.KanbanStatuses.AddRange(defaultStatuses);
-        _context.SaveChanges();
+        await _context.KanbanStatuses.AddRangeAsync(defaultStatuses);
+        await _context.SaveChangesAsync();
         
         return Ok(new
         {
@@ -93,7 +96,7 @@ public class KanbanController : ControllerBase
         });
     }
     [HttpPost("CreateKanbanCard")]
-    public IActionResult CreateKanbanCard(
+    public async Task<IActionResult> CreateKanbanCard(
         [FromQuery] string kanbanTableId,
         [FromQuery] string kanbanStatusId,
         [FromBody] CreateKanbanCardDto kanbanCardDto)
@@ -101,10 +104,10 @@ public class KanbanController : ControllerBase
         if(!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var lastCardPosition = _context.KanbanCards
-            .Where(x => x.KanbanTableId == kanbanTableId)
+        var lastCardPosition = await _context.KanbanCards
+            .Where(x => x.KanbanTableId == kanbanTableId && x.KanbanStatusId == kanbanStatusId)
             .Select(x => (int?)x.Position)
-            .Max() ?? 0;
+            .MaxAsync() ?? -1;
         var newKanbanCard = new KanbanData
         {
             KanbanTableId = kanbanTableId,
@@ -112,8 +115,8 @@ public class KanbanController : ControllerBase
             Title = kanbanCardDto.Title,
             Position = lastCardPosition + 1,
         };
-        _context.KanbanCards.Add(newKanbanCard);
-        _context.SaveChanges();
+        await _context.KanbanCards.AddAsync(newKanbanCard);
+        await _context.SaveChangesAsync();
 
         return Ok(new
         {
@@ -125,13 +128,15 @@ public class KanbanController : ControllerBase
     }
 
     [HttpPut("MoveCard")]
-    public IActionResult MoveCard(
+    public async Task<IActionResult> MoveCard(
         [FromBody] MoveKanbanCardDto kanbanCardDto
     )
     {
-        var sourceColumn = _context.KanbanStatuses
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+        var sourceColumn = await _context.KanbanStatuses
             .Include(c => c.Cards)
-            .FirstOrDefault(x => x.Id == kanbanCardDto.SourceKanbanBlockId);
+            .FirstOrDefaultAsync(x => x.Id == kanbanCardDto.SourceKanbanBlockId);
         if (sourceColumn == null)
             return BadRequest("Kanban table not found");
 
@@ -140,22 +145,39 @@ public class KanbanController : ControllerBase
         if (card == null)
             return NotFound("Card not found");
         
-        var targetColumn = _context.KanbanStatuses
+        var targetColumn = await _context.KanbanStatuses
             .Include(c => c.Cards)
-            .FirstOrDefault(x => x.Id == kanbanCardDto.TargetKanbanBlockId);
+            .FirstOrDefaultAsync(x => x.Id == kanbanCardDto.TargetKanbanBlockId);
         if (targetColumn == null)
             return NotFound("Target not found");
 
-        var targetCards = targetColumn.Cards.ToList();
-        var insertIndex = Math.Clamp(kanbanCardDto.Position - 1, 0, targetCards.Count);
-        targetCards.Insert(insertIndex, card);
+        if (kanbanCardDto.SourceKanbanBlockId == kanbanCardDto.TargetKanbanBlockId)
+        {
+            var cards = sourceColumn.Cards.OrderBy(c => c.Position).ToList();
+
+            cards.Remove(card);
+            var insertIndex = Math.Clamp(kanbanCardDto.Position, 0, cards.Count);
+            cards.Insert(insertIndex, card);
+
+            for (int i = 0; i < cards.Count; i++)
+                cards[i].Position = i;
+
+            await _context.SaveChangesAsync();
+            return Ok("Success!");
+        }
+        sourceColumn.Cards.Remove(card);
+        card.KanbanStatusId = kanbanCardDto.TargetKanbanBlockId;
+
+        var targetCards = targetColumn.Cards.OrderBy(c => c.Position).ToList();
+        var targetIndex = Math.Clamp(kanbanCardDto.Position - 1, 0, targetCards.Count);
+        targetCards.Insert(targetIndex, card);
 
         for (int i = 0; i < targetCards.Count; i++)
             targetCards[i].Position = i;
+        for (int i = 0; i < sourceColumn.Cards.Count; i++)
+            sourceColumn.Cards[i].Position = i;
 
-        targetColumn.Cards = targetCards;
-        sourceColumn.Cards.Remove(card);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return Ok("Success!");
     }
