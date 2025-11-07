@@ -76,7 +76,6 @@ public class AccountController : ControllerBase
             _logger.LogCritical("Model state is invalid");
             return BadRequest(ModelState);
         }
-        
         var user = await _userManager.FindByEmailAsync(loginDto.Email);
         if (user == null)
             return NotFound("user not found");

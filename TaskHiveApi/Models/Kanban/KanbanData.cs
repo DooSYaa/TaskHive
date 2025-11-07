@@ -2,7 +2,7 @@
 
 public class KanbanData
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string Id { get; set; } = $"card-{Guid.NewGuid()}";
     public string KanbanTableId { get; set; }
     public string KanbanStatusId { get; set; }
     public string Title { get; set; }

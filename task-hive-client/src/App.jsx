@@ -15,9 +15,8 @@ import WorkingSpace from "./components/WorkingSpaceComponent/WorkingSpace.jsx";
 export default function App() {
 
     return (
-        <>
+        <div>
             <Header />
-            <div>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path='/registration' element={<Registration />} />
@@ -29,7 +28,6 @@ export default function App() {
                     <Route path='/group/:groupId' element={<WorkingSpace />} />
                     <Route path='/:groupId/:kanbanId' element={<Kanban />} />
                 </Routes>
-            </div>
-        </>
+        </div>
     )
 }

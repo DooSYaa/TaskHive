@@ -1,52 +1,35 @@
 .header-component{
-    padding: 3px;
-    border: 1px solid #999;
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
+    border: 1px solid #ccc;
 }
 .header-main{
     display: flex;
-    width: auto;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: row;
+    border: 1px solid aquamarine;
+}
+.header-nav{ 
+    display: flex;
+    flex-direction: row;
+    border: 1px solid purple;
 }
 .header-logo{
-    display: flex;
-    justify-content: center;
-    width: 120px;
+    
 }
 .header-account{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-right: 15px;
-    width: auto;
-    font-size: 18px;
+    
 }
 .nav-menu{
-    width: auto;
     display: flex;
-    justify-content: space-between;
     flex-direction: row;
-    align-items: center;
-    font-size: 20px;
+    border: 1px solid yellow;
 }
 .nav-link{
-    margin: 0 0 0 5px;
-    color: black;
-    text-decoration: none;
-    transition-property: color;
-    transition-duration: 0.3s;
+    
+    
 }
 .nav-link:visited{
-    color: black;
 }
 .nav-link:hover{
-    color: #00b4d8;
 }
-.svg-icon{
-    transition: 0.3s fill ease;
-}
-.svg-icon:hover{
-    fill: #00b4d8;
-}
+

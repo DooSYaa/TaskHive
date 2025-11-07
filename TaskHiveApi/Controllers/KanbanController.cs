@@ -7,6 +7,7 @@ using TaskHiveApi.Models.DTO.Kanban;
 using TaskHiveApi.Models.Kanban;
 
 namespace TaskHiveApi.Controllers;
+
 [Authorize]
 [Route("api/[controller]")]
 public class KanbanController : ControllerBase
@@ -46,8 +47,7 @@ public class KanbanController : ControllerBase
                     x.Id,
                     x.StatusName,
                     x.Position,
-                }),
-            Cards = currentKanbanTable.Cards
+                    Cards = x.Cards
                 .OrderBy(x => x.Position)
                 .Select(x => new
                 {
@@ -57,17 +57,19 @@ public class KanbanController : ControllerBase
                     x.Description,
                     x.Position,
                 }),
+            }),
         };
         return Ok(newResult);
     }
 
     [HttpPost("CreateKanbanTable")]
-    public async Task<IActionResult> CreateKanbanTable([FromBody]CreateKanbanTableDto kanbanTableDto)
+    public async Task<IActionResult> CreateKanbanTable([FromBody] CreateKanbanTableDto kanbanTableDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+
         var kanbanTable = new KanbanTable
         {
             KanbanTableName = kanbanTableDto.KanbanTableName,
@@ -84,15 +86,46 @@ public class KanbanController : ControllerBase
             new KanbanStatus { KanbanTableId = kanbanTable.Id, StatusName = "Doing", Position = 1 },
             new KanbanStatus { KanbanTableId = kanbanTable.Id, StatusName = "Done", Position = 2 },
         };
-        
+
         await _context.KanbanStatuses.AddRangeAsync(defaultStatuses);
         await _context.SaveChangesAsync();
-        
+
         return Ok(new
         {
             id = kanbanTable.GroupId,
             name = kanbanTable.KanbanTableName,
             createdAt = kanbanTable.CreatedAt
+        });
+    }
+
+    [HttpPost("CreateCanbanBlock")]
+    public async Task<IActionResult> CreateCanbanBlock(
+        [FromQuery] string kanbanTableId,
+        [FromBody] CreateKanbanBlockDto kanbanBlockDto)
+    {
+        var kanbanTable = await _context.KanbanTables
+            .FirstOrDefaultAsync(x => x.Id == kanbanTableId);
+        if (kanbanTable == null)
+            return NotFound("Kanban table is not found");
+
+        var lastKanbanBlockPosition = await _context.KanbanStatuses
+            .Where(x => x.KanbanTableId == kanbanTableId)
+            .Select(x => (int?)x.Position)
+            .MaxAsync() ?? -1;
+        var newKanbanblock = new KanbanStatus
+        {
+            KanbanTableId = kanbanTableId,
+            StatusName = kanbanBlockDto.kanbanBlockName,
+            Position = lastKanbanBlockPosition + 1,
+        };
+        await _context.KanbanStatuses.AddAsync(newKanbanblock);
+        await _context.SaveChangesAsync();
+        return Ok( new
+        {
+            id = newKanbanblock.Id,
+            kanbanTable = newKanbanblock.KanbanTableId,
+            statusName = newKanbanblock.StatusName,
+            position = newKanbanblock.Position,
         });
     }
     [HttpPost("CreateKanbanCard")]
@@ -121,6 +154,7 @@ public class KanbanController : ControllerBase
         return Ok(new
         {
             id = newKanbanCard.Id,
+            kanbanStatusId,
             title = newKanbanCard.Title,
             description = newKanbanCard.Description,
             position = newKanbanCard.Position,

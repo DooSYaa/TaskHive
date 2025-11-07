@@ -52,7 +52,7 @@ export default function WorkingSpace() {
     }, [])
 
     return (
-        <>
+        <div className='flex flex-1 flex-col'>
             <div className="workingSpace">
                 <h1>Working Space</h1>
                 <div className='createKanbanContainer'>
@@ -75,6 +75,6 @@ export default function WorkingSpace() {
                     handleSubmit={handleSubmit}
                 />
             )}
-        </>
+        </div>
     )
 }

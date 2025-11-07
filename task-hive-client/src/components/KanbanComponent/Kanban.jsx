@@ -1,24 +1,14 @@
 import "./kanban.css";
 import KanbanBlock from "./KanbanBlock.jsx";
+import {DragDropContext, Droppable} from '@hello-pangea/dnd';
 import { useParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../Context/AuthContext.jsx";
-import { createPortal } from "react-dom";
-import { DndContext, DragOverlay } from "@dnd-kit/core";
-import TaskCard from "./TaskCard.jsx";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 
 export default function Kanban() {
   const { kanbanId } = useParams();
-  const [kanbanBlocks, setKanbanBlocks] = useState([]);
-  const [kanbanCards, setKanbanCards] = useState([]);
+  const [columns, setColumns] = useState([]);
   const { user } = useAuth();
-  const [activeCard, setActiveCard] = useState(null);
-  const [activeBlock, setActiveBlock] = useState([]);
-  const blocksId = useMemo(
-    () => kanbanBlocks.map((blocks) => blocks.id),
-    [kanbanBlocks]
-  );
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
@@ -35,8 +25,7 @@ export default function Kanban() {
         throw new Error("Kanban not found.", response.status);
       }
       const data = await response.json();
-      setKanbanBlocks(data.statuses || []);
-      setKanbanCards(data.cards || []);
+      setColumns(data.statuses || []);
     };
     fetchData();
   }, [user.token, kanbanId]);
@@ -64,30 +53,9 @@ export default function Kanban() {
       console.error("Error request", error);
     }
   };
-
-  function handleDragEnd(event) {
-    const { active, over } = event;
-    setActiveBlock(null);
-    setActiveCard(null);
-    if (!over) return;
-
-    const activeBlock = active.id;
-    const overBlock = over.id;
-
-    if (activeBlock === overBlock) return;
-
-    setKanbanBlocks((blocks) => {
-      const activeBlockIndex = blocks.findIndex(
-        (block) => block.id === activeBlock
-      );
-      const overBlockIndex = blocks.findIndex(
-        (block) => block.id === overBlock
-      );
-      return arrayMove(blocks, activeBlockIndex, overBlockIndex);
-    });
-  }
+ 
   const handleCardCreated = (newCard) => {
-    setKanbanBlocks((prev) =>
+    setColumns((prev) =>
       prev.map((status) => {
         if (status.id === statusId) {
           return { ...status, cards: [...status.cards, newCard] };
@@ -96,94 +64,83 @@ export default function Kanban() {
       })
     );
   };
-  const handleDragStart = (event) => {
-    if (event.active.data.current?.type === "Column") {
-      setActiveBlock(event.active.data.current?.status);
+  function onDragEnd(result) {
+    const {draggableId, destination, source, type} = result;
+
+    if(!destination) return; 
+
+    if(destination.droppableId === source.droppableId && destination.index === source.index) {
       return;
     }
 
-    if (event.active.data.current?.type === "Task") {
-      setActiveCard(event.active.data.current.card);
+    if(type === 'column') {
+      const newColumnOrder = Array.from(columns.map((col) => col.id));
+      newColumnOrder.splice(source.index, 1);
+      newColumnOrder.splice(destination.index, 0, draggableId);
+      const reorderedColumns = newColumnOrder.map((id, index) => {
+      const col = columns.find(c => c.id === id);
+        return col ? { ...col, position: index } : null;
+      }).filter(Boolean);
+      setColumns(reorderedColumns);
       return;
     }
-  };
-  const handleDragCancel = () => {
-    setActiveCard(null);
-  };
-  const handleDragOver = (event) => {
-    // Добавлено: обработка onDragOver для улучшения isOver
-    const { active, over } = event;
-    if (!over) return;
+    let movedCard = null;
+    if (source.droppableId === destination.droppableId) {
+      const column = columns.find((col) => col.id === source.droppableId);
+      const newCards = Array.from(column.cards);
+      [movedCard] = newCards.splice(source.index, 1);
+      newCards.splice(destination.index, 0, movedCard);
 
-    const activeId = active.id;
-    const overId = over.id;
+      const updatedCards = newCards.map((card, index) => ({
+        ...card,
+        position: index
+      }));
 
-    if (activeId === overId) return;
-
-    const isActiveACard = active.data.current?.type === "Task";
-    const isOverACard = over.data.current?.type === "Task";
-
-    if (!isActiveACard) return;
-    if (isActiveACard && isOverACard) {
-      setKanbanCards((cards) => {
-        const activeIndex = cards.findIndex((t) => t.id === activeId);
-        const overIndex = cards.findIndex((t) => t.id === overId);
-
-        cards[activeIndex].kanbanStatusId = cards[overIndex].kanbanStatusId;
-
-        return arrayMove(cards, activeIndex, overIndex);
-      });
+      const newColumns = columns.map((col) =>
+        col.id === column.id ? { ...col, cards: updatedCards } : col
+      );
+      setColumns(newColumns);
+      return;
     }
 
-    const isOverABlock = over.data.current?.type === "Column";
-    if (isActiveACard && isOverABlock) {
-      setKanbanCards((cards) => {
-        const activeIndex = cards.findIndex((t) => t.id === activeId);
+    // ⚙️ если карточку перетащили в другую колонку
+    const sourceColumn = columns.find((col) => col.id === source.droppableId);
+    const destColumn = columns.find((col) => col.id === destination.droppableId);
 
-        cards[activeIndex].kanbanStatusId = overId;
+    const sourceCards = Array.from(sourceColumn.cards);
+    const destCards = Array.from(destColumn.cards);
 
-        return arrayMove(cards, activeIndex, activeIndex);
-      });
-    }
-  };
+    [movedCard] = sourceCards.splice(source.index, 1);
+    destCards.splice(destination.index, 0, movedCard);
+
+    const updatedSourceCards = sourceCards.map((card, i) => ({ ...card, position: i }));
+    const updatedDestCards = destCards.map((card, i) => ({ ...card, position: i }));
+
+    const newColumns = columns.map(col => {
+      if (col.id === sourceColumn.id) return { ...col, cards: updatedSourceCards };
+      if (col.id === destColumn.id) return { ...col, cards: updatedDestCards };
+      return col;
+    });
+    setColumns(newColumns);
+  }
   return (
-    <DndContext
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
-      onDragOver={handleDragOver}
-    >
-      <div className="kanban">
-        <SortableContext items={blocksId}>
-          {kanbanBlocks.length > 0
-            ? kanbanBlocks.map((status) => (
-                <KanbanBlock
-                  key={status.position}
-                  status={status}
-                  cards={kanbanCards.filter(
-                    (card) => card.kanbanStatusId === status.id
-                  )}
-                  onCardCreated={handleCardCreated}
-                />
-              ))
-            : null}
-        </SortableContext>
-      </div>
-      {createPortal(
-        <DragOverlay>
-          {activeBlock && (
-            <KanbanBlock
-              status={activeBlock}
-              cards={kanbanCards.filter(
-                (card) => card.kanbanStatusId === activeBlock.id
-              )}
-            />
-          )}
-          {activeCard && <TaskCard card={activeCard} />}
-        </DragOverlay>,
-        document.body
-      )}
-      {/* {activeCard && <TaskCard card={activeCard}/>} */}
-    </DndContext>
+      <DragDropContext 
+        onDragEnd={onDragEnd}
+        >
+        <Droppable droppableId="all-columns" direction="horizontal" type="column">
+          {(provided) => (
+            <div 
+              className="main-kanban"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {columns.length > 0 ? columns.map((col, index) => (
+                <KanbanBlock key={col.id} column={col} index={index}/>
+              )) : null}
+              {provided.placeholder}
+            </div>
+            )}
+        </Droppable>
+      </DragDropContext>
   );
 }

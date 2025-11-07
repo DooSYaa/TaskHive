@@ -48,7 +48,7 @@ export default function Group()
             fetchData();
         }, [])
     return (
-        <>
+        <div className='flex flex-1 flex-col'>
             <div className='create-group-container'>
                 <Button variant={'group'} onClick={() => setShowModal(true)}>Create group</Button>
             </div>
@@ -72,6 +72,6 @@ export default function Group()
                     handleSubmit={handleSubmit}
                 />
             )}
-        </>
+        </div>
     )
 }

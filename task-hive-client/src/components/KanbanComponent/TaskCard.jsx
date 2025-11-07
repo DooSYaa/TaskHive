@@ -1,46 +1,32 @@
-import { CSS } from "@dnd-kit/utilities";
-import { useSortable } from "@dnd-kit/sortable";
-export default function TaskCard({ card }) {
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: card.id,
-    data: {
-      type: "Task",
-      card,
-    },
-  });
-  const style = {
-    transition,
-    transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.3 : 1,
-    cursor: "grab",
-  };
-  if (isDragging) {
-    return (
-      <div ref={setNodeRef} style={style} className="dragging-task-card">
-        <div className="task-card-content">
-          <p>{card.title}</p>
-        </div>
-      </div>
-    );
-  }
+import { Draggable } from "@hello-pangea/dnd";
+export default function TaskCard({ card, index}) {
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      className="task-card"
+    <Draggable
+      draggableId={card.id}
+      index={index}
     >
-      <div className="task-card-content">
-        <p>{card.title}</p>
-      </div>
-    </div>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          className="main-kanban-card"
+          style={{
+            userSelect: "none",
+            padding: "8px",
+            marginBottom: "8px",
+            background: snapshot.isDragging ? "#ffe58a" : "#fff",
+            borderRadius: "6px",
+            boxShadow: snapshot.isDragging
+              ? "0 4px 8px rgba(0,0,0,0.2)"
+              : "0 1px 3px rgba(0,0,0,0.1)",
+            transition: "transform 0.15s ease, background 0.2s ease",
+            ...provided.draggableProps.style, // 🟢 обязательная строка!
+          }}
+        >
+          <h4>{card.title}</h4>
+        </div>
+      )}
+    </Draggable>
   );
 }
