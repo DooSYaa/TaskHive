@@ -1,72 +1,81 @@
-import {Link} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext.jsx";
-import HomeIcon from "../../assets/HomeIcon.jsx";
-import UserIcon from "../../assets/UserIcon.jsx";
-import ChatIcon from "../../assets/ChatIcon.jsx";
+import { Link } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext.jsx';
+import HomeIcon from '../../assets/HomeIcon.jsx';
+import UserIcon from '../../assets/UserIcon.jsx';
+import ChatIcon from '../../assets/ChatIcon.jsx';
 import './header.css';
+import FriendsIcon from '../../assets/FriendsIcon.jsx';
 
 export default function Header() {
-    const { user, logout } = useAuth();
+  const { user, logout } = useAuth();
 
-    function handleLogout() {
-        try {
-            logout();
-            window.location.href = '/';
-        } catch (error) {
-            console.log(error);
-        }
+  function handleLogout() {
+    try {
+      logout();
+      window.location.href = '/';
+    } catch (error) {
+      console.log(error);
     }
+  }
 
-    return (
-        <header className="header-component">
-            {user ? (
-                <div className="header-main">
-                    <nav className="header-nav">
-                        <div className="header-logo">
-                            <Link className="nav-link" to="/">
-                                <h2>TaskHive</h2>
-                            </Link>
-                        </div>
-                        <div className="nav-menu">
-                            <Link className="nav-link" to="/">
-                                <HomeIcon />
-                            </Link>
-                            <Link className="nav-link" to="/friends">
-                                <UserIcon />
-                            </Link>
-                            <Link className="nav-link" to="/chat">
-                                <ChatIcon />
-                            </Link>
-                            <Link className="nav-link" to="/group">
-                                Group
-                            </Link>
-                        </div>
-                    </nav>
-                    <nav className="header-account">
-                        <Link className="nav-link" to="/user">{user.userName}</Link>
-                        <Link className="nav-link" to="#" onClick={handleLogout}>Logout</Link>
-                    </nav>
-                </div>
-            ) : (
-                <>
-                    <nav className="header-main">
-                        <div className="header-logo">
-                            <Link className="nav-link" to="/">
-                                <h2>TaskHive</h2>
-                            </Link>
-                        </div>
-                        <div className="nav-menu">
-                            <HomeIcon />
-                        </div>
-                    </nav>
-                    <nav className="header-account">
-                        <Link className="nav-link" to="/login">Sign In</Link>
-                        <Link className="nav-link" to="/registration">Registration</Link>
-                    </nav>
-                </>
-            )}
-        </header>
-    );
+  return (
+    <header className="header-component">
+      {user ? (
+        <div className="header-main">
+          <nav className="header-nav">
+            <div className="header-logo">
+              <Link className="nav-link" to="/">
+                <h2>TaskHive</h2>
+              </Link>
+            </div>
+            <div className="nav-menu">
+              <Link className="nav-link" to="/">
+                <HomeIcon />
+              </Link>
+              <Link className="nav-link" to="/friends">
+                <FriendsIcon />
+              </Link>
+              <Link className="nav-link" to="/chat">
+                <ChatIcon />
+              </Link>
+              <Link className="nav-link" to="/group">
+                Group
+              </Link>
+            </div>
+          </nav>
+          <nav className="header-account">
+            <Link className="nav-link" to="/user">
+              <UserIcon />
+            </Link>
+            <Link className="nav-link" to="#" onClick={handleLogout}>
+              Logout
+            </Link>
+          </nav>
+        </div>
+      ) : (
+        <>
+          <nav className="header-main">
+            <div className="header-logo">
+              <Link className="nav-link" to="/">
+                <h2>TaskHive</h2>
+              </Link>
+            </div>
+            <div className="nav-menu">
+              <HomeIcon />
+            </div>
+          </nav>
+          <nav className="header-account">
+            <Link className="nav-link" to="/login">
+              Sign In
+            </Link>
+            <Link className="nav-link" to="/registration">
+              Registration
+            </Link>
+          </nav>
+        </>
+      )}
+    </header>
+  );
 }
 // import { Link } from "react-router-dom";
 // import { useAuth } from "../Context/AuthContext.jsx";

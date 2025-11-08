@@ -1,91 +1,101 @@
-.button{
-    width: 70px;
-    height: 30px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition-property: background-color;
-    transition-duration: 0.4s;
+.button {
+  width: 70px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition-property: background-color;
+  transition-duration: 0.4s;
 }
 
-.button.accept{
-    padding: 0 5px 0 5px;
-    width: auto;
-    background-color: rgba(80,161,67,0.99);
+.button.accept {
+  padding: 0 5px 0 5px;
+  width: auto;
+  background-color: rgba(80, 161, 67, 0.99);
 }
-.button.default{
-    padding: 0 5px 0 5px;
-    width: auto;
-    background-color: rgba(0, 0, 0);
-    color: white;
+.button.default {
+  padding: 0 5px 0 5px;
+  width: auto;
+  background-color: rgba(0, 0, 0);
+  color: white;
 }
-.button.primary{
-    padding: 0 5px 0 5px;
-    width: auto;
-    background-color: rgb(63, 189, 161);
+.button.primary {
+  padding: 0 5px 0 5px;
+  width: auto;
+  background-color: rgb(63, 189, 161);
 }
-.button.login{
-    width: 300px;
-    border: 2px solid black;
-    background-color: rgba(189, 189, 189, 0.5);
+.button.login {
+  width: 300px;
+  border: 2px solid black;
+  background-color: rgba(189, 189, 189, 0.5);
 }
-.button.chat{
-    padding: 0 5px 0 5px;
-    width: auto;
-    border: 1px solid black;
-    border-radius: 30px;
-    background-color: rgb(136, 207, 1);
+.button.chat {
+  padding: 0 5px 0 5px;
+  width: auto;
+  border: 1px solid black;
+  border-radius: 30px;
+  background-color: rgb(136, 207, 1);
 }
-.button.kanban{
-    padding: 10px 5px 10px 5px;
-    height: auto;
-    width: 90%;
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.button.kanban {
+  padding: 10px 5px 10px 5px;
+  height: auto;
+  width: 100%;
+  border-radius: 0 0 10px 10px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.button.kanban-input{
-    background-color: #e0e0e0;
+.button.kanban-input {
+  background-color: #e0e0e0;
 }
-.button.kanban-input-cancel{
-    width: 30px;
+.button.kanban-input-cancel {
+  padding: 5px 8px;
+  width: auto;
 }
-button.group{
-    background-color: white;
-    padding: 5px;
-    width: auto;
-    height: 30px;
-    border: 1px solid white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition-property: border;
-    transition-duration: 0.4s;
+button.group {
+  background-color: white;
+  padding: 5px;
+  width: auto;
+  height: 30px;
+  border: 1px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition-property: border;
+  transition-duration: 0.4s;
 }
-.button.default:hover{
-    background-color: rgba(89,89,93,0.99) ;
+.button.add-kanban-column {
+  width: 10vw;
+  border: 1px solid #ccc;
+  transition: background-color 0.3s ease;
 }
-.button.accept:hover{
-    background-color: rgb(60, 122, 51);
+.button.default:hover {
+  background-color: rgba(89, 89, 93, 0.99);
 }
-.button.primary:hover{
-    background-color: rgb(46, 140, 120);
+.button.accept:hover {
+  background-color: rgb(60, 122, 51);
 }
-.button.login:hover{
-    background-color: rgb(124, 228, 113);
+.button.primary:hover {
+  background-color: rgb(46, 140, 120);
 }
-.button.chat:hover{
-    background-color: rgba(136, 207, 1, 0.53);
+.button.login:hover {
+  background-color: rgb(124, 228, 113);
 }
-.button.kanban:hover{
-   background-color: #00b4d8;
+.button.chat:hover {
+  background-color: rgba(136, 207, 1, 0.53);
 }
-button.group:hover{
-    border: 1px solid #00b4d8;
+.button.kanban:hover {
+  background-color: #00b4d8;
 }
-.button.kanban-input:hover{
-    background-color: #00b4d8;
+button.group:hover {
+  border: 1px solid #00b4d8;
 }
-.button.kanban-input-cancel:hover{
-    background-color: #e6363f;
+.button.kanban-input:hover {
+  background-color: #00b4d8;
+}
+.button.kanban-input-cancel:hover {
+  background-color: #e6363f;
+}
+.button.add-kanban-column:hover {
+  background-color: #00b4d8;
 }

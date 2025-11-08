@@ -178,7 +178,7 @@ public class KanbanController : ControllerBase
             .FirstOrDefault(x => x.Id == kanbanCardDto.KanbanCardId);
         if (card == null)
             return NotFound("Card not found");
-        
+
         var targetColumn = await _context.KanbanStatuses
             .Include(c => c.Cards)
             .FirstOrDefaultAsync(x => x.Id == kanbanCardDto.TargetKanbanBlockId);
@@ -216,4 +216,32 @@ public class KanbanController : ControllerBase
         return Ok("Success!");
     }
 
+    [HttpPut("MoveColumn")]
+    public async Task<IActionResult> MoveColumn(
+        [FromBody] MoveColumnDto columnDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var sourceColumn = await _context.KanbanStatuses
+            .FirstOrDefaultAsync(x => x.Id == columnDto.columnId && x.KanbanTableId == columnDto.kanbanTableId);
+        if (sourceColumn == null)
+            return NotFound("Column not found!");
+
+        var columns = await _context.KanbanStatuses
+            .Where(x => x.KanbanTableId == columnDto.kanbanTableId)
+            .OrderBy(x => x.Position)
+            .ToListAsync();
+        columns.Remove(sourceColumn);
+        var targetIndex = Math.Clamp(columnDto.position, 0, columns.Count);
+        columns.Insert(targetIndex, sourceColumn);
+
+        for (int i = 0; i < columns.Count(); i++)
+        {
+            columns[i].Position = i;
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok("Success!");
+    }
 }

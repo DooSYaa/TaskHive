@@ -1,9 +1,10 @@
-import "./kanban.css";
-import KanbanBlock from "./KanbanBlock.jsx";
-import {DragDropContext, Droppable} from '@hello-pangea/dnd';
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useAuth } from "../Context/AuthContext.jsx";
+import './kanban.css';
+import KanbanBlock from './KanbanBlock.jsx';
+import { DragDropContext, Droppable } from '@hello-pangea/dnd';
+import { useParams } from 'react-router-dom';
+import { use, useEffect, useState } from 'react';
+import { useAuth } from '../Context/AuthContext.jsx';
+import Button from '../ButtonComponent/Button.jsx';
 
 export default function Kanban() {
   const { kanbanId } = useParams();
@@ -14,46 +15,61 @@ export default function Kanban() {
       const response = await fetch(
         `http://localhost:5292/api/Kanban/GetCurrentKanbanTable?kanbanId=${kanbanId}`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${user.token}`,
           },
         }
       );
       if (!response.ok) {
-        throw new Error("Kanban not found.", response.status);
+        throw new Error('Kanban not found.', response.status);
       }
       const data = await response.json();
       setColumns(data.statuses || []);
     };
     fetchData();
   }, [user.token, kanbanId]);
-  const handleUpdateCardPosition = async (
-    sourceColumn,
-    destinationColumn,
-    cardId
-  ) => {
+  const handleUpdateCardPosition = async (cardToUpdate) => {
     try {
-      const request = await fetch("http://localhost:5292/api/Kanban/MoveCard", {
-        method: "PUT",
+      const request = await fetch('http://localhost:5292/api/Kanban/MoveCard', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify({
-          sourceKanbanBlockId: sourceColumn,
-          targetKanbanBlockId: destinationColumn,
-          kanbanCardId: cardId.id,
-          position: cardId.position,
+          sourceKanbanBlockId: cardToUpdate.sourceColumnId,
+          targetKanbanBlockId: cardToUpdate.destColumnId,
+          kanbanCardId: cardToUpdate.cardId,
+          position: cardToUpdate.position,
         }),
       });
       if (!request.ok) throw new Error(request.status);
     } catch (error) {
-      console.error("Error request", error);
+      console.error('Error request', error);
     }
   };
- 
+  const handleUpdateColumnPosition = async (columnToMove) => {
+    try {
+      const request = await fetch('http://localhost:5292/api/Kanban/MoveColumn', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          kanbanTableId: columnToMove.kanbanTableId,
+          columnId: columnToMove.columnId,
+          position: columnToMove.position,
+        }),
+      });
+      console.log('column position updated!');
+      if (!request.ok) throw new Error(request.status);
+    } catch (error) {
+      console.error('Error request', error);
+    }
+  };
   const handleCardCreated = (newCard) => {
     setColumns((prev) =>
       prev.map((status) => {
@@ -65,23 +81,31 @@ export default function Kanban() {
     );
   };
   function onDragEnd(result) {
-    const {draggableId, destination, source, type} = result;
+    const { draggableId, destination, source, type } = result;
 
-    if(!destination) return; 
+    if (!destination) return;
 
-    if(destination.droppableId === source.droppableId && destination.index === source.index) {
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return;
     }
 
-    if(type === 'column') {
+    if (type === 'column') {
       const newColumnOrder = Array.from(columns.map((col) => col.id));
       newColumnOrder.splice(source.index, 1);
       newColumnOrder.splice(destination.index, 0, draggableId);
-      const reorderedColumns = newColumnOrder.map((id, index) => {
-      const col = columns.find(c => c.id === id);
-        return col ? { ...col, position: index } : null;
-      }).filter(Boolean);
+      const reorderedColumns = newColumnOrder
+        .map((id, index) => {
+          const col = columns.find((c) => c.id === id);
+          return col ? { ...col, position: index } : null;
+        })
+        .filter(Boolean);
       setColumns(reorderedColumns);
+      const columnToMove = {
+        kanbanTableId: kanbanId,
+        columnId: draggableId,
+        position: destination.index,
+      };
+      handleUpdateColumnPosition(columnToMove);
       return;
     }
     let movedCard = null;
@@ -90,57 +114,66 @@ export default function Kanban() {
       const newCards = Array.from(column.cards);
       [movedCard] = newCards.splice(source.index, 1);
       newCards.splice(destination.index, 0, movedCard);
-
       const updatedCards = newCards.map((card, index) => ({
         ...card,
-        position: index
+        position: index,
       }));
-
       const newColumns = columns.map((col) =>
         col.id === column.id ? { ...col, cards: updatedCards } : col
       );
       setColumns(newColumns);
+      const cardToUpdate = {
+        sourceColumnId: column.id,
+        destColumnId: column.id,
+        cardId: movedCard.id,
+        position: destination.index,
+      };
+      handleUpdateCardPosition(cardToUpdate);
       return;
     }
 
-    // ⚙️ если карточку перетащили в другую колонку
     const sourceColumn = columns.find((col) => col.id === source.droppableId);
     const destColumn = columns.find((col) => col.id === destination.droppableId);
-
     const sourceCards = Array.from(sourceColumn.cards);
     const destCards = Array.from(destColumn.cards);
-
     [movedCard] = sourceCards.splice(source.index, 1);
     destCards.splice(destination.index, 0, movedCard);
 
     const updatedSourceCards = sourceCards.map((card, i) => ({ ...card, position: i }));
     const updatedDestCards = destCards.map((card, i) => ({ ...card, position: i }));
-
-    const newColumns = columns.map(col => {
+    const newColumns = columns.map((col) => {
       if (col.id === sourceColumn.id) return { ...col, cards: updatedSourceCards };
       if (col.id === destColumn.id) return { ...col, cards: updatedDestCards };
       return col;
     });
     setColumns(newColumns);
+    const cardToUpdate = {
+      sourceColumnId: sourceColumn.id,
+      destColumnId: destColumn.id,
+      cardId: movedCard.id,
+      position: destination.index,
+    };
+    handleUpdateCardPosition(cardToUpdate);
   }
   return (
-      <DragDropContext 
-        onDragEnd={onDragEnd}
-        >
+    <div className="y">
+      <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="all-columns" direction="horizontal" type="column">
           {(provided) => (
-            <div 
-              className="main-kanban"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {columns.length > 0 ? columns.map((col, index) => (
-                <KanbanBlock key={col.id} column={col} index={index}/>
-              )) : null}
+            <div className="main-kanban" {...provided.droppableProps} ref={provided.innerRef}>
+              {columns.length > 0
+                ? columns.map((col, index) => (
+                    <KanbanBlock key={col.id} column={col} index={index} />
+                  ))
+                : null}
               {provided.placeholder}
             </div>
-            )}
+          )}
         </Droppable>
+        <div className="add-column-container">
+          <Button variant="add-kanban-column">Add Column</Button>
+        </div>
       </DragDropContext>
+    </div>
   );
 }
