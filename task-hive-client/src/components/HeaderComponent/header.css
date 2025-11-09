@@ -10,6 +10,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 .header-nav {
   margin-left: 15px;
@@ -21,6 +22,7 @@
   font-size: 25px;
 }
 .header-account {
+  position: relative;
   margin-right: 10px;
   width: auto;
   display: flex;
