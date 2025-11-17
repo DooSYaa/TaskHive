@@ -8,6 +8,7 @@ import FriendsIcon from '../../assets/FriendsIcon.jsx';
 import Button from '../ButtonComponent/Button.jsx';
 import { useState, useRef, useEffect } from 'react';
 import AccountDropDown from '../AccountComponent/AccountDropDown.jsx';
+import MenuIcon from '../../assets/MenuIcon.jsx';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -15,7 +16,7 @@ export default function Header() {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = e => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setOpen(false);
       }
@@ -33,75 +34,87 @@ export default function Header() {
   }
 
   return (
-    <div>
-      <header className="header-component">
-        {user ? (
-          <div className="header-main">
-            <nav className="header-nav">
-              <div className="header-logo">
-                <Link className="nav-link" to="/">
-                  <h2>TaskHive</h2>
-                </Link>
-              </div>
-              <div className="nav-menu">
-                <Link className="nav-link" to="/">
-                  <HomeIcon />
-                </Link>
-                <Link className="nav-link" to="/friends">
-                  <FriendsIcon />
-                </Link>
-                <Link className="nav-link" to="/chat">
-                  <ChatIcon />
-                </Link>
-                <Link className="nav-link" to="/group">
-                  Group
-                </Link>
-              </div>
-            </nav>
-            <nav className="header-account" ref={menuRef}>
-              <Button onClick={() => setOpen(!open)}>
-                <UserIcon />
-              </Button>
-              {open && (
-                <AccountDropDown handleLogout={handleLogout}>
-                  <div className="userName-dropdown">
-                    <p>{user.userName}</p>
-                    <p>{user.email}</p>
-                  </div>
-                  <Link className="nav-link" to={'/user'}>
-                    Profile
-                  </Link>
-                  <p>Settings</p>
-                  <Link className="nav-link" to="#" onClick={handleLogout}>
-                    Logout
-                  </Link>
-                </AccountDropDown>
-              )}
-            </nav>
-          </div>
-        ) : (
-          <>
-            <nav className="header-main">
-              <div className="header-logo">
-                <Link className="nav-link" to="/">
-                  <h2>TaskHive</h2>
-                </Link>
-              </div>
-              <div className="nav-menu">
+    <header className="header-component">
+      {user ? (
+        <div className="header-main">
+          <nav className="header-nav">
+            <div className="header-logo">
+              <Link className="nav-link" to="/">
+                <h2>TaskHive</h2>
+              </Link>
+            </div>
+            <div className="nav-menu">
+              <Link className="nav-link" to="/">
                 <HomeIcon />
-              </div>
-            </nav>
-            <nav className="header-account">
-              <Link className="nav-link" to="/login">
-                Sign In
               </Link>
-              <Link className="nav-link" to="/registration">
-                Registration
+              <Link className="nav-link" to="/friends">
+                <FriendsIcon />
               </Link>
-            </nav>
-          </>
-        )}
-      </header>
-    </div>
+              <Link className="nav-link" to="/chat">
+                <ChatIcon />
+              </Link>
+              <Link className="nav-link" to="/group">
+                Group
+              </Link>
+            </div>
+          </nav>
+          <nav className="header-account" ref={menuRef}>
+            <Button onClick={() => setOpen(!open)}>
+              <UserIcon />
+            </Button>
+            <Button onClick={() => setOpen(!open)}>
+              <MenuIcon />
+            </Button>
+            {open && (
+              <AccountDropDown handleLogout={handleLogout}>
+                <div className="userName-dropdown">
+                  <p>{user.userName}</p>
+                  <p>{user.email}</p>
+                </div>
+                <Link className="nav-link" to={'/user'}>
+                  Profile
+                </Link>
+                <p>Settings</p>
+                <Link className="nav-link" to="#" onClick={handleLogout}>
+                  Logout
+                </Link>
+              </AccountDropDown>
+            )}
+          </nav>
+        </div>
+      ) : (
+        <div className="header-main">
+          <nav className="header-nav">
+            <div className="header-logo">
+              <Link className="nav-link" to="/">
+                <h2>TaskHive</h2>
+              </Link>
+            </div>
+            <div className="nav-menu">
+              <Link className="nav-link" to="/">
+                <HomeIcon />
+              </Link>
+              <Link className="nav-link" to="/friends">
+                <FriendsIcon />
+              </Link>
+              <Link className="nav-link" to="/chat">
+                <ChatIcon />
+              </Link>
+              <Link className="nav-link" to="/group">
+                Group
+              </Link>
+            </div>
+          </nav>
+          <nav className="header-account">
+            <Link className="nav-link" to="/login">
+              Sign In
+            </Link>
+            <Link className="nav-link" to="/registration">
+              Registration
+            </Link>
+          </nav>
+        </div>
+      )}
+    </header>
   );
 }

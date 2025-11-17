@@ -12,7 +12,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!email || !password) {
       setEmailError(!email ? 'email is required!' : null);
@@ -51,7 +51,7 @@ export default function Login() {
           '- be between 10 and 20 characters\n' +
           '- contain special characters\n' +
           '- must contain a capital letter\n' +
-          '- contain numbers'
+          '- contain numbers',
       );
     } else {
       setPasswordError(null);
@@ -77,34 +77,30 @@ export default function Login() {
             height={400}
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width={400} height={400} />
-          </svg>
+          ></svg>
         </div>
         <div className={styles.loginFormContainer}>
           <h1>Sign in</h1>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className={styles.loginForm}>
             <input
               className={styles.formInput}
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               placeholder="Email"
             />{' '}
-            <br />
             {emailError && (
               <span id="email-error" className={styles.errorMessage}>
                 {emailError}
               </span>
             )}
-            <br />
             <input
               className={styles.formInput}
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               placeholder="Password"
             />{' '}
             <br />

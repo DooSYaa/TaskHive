@@ -16,7 +16,7 @@
 .button.default {
   padding: 0 5px 0 5px;
   width: auto;
-  background-color: rgba(0, 0, 0);
+  background-color: #234c6a;
   color: white;
 }
 .button.primary {
@@ -26,8 +26,7 @@
 }
 .button.login {
   width: 300px;
-  border: 2px solid black;
-  background-color: rgba(189, 189, 189, 0.5);
+  background-color: #1b3c53;
 }
 .button.chat {
   padding: 0 5px 0 5px;
@@ -41,7 +40,7 @@
   height: auto;
   width: 100%;
   border-radius: 0 0 10px 10px;
-  background-color: white;
+  background-color: #19183b;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -65,12 +64,13 @@ button.group {
   transition-duration: 0.4s;
 }
 .button.add-kanban-column {
-  width: 10vw;
+  width: 100%;
+  height: 4vh;
   border: 1px solid #ccc;
   transition: background-color 0.3s ease;
 }
 .button.default:hover {
-  background-color: rgba(89, 89, 93, 0.99);
+  background-color: #456882;
 }
 .button.accept:hover {
   background-color: rgb(60, 122, 51);
@@ -79,13 +79,13 @@ button.group {
   background-color: rgb(46, 140, 120);
 }
 .button.login:hover {
-  background-color: rgb(124, 228, 113);
+  background-color: #456882;
 }
 .button.chat:hover {
   background-color: rgba(136, 207, 1, 0.53);
 }
 .button.kanban:hover {
-  background-color: #00b4d8;
+  background-color: #708993;
 }
 button.group:hover {
   border: 1px solid #00b4d8;

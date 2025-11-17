@@ -14,16 +14,16 @@ import {
 
 export default function Home() {
   return (
-    <div className="home-page">
-      {/* Hero Section */}
+    <div className="welcome-page">
       <section className="hero">
         <div className="hero-content">
           <h1 className="hero-title">
-            Zarządzaj projektami <span className="highlight">z zespołem</span> — prosto i efektywnie
+            Zarządzaj projektami <span className="highlight">z zespołem</span> —
+            prosto i efektywnie
           </h1>
           <p className="hero-subtitle">
-            Platforma, która synchronizuje zadania, komunikację i wyniki. Idealna dla zespołów
-            zdalnych i biurowych.
+            Platforma, która synchronizuje zadania, komunikację i wyniki.
+            Idealna dla zespołów zdalnych i biurowych.
           </p>
           <div className="hero-actions">
             <button className="btn-primary">
@@ -84,7 +84,10 @@ export default function Home() {
                 <Users />
               </div>
               <h3>Współpraca w czasie rzeczywistym</h3>
-              <p>Komentuj, przypisuj, edytuj — wszystko razem z zespołem, bez opóźnień.</p>
+              <p>
+                Komentuj, przypisuj, edytuj — wszystko razem z zespołem, bez
+                opóźnień.
+              </p>
             </div>
             <div className="feature-card">
               <div className="feature-icon">
@@ -98,13 +101,14 @@ export default function Home() {
                 <MessageSquare />
               </div>
               <h3>Komunikacja w zadaniach</h3>
-              <p>Nie trać wątków — wszystkie dyskusje przy zadaniach, nie w mailach.</p>
+              <p>
+                Nie trać wątków — wszystkie dyskusje przy zadaniach, nie w
+                mailach.
+              </p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Testimonials */}
       <section className="testimonials">
         <div className="container">
           <h2 className="section-title">Co mówią nasi użytkownicy</h2>
@@ -116,7 +120,8 @@ export default function Home() {
                 ))}
               </div>
               <p className="quote">
-                „Kanban zmienił sposób, w jaki pracujemy. Wszystko widać jak na dłoni.”
+                „Kanban zmienił sposób, w jaki pracujemy. Wszystko widać jak na
+                dłoni.”
               </p>
               <div className="author">
                 <strong>Anna Kowalska</strong>, Product Owner w TechFlow
@@ -128,7 +133,9 @@ export default function Home() {
                   <Star key={i} fill="currentColor" size={18} />
                 ))}
               </div>
-              <p className="quote">„Zespół zdalny działa jak w biurze. Polecam każdemu PM-owi.”</p>
+              <p className="quote">
+                „Zespół zdalny działa jak w biurze. Polecam każdemu PM-owi.”
+              </p>
               <div className="author">
                 <strong>Michał Nowak</strong>, Scrum Master
               </div>
@@ -136,8 +143,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* CTA Final */}
       <section className="cta-final">
         <div className="container">
           <h2>Gotowy na lepszą współpracę?</h2>
@@ -145,11 +150,11 @@ export default function Home() {
           <button className="btn-primary large">
             Zacznij teraz — za darmo <ArrowRight className="btn-icon" />
           </button>
-          <p className="cta-note">Bez karty. Bez ryzyka. Możesz anulować w każdej chwili.</p>
+          <p className="cta-note">
+            Bez karty. Bez ryzyka. Możesz anulować w każdej chwili.
+          </p>
         </div>
       </section>
-
-      {/* Footer */}
       <footer className="footer">
         <div className="container">
           <p>© 2025 ProjectFlow. Wszystkie prawa zastrzeżone.</p>

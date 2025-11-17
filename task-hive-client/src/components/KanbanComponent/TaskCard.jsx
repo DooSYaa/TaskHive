@@ -12,7 +12,7 @@ export default function TaskCard({ card, index, onClick }) {
             userSelect: 'none',
             padding: '8px',
             marginBottom: '8px',
-            background: snapshot.isDragging ? '#ffe58a' : '#fff',
+            background: snapshot.isDragging ? '#A1C2BD' : '#708993',
             borderRadius: '6px',
             boxShadow: snapshot.isDragging
               ? '0 4px 8px rgba(0,0,0,0.2)'

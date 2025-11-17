@@ -3,9 +3,12 @@
   "singleQuote": true,
   "tabWidth": 2,
   "useTabs": false,
-  "trailingComma": "es5",
-  "printWidth": 100,
+  "trailingComma": "all",
+  "printWidth": 80,
   "bracketSpacing": true,
-  "arrowParens": "always",
-  "endOfLine": "lf"
+  "arrowParens": "avoid",
+  "endOfLine": "lf",
+  "quoteProps": "consistent",
+  "jsxSingleQuote": false,
+  "bracketSameLine": false
 }

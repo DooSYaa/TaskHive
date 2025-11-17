@@ -1,125 +1,77 @@
-/* .loginMainContainer {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.loginContainer {
-    height: auto;
-    width: 820px;
-    margin-top: 100px;
-    padding: 20px 20px 20px 20px;
-    border-radius: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 5px 5px 25px black;
-}
-.loginFormContainer{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.formLabel{
-    font-size: 20px;
-}
-.formInput{
-    width: 300px;
-    height: 30px;
-    font-size: 14px;
-}
-.errorMessage{
-    font-size: 10px;
-    color: red;
-}
-.rectangle{
-    border-radius: 15px;
-    fill: #00b4d8;
-} */
-/* ====== Контейнер всей страницы логина ====== */
 .loginMainContainer {
-    width: 100%;
-    height: 90vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #e0f7fa, #f0f4f8);
-    font-family: 'Inter', sans-serif;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
 }
-
-/* ====== Основной контейнер логина ====== */
 .loginContainer {
-    width: 820px;
-    max-width: 95%;
-    padding: 30px 40px;
-    border-radius: 16px;
-    background-color: #ffffff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 820px;
+  max-width: 95%;
+  margin-top: 100px;
+  padding: 20px;
+  border-radius: 15px;
+  background-color: #234c6a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
-
-/* ====== Форма логина ====== */
 .loginFormContainer {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
 }
-
-/* ====== Заголовки полей ====== */
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
 .formLabel {
-    font-size: 18px;
-    font-weight: 500;
-    color: #111827;
-    align-self: flex-start;
+  font-size: 18px;
+  font-weight: 500;
+  color: #111827;
+  align-self: flex-start;
 }
-
-/* ====== Поля ввода ====== */
 .formInput {
-    width: 300px;
-    height: 36px;
-    padding: 6px 10px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    outline: none;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  width: 300px;
+  height: 36px;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #d2c1b6;
+  outline: none;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 .formInput:focus {
-    border-color: #00b4d8;
-    box-shadow: 0 0 0 2px rgba(0, 180, 216, 0.2);
+  border-color: #00b4d8;
+  box-shadow: 0 0 0 2px rgba(0, 180, 216, 0.2);
 }
-
-/* ====== Сообщения об ошибке ====== */
 .errorMessage {
-    font-size: 12px;
-    color: #ef4444;
-    align-self: flex-start;
+  font-size: 12px;
+  color: #ef4444;
+  align-self: flex-start;
 }
-
-/* ====== Прямоугольники / кнопки ====== */
 .rectangle {
-    border-radius: 12px;
-    background-color: #00b4d8;
-    color: white;
-    padding: 10px 20px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: background 0.25s ease, transform 0.1s ease;
-}
-.rectangle:hover {
-    background-color: #0096c7;
-    transform: translateY(-2px);
-}
-.rectangle:active {
-    background-color: #0077b6;
-    transform: translateY(0);
+  border-radius: 15px;
+  background-color: #00b4d8;
+  color: white;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition:
+    background 0.25s ease,
+    transform 0.1s ease;
 }
