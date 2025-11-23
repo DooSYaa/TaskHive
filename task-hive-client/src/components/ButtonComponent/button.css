@@ -26,7 +26,7 @@
 }
 .button.login {
   width: 300px;
-  background-color: #1b3c53;
+  background-color: #169976;
 }
 .button.chat {
   padding: 0 5px 0 5px;
@@ -79,7 +79,7 @@ button.group {
   background-color: rgb(46, 140, 120);
 }
 .button.login:hover {
-  background-color: #456882;
+  background-color: #1dcd9f;
 }
 .button.chat:hover {
   background-color: rgba(136, 207, 1, 0.53);

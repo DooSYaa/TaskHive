@@ -94,15 +94,6 @@ export default function Header() {
               <Link className="nav-link" to="/">
                 <HomeIcon />
               </Link>
-              <Link className="nav-link" to="/friends">
-                <FriendsIcon />
-              </Link>
-              <Link className="nav-link" to="/chat">
-                <ChatIcon />
-              </Link>
-              <Link className="nav-link" to="/group">
-                Group
-              </Link>
             </div>
           </nav>
           <nav className="header-account">

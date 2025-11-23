@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  border: 1px solid #234c6a;
+  border-bottom: 1px dashed #cfffe2;
 }
 .header-main {
   width: 100%;
@@ -40,8 +40,6 @@
 }
 .nav-link {
   transition: color 0.3s ease;
-}
-.nav-link:visited {
 }
 .nav-link:hover {
   color: #456882;

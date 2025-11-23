@@ -1,11 +1,13 @@
 import Button from '../ButtonComponent/Button.jsx';
 import TaskCard from './TaskCard.jsx';
-import { useState, useEffect } from 'react';
 import KanbanInput from './KanbanInput.jsx';
+// import DatePicker from 'react-datepicker';
+import { DatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
-import { useParams } from 'react-router-dom';
-
+import ToastEditor from '../AccountComponent/ToastEditor.jsx';
 function Modal({ isExpandedCard, onClose, children }) {
   useEffect(() => {
     const handleKey = e => e.key === 'Escape' && onClose();
@@ -24,13 +26,12 @@ function Modal({ isExpandedCard, onClose, children }) {
     document.body,
   );
 }
-
 export default function KanbanBlock({ column, index, onCardCreated }) {
   const [showInput, setShowInput] = useState(false);
   const [isExpandedCard, setIsExpandedCard] = useState(false);
   const [card, setCard] = useState(null);
-  const [isExpandedCardMenu, setIsExpandedCardMenu] = useState(false);
-  const [cardTitle, setCardTitle] = useState('');
+  const [open, setOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const handleCardCreatedLocal = newCard => {
     onCardCreated(newCard);
     setShowInput(false);
@@ -38,11 +39,17 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   return (
     <div>
       <Draggable draggableId={column.id} index={index}>
-        {provided => (
+        {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
             {...provided.draggableProps}
             className="main-kanban-column"
+            style={{
+              border: snapshot.isDragging
+                ? '1px dashed #0D92F4'
+                : '1px dashed #cfffe2',
+              ...provided.draggableProps.style,
+            }}
           >
             <div className="x">
               <div
@@ -99,27 +106,53 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
         isExpandedCard={isExpandedCard}
         onClose={() => setIsExpandedCard(false)}
       >
-        <div className="border border-b-emerald-600 w-max">
-          <h2 className="modal-title">{card ? card.title : null}</h2>
-          <textarea className="modal-textarea" name="" id=""></textarea>
+        <div className="flex flex-col flex-1 justify-between w-max border border-cyan-500">
+          <div className="flex flex-col justify-center w-[80%] border border-amber-600">
+            <h2 className="modal-title">{card ? card.title : null}</h2>
+          </div>
+          <div className="relative inline-block">
+            <Button onClick={() => setOpen(!open)}>Select date</Button>
+            <Button>Add user</Button>
+            {open && (
+              <div className="date-container">
+                <DatePicker
+                  className="date-picker"
+                  placeholderText="Select date"
+                  selected={selectedDate}
+                  onChange={date => setSelectedDate(date)}
+                  showTimeSelect
+                  dateFormat={'dd/MM/yyyy HH:mm'}
+                  timeFormat="HH:mm"
+                />
+                <Button onClick={() => setOpen(!open)}>Close</Button>
+              </div>
+            )}
+          </div>
+          <div>
+            <h6 className="">Description</h6>
+            {/* <div className="">
+              <ToastEditor />
+            </div> */}
+          </div>
+          <div className="modal-actions">
+            <button
+              className="modal-btn primary"
+              onClick={() => {
+                setIsExpandedCard(false);
+                setCard(null);
+              }}
+            >
+              Save
+            </button>
+            <button
+              className="modal-btn secondary"
+              onClick={() => setIsExpandedCard(false)}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-        <div className="modal-actions border border-amber-400">
-          <button
-            className="modal-btn primary"
-            onClick={() => {
-              setIsExpandedCard(false);
-              setCard(null);
-            }}
-          >
-            Сохранить
-          </button>
-          <button
-            className="modal-btn secondary"
-            onClick={() => setIsExpandedCard(false)}
-          >
-            Отмена
-          </button>
-        </div>
+        <div className="flex flex-1 border border-purple-700">Hello</div>
       </Modal>
     </div>
   );

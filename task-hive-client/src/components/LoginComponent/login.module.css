@@ -11,8 +11,8 @@
   max-width: 95%;
   margin-top: 100px;
   padding: 20px;
+  border: 1px dashed #cfffe2;
   border-radius: 15px;
-  background-color: #234c6a;
   display: flex;
   justify-content: space-between;
   align-items: center;
