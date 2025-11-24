@@ -209,7 +209,8 @@
   width: 90%;
 }
 .date-container {
-  width: 15rem;
+  background-color: #19183b;
+  color: white;
   border: 1px solid red;
 }
 .date-picker {

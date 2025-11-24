@@ -2,12 +2,17 @@ import Button from '../ButtonComponent/Button.jsx';
 import TaskCard from './TaskCard.jsx';
 import KanbanInput from './KanbanInput.jsx';
 // import DatePicker from 'react-datepicker';
-import { DatePicker } from '@mui/x-date-pickers';
+import { DatePicker, StaticDatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateCalendar } from '@mui/x-date-pickers';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import ToastEditor from '../AccountComponent/ToastEditor.jsx';
+import { Dayjs } from 'dayjs';
+import { Typography } from '@mui/material';
 function Modal({ isExpandedCard, onClose, children }) {
   useEffect(() => {
     const handleKey = e => e.key === 'Escape' && onClose();
@@ -31,11 +36,27 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   const [isExpandedCard, setIsExpandedCard] = useState(false);
   const [card, setCard] = useState(null);
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null);
   const handleCardCreatedLocal = newCard => {
     onCardCreated(newCard);
     setShowInput(false);
   };
+  const theme = createTheme({
+    palette: {
+      primary: {
+        light: '#000',
+        main: '#000',
+        dark: '#000',
+        contrastText: '#fff',
+      },
+      secondary: {
+        light: '#fff',
+        main: '#fff',
+        dark: '#fff',
+        contrastText: '#fff',
+      },
+    },
+  });
   return (
     <div>
       <Draggable draggableId={column.id} index={index}>
@@ -114,8 +135,27 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             <Button onClick={() => setOpen(!open)}>Select date</Button>
             <Button>Add user</Button>
             {open && (
-              <div className="date-container">
-                <DatePicker
+              <div className="">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <Typography />
+                  <DateCalendar
+                    value={selectedDate}
+                    onChange={setSelectedDate}
+                    slotProps={{
+                      calendarHeader: { sx: { color: 'white' } },
+                      day: {
+                        sx: {
+                          color: 'white',
+                        },
+                      },
+                      leftArrowIcon: { sx: { color: 'white' } },
+                      rightArrowIcon: { sx: { color: 'white' } },
+                    }}
+                    slots={{}}
+                  />
+                </LocalizationProvider>
+
+                {/* <DatePicker
                   className="date-picker"
                   placeholderText="Select date"
                   selected={selectedDate}
@@ -123,7 +163,8 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
                   showTimeSelect
                   dateFormat={'dd/MM/yyyy HH:mm'}
                   timeFormat="HH:mm"
-                />
+                /> */}
+                <p>{selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}</p>
                 <Button onClick={() => setOpen(!open)}>Close</Button>
               </div>
             )}
