@@ -131,11 +131,11 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
           <div className="flex flex-col justify-center w-[80%] border border-amber-600">
             <h2 className="modal-title">{card ? card.title : null}</h2>
           </div>
-          <div className="relative inline-block">
+          <div className="relative inline-block text-center justify-center border border-amber-200">
             <Button onClick={() => setOpen(!open)}>Select date</Button>
             <Button>Add user</Button>
             {open && (
-              <div className="absolute top-12 bg-sky-400">
+              <div className="absolute top-10 right-52 bg-emerald-400">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Typography />
                   <DateCalendar
@@ -154,16 +154,11 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
                     slots={{}}
                   />
                 </LocalizationProvider>
-
-                {/* <DatePicker
-                  className="date-picker"
-                  placeholderText="Select date"
-                  selected={selectedDate}
+                <input
+                  type="text"
+                  value={selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
                   onChange={date => setSelectedDate(date)}
-                  showTimeSelect
-                  dateFormat={'dd/MM/yyyy HH:mm'}
-                  timeFormat="HH:mm"
-                /> */}
+                />
                 <p>{selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}</p>
                 <Button onClick={() => setOpen(!open)}>Close</Button>
               </div>

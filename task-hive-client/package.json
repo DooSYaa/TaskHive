@@ -29,10 +29,12 @@
     "dayjs": "^1.11.19",
     "lexical": "^0.38.2",
     "lucide-react": "^0.548.0",
+    "primereact": "^10.9.7",
     "react": "^19.1.0",
     "react-datepicker": "^8.9.0",
     "react-dom": "^19.1.0",
     "react-markdown": "^10.1.0",
+    "react-mentions": "^4.4.10",
     "react-router-dom": "^7.6.1",
     "remirror": "^3.0.3",
     "tailwindcss": "^4.1.16"
