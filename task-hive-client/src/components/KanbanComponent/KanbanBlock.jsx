@@ -135,7 +135,7 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             <Button onClick={() => setOpen(!open)}>Select date</Button>
             <Button>Add user</Button>
             {open && (
-              <div className="">
+              <div className="absolute top-12 bg-sky-400">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Typography />
                   <DateCalendar

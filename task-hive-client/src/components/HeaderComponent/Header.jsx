@@ -3,6 +3,7 @@ import { useAuth } from '../Context/AuthContext.jsx';
 import HomeIcon from '../../assets/HomeIcon.jsx';
 import UserIcon from '../../assets/UserIcon.jsx';
 import ChatIcon from '../../assets/ChatIcon.jsx';
+import '../AccountComponent/account.model.css';
 import './header.css';
 import FriendsIcon from '../../assets/FriendsIcon.jsx';
 import Button from '../ButtonComponent/Button.jsx';
@@ -67,7 +68,7 @@ export default function Header() {
             </Button>
             {open && (
               <AccountDropDown handleLogout={handleLogout}>
-                <div className="userName-dropdown">
+                <div className="userName-dropdown ">
                   <p>{user.userName}</p>
                   <p>{user.email}</p>
                 </div>
