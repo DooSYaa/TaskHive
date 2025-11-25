@@ -20,3 +20,9 @@
   flex-direction: column;
   border: 1px solid palegreen;
 }
+.card {
+  background: var(--surface-card);
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}

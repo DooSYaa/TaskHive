@@ -70,7 +70,7 @@ export default function WorkingSpace() {
           ? kanbanTables.map(kanban => (
               <Link
                 style={{ textDecoration: 'none' }}
-                to={`/${groupId}/${kanban.id}`}
+                to={`/group/${groupId}/${kanban.id}`}
                 key={kanban.id}
               >
                 <div className="kanbanTablesList">{kanban.kanbanTableName}</div>

@@ -32,7 +32,7 @@ export default function App() {
         <Route path="/chat" element={<Chat />} />
         <Route path="/group" element={<Group />} />
         <Route path="/group/:groupId" element={<WorkingSpace />} />
-        <Route path="/:groupId/:kanbanId" element={<Kanban />} />
+        <Route path="/group/:groupId/:kanbanId" element={<Kanban />} />
       </Routes>
     </div>
   );

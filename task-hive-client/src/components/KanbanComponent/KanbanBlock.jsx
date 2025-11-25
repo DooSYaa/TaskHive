@@ -131,9 +131,12 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
           <div className="flex flex-col justify-center w-[80%] border border-amber-600">
             <h2 className="modal-title">{card ? card.title : null}</h2>
           </div>
-          <div className="relative inline-block text-center justify-center border border-amber-200">
+          <div className="relative flex gap-3 text-center justify-center border border-amber-200">
             <Button onClick={() => setOpen(!open)}>Select date</Button>
             <Button>Add user</Button>
+            <Button>CheckList</Button>
+            <Button>abc</Button>
+            <Button>zxc</Button>
             {open && (
               <div className="absolute top-10 right-52 bg-emerald-400">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
