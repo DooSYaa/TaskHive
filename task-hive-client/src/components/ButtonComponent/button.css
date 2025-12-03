@@ -40,7 +40,7 @@
   height: auto;
   width: 100%;
   border-radius: 0 0 10px 10px;
-  background-color: #19183b;
+  background-color: #000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -69,6 +69,11 @@ button.group {
   border: 1px solid #ccc;
   transition: background-color 0.3s ease;
 }
+.button.actions {
+  padding: 0 5px 0 5px;
+  width: auto;
+  border: 1px solid #7f8487;
+}
 .button.default:hover {
   background-color: #456882;
 }
@@ -85,7 +90,7 @@ button.group {
   background-color: rgba(136, 207, 1, 0.53);
 }
 .button.kanban:hover {
-  background-color: #708993;
+  background-color: #57595b;
 }
 button.group:hover {
   border: 1px solid #00b4d8;
@@ -98,4 +103,7 @@ button.group:hover {
 }
 .button.add-kanban-column:hover {
   background-color: #00b4d8;
+}
+.button.actions:hover {
+  background-color: #7f8487;
 }

@@ -1,18 +1,17 @@
 import Button from '../ButtonComponent/Button.jsx';
 import TaskCard from './TaskCard.jsx';
 import KanbanInput from './KanbanInput.jsx';
-// import DatePicker from 'react-datepicker';
-import { DatePicker, StaticDatePicker } from '@mui/x-date-pickers';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import Users from '../ModalComponents/Users.jsx';
+import Kalendar from '../ModalComponents/Kalendar.jsx';
+import CalendarIcon from '../../assets/CalendarIcon.jsx';
+import AddUserIcon from '../../assets/AddUserIcon.jsx';
+import ToastEditor from '../AccountComponent/ToastEditor.jsx';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
-import ToastEditor from '../AccountComponent/ToastEditor.jsx';
-import { Dayjs } from 'dayjs';
-import { Typography } from '@mui/material';
+import Mark from '../ModalComponents/Mark.jsx';
+import { Calendar1Icon } from 'lucide-react';
 function Modal({ isExpandedCard, onClose, children }) {
   useEffect(() => {
     const handleKey = e => e.key === 'Escape' && onClose();
@@ -35,8 +34,9 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   const [showInput, setShowInput] = useState(false);
   const [isExpandedCard, setIsExpandedCard] = useState(false);
   const [card, setCard] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [activePanel, setActivePanel] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+
   const handleCardCreatedLocal = newCard => {
     onCardCreated(newCard);
     setShowInput(false);
@@ -68,7 +68,7 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             style={{
               border: snapshot.isDragging
                 ? '1px dashed #0D92F4'
-                : '1px dashed #cfffe2',
+                : '1px dashed #fff',
               ...provided.draggableProps.style,
             }}
           >
@@ -80,7 +80,7 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
                 <h2>{column.statusName}</h2>
               </div>
               <Droppable droppableId={column.id} type="task">
-                {(provided, snapshot) => (
+                {provided => (
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
@@ -131,47 +131,56 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
           <div className="flex flex-col justify-center w-[80%] border border-amber-600">
             <h2 className="modal-title">{card ? card.title : null}</h2>
           </div>
-          <div className="relative flex gap-3 text-center justify-center border border-amber-200">
-            <Button onClick={() => setOpen(!open)}>Select date</Button>
-            <Button>Add user</Button>
-            <Button>CheckList</Button>
-            <Button>abc</Button>
-            <Button>zxc</Button>
-            {open && (
-              <div className="absolute top-10 right-52 bg-emerald-400">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <Typography />
-                  <DateCalendar
-                    value={selectedDate}
-                    onChange={setSelectedDate}
-                    slotProps={{
-                      calendarHeader: { sx: { color: 'white' } },
-                      day: {
-                        sx: {
-                          color: 'white',
-                        },
-                      },
-                      leftArrowIcon: { sx: { color: 'white' } },
-                      rightArrowIcon: { sx: { color: 'white' } },
-                    }}
-                    slots={{}}
-                  />
-                </LocalizationProvider>
-                <input
-                  type="text"
-                  value={selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}
-                  onChange={date => setSelectedDate(date)}
-                />
-                <p>{selectedDate ? selectedDate.format('DD/MM/YYYY') : ''}</p>
-                <Button onClick={() => setOpen(!open)}>Close</Button>
+          <div className="relative flex gap-3 text-center justify-center ">
+            <Button
+              variant="actions"
+              onClick={() =>
+                setActivePanel(activePanel === 'date' ? null : 'date')
+              }
+            >
+              <div className="flex flex-row gap-1.5">
+                <CalendarIcon />
+                Select date
               </div>
+            </Button>
+            <Button
+              variant="actions"
+              onClick={() =>
+                setActivePanel(activePanel === 'users' ? null : 'users')
+              }
+            >
+              <div className="flex flex-row gap-1.5">
+                <AddUserIcon />
+                Add user
+              </div>
+            </Button>
+            <Button
+              variant="actions"
+              onClick={() =>
+                setActivePanel(activePanel === 'marks' ? null : 'marks')
+              }
+            >
+              Marks
+            </Button>
+            {activePanel === 'date' && (
+              <Kalendar
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                setActivePanel={setActivePanel}
+              />
+            )}
+            {activePanel === 'users' && (
+              <Users setActivePanel={setActivePanel} />
+            )}
+            {activePanel === 'marks' && (
+              <Mark setActivePanel={setActivePanel} />
             )}
           </div>
           <div>
             <h6 className="">Description</h6>
             {/* <div className="">
               <ToastEditor />
-            </div> */}
+              </div> */}
           </div>
           <div className="modal-actions">
             <button

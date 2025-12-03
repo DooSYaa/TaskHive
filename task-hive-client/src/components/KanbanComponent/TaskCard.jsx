@@ -9,10 +9,11 @@ export default function TaskCard({ card, index, onClick }) {
           {...provided.dragHandleProps}
           className="main-kanban-card"
           style={{
+            color: 'black',
             userSelect: 'none',
             padding: '8px',
             marginBottom: '8px',
-            background: snapshot.isDragging ? '#A1C2BD' : '#708993',
+            background: snapshot.isDragging ? '#E3E3E3' : '#fff',
             borderRadius: '6px',
             boxShadow: snapshot.isDragging
               ? '0 4px 8px rgba(0,0,0,0.2)'
