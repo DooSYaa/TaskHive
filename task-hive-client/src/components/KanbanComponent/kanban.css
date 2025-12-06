@@ -130,8 +130,8 @@
   max-height: auto;
   display: flex;
   flex-direction: row;
-  background-color: #44444e;
-  border: 1px dashed #cfffe2;
+  background-color: #000;
+  border: 1px solid #fff;
   border-radius: 10px;
   padding: 24px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
@@ -217,4 +217,54 @@
   width: 80%;
   padding-left: 10px;
   border: 1px dashed blue;
+}
+
+/* Тёмная тема для PrimeReact Calendar */
+.dark-calendar .p-datepicker {
+  background: transparent !important;
+  border: none !important;
+  color: #e2e8f0 !important;
+}
+
+.dark-calendar .p-datepicker table {
+  font-size: 0.94rem;
+}
+
+.dark-calendar .p-datepicker th {
+  color: #94a3b8 !important;
+  font-weight: 600;
+  padding: 0.75rem 0 !important;
+}
+
+.dark-calendar .p-datepicker td > span {
+  width: 2.4rem !important;
+  height: 2.4rem !important;
+  border-radius: 12px !important;
+  color: #cbd5e1 !important;
+  transition: all 180ms ease;
+}
+
+.dark-calendar .p-datepicker td > span:hover {
+  background: #374151 !important;
+  color: white !important;
+}
+
+/* Сегодняшний день */
+.dark-calendar .p-datepicker .p-datepicker-today > span {
+  background: #4f46e5 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+/* Выбранный день */
+.dark-calendar .p-datepicker .p-highlight {
+  background: #6366f1 !important;
+  color: white !important;
+  font-weight: 700;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Номера недель */
+.dark-calendar .p-datepicker .p-datepicker-weeknumber {
+  color: #64748b !important;
 }

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Mention } from 'primereact/mention';
 import Button from '../ButtonComponent/Button.jsx';
 import { AutoComplete } from 'primereact/autocomplete';
+import 'primereact/resources/themes/lara-dark-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
 
 function Users({ setActivePanel }) {
   const [value, setValue] = useState('');
@@ -10,6 +12,7 @@ function Users({ setActivePanel }) {
     'eurosting73',
     'rozmarin41',
     'BonnZaiiTree',
+    'BonnZaiiTwo',
     'CraftHunter',
   ]);
   const [suggestions, setSuggestions] = useState([]);
@@ -33,35 +36,32 @@ function Users({ setActivePanel }) {
 
   const itemTemplate = suggestion => {
     return (
-      <div className="flex align-items-center bg-emerald-950">
-        <span className="flex flex-column ml-2">
-          {suggestion}
-          {/* <small
-            style={{ fontSize: '.75rem', color: 'var(--text-color-secondary)' }}
-          >
-            @{suggestion}
-          </small> */}
-        </span>
+      <div className="p-autocomplete-items">
+        <span className="p-autocomplete-item">{suggestion}</span>
       </div>
     );
   };
   return (
-    <div className="w-72 flex flex-col gap-4 absolute top-10 right-48 border border-amber-300 rounded-[15px]">
+    <div className="w-72 flex flex-col gap-6 absolute top-10 right-48 border border-amber-300 rounded-[15px]">
       <div className="border border-sky-500">
         <h3>Participants</h3>
       </div>
-      <div className="z-20 border border-amber-300">
+      <div className="">
         <AutoComplete
           value={value}
           suggestions={suggestions}
           completeMethod={search}
           onChange={e => setValue(e.value)}
-          placeholder="Enter @ the nickname"
+          placeholder="Enter the nickname"
           itemTemplate={itemTemplate}
           dropdown
+          panelClassName="w-72 shadow-lg border border-gray-300 rounded-md mt-1"
+          className="w-full"
         />
       </div>
-      <Button onClick={() => setActivePanel(null)}>Close</Button>
+      <div>
+        <Button onClick={() => setActivePanel(null)}>Close</Button>
+      </div>
     </div>
   );
 }

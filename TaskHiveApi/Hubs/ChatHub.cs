@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using TaskHiveApi.Data;
 using TaskHiveApi.Service;
 
@@ -34,6 +36,18 @@ namespace TaskHiveApi.Hubs
 
             var users = new[] { to, from };
             await Clients.Users(userId, friendId).SendAsync("ReceivePrivateMessage", message, from);
+        }
+
+        public async Task SendComment(string groupId, string userId, string message)
+        {
+            var gourpId = await _context.Groups.FirstOrDefaultAsync(x => x.Id == groupId);
+            if (string.IsNullOrEmpty(groupId))
+                throw new NullReferenceException("group is null");
+            var user = Context?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(user))
+                throw new NullReferenceException("user is null");
+
+            await Clients.Group(groupName: groupId).SendAsync("", message);
         }
     }
 }
