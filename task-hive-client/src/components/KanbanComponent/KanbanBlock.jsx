@@ -5,17 +5,20 @@ import Users from '../ModalComponents/Users.jsx';
 import CalendarComponent from '../ModalComponents/Calendar.jsx';
 import CalendarIcon from '../../assets/CalendarIcon.jsx';
 import AddUserIcon from '../../assets/AddUserIcon.jsx';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import Mark from '../ModalComponents/Mark.jsx';
 import 'primereact/resources/themes/lara-light-blue/theme.css';
+import { useAuth } from '../Context/AuthContext.jsx';
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 function Modal({ isExpandedCard, onClose, children }) {
   useEffect(() => {
     const handleKey = e => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [onClose]);
+
   const handleOverlayClick = e => {
     // Если клик был именно по overlay (а не по вложенному .modal-content)
     if (e.target === e.currentTarget) {
@@ -37,6 +40,63 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   const [card, setCard] = useState(null);
   const [activePanel, setActivePanel] = useState(null);
   const [date, setDate] = useState(null);
+
+  //SignalR
+  const [connection, setConnection] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+  const { user } = useAuth();
+  const groupId = useRef();
+  const latestCardId = useRef();
+
+  useEffect(() => {
+    if (!isExpandedCard || !card || !user?.token) {
+      return;
+    }
+
+    latestCardId.current = card.id;
+    const conn = new HubConnectionBuilder()
+      .withUrl('http://localhost:5292/hubs/chat', {
+        accessTokenFactory: () => user.token,
+      })
+      .configureLogging(LogLevel.Information)
+      .withAutomaticReconnect()
+      .build();
+
+    conn.on('ReceiveComment', (senderName, message) => {
+      setMessages(prev => [
+        ...prev,
+        { message: message, sender: senderName, timestamp: new Date() },
+      ]);
+    });
+    conn
+      .start()
+      .then(() => console.log('SignalR connected for card:', card.id))
+      .catch(error => console.error('SignalR error:', error));
+
+    setConnection(conn);
+
+    return () => {
+      conn
+        .stop()
+        .then(() => console.log('SignalR disconnected from card:', card.id))
+        .catch(() => {});
+
+      setConnection(null);
+      setMessages([]);
+    };
+  }, [isExpandedCard, card, user]);
+
+  const sendComment = async () => {
+    if (!connection || !message.trim() || !card) return;
+
+    try {
+      await connection.invoke('SendComment', groupId, card.id, message);
+      setMessage('');
+    } catch (error) {
+      console.error('Error send comment:', error);
+    }
+  };
 
   const handleCardCreatedLocal = newCard => {
     onCardCreated(newCard);
@@ -198,11 +258,20 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
               id=""
               className="resize-none w-[70%] rounded-[5px]"
               placeholder="text coment"
+              value={message}
+              onChange={e => setMessage(e.target.value)}
             ></textarea>
-            <Button>Send</Button>
+            <Button onClick={sendComment}>Send</Button>
           </div>
           <div className="border border-cyan-600 w-full h-full">
-            Some comments...
+            {messages.map((msg, index) => (
+              <div key={index}>
+                <strong>{msg.sender}</strong>
+                <p>
+                  {msg.message} <sub>{msg.timestamp.toLocaleTimeString()}</sub>
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </Modal>

@@ -38,16 +38,30 @@ namespace TaskHiveApi.Hubs
             await Clients.Users(userId, friendId).SendAsync("ReceivePrivateMessage", message, from);
         }
 
-        public async Task SendComment(string groupId, string userId, string message)
+        public async Task Enter(string userId)
         {
-            var gourpId = await _context.Groups.FirstOrDefaultAsync(x => x.Id == groupId);
-            if (string.IsNullOrEmpty(groupId))
-                throw new NullReferenceException("group is null");
+            await Groups.AddToGroupAsync(Context.ConnectionId, userId);
+            Console.WriteLine($"------------The userId ${userId} is connected!---------------------------");
+        }
+
+        public async Task SendComment(string cardId, string message)
+        {
+            Console.WriteLine($"--------------------CARDID: {cardId}----------------------");
+            try
+            {
+                
+            Console.WriteLine("===========================Startnig Sending comment==========================");   
             var user = Context?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(user))
-                throw new NullReferenceException("user is null");
+                Console.WriteLine("============================UserNULL========================");
 
-            await Clients.Group(groupName: groupId).SendAsync("", message);
+            await Clients.Group(cardId).SendAsync("ReceiveComment", user, message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"$ERROR sending comment: {ex.Message}\n{ex.StackTrace}");
+                throw;
+            }
         }
     }
 }
