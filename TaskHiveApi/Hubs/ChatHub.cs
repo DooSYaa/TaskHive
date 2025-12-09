@@ -38,24 +38,23 @@ namespace TaskHiveApi.Hubs
             await Clients.Users(userId, friendId).SendAsync("ReceivePrivateMessage", message, from);
         }
 
-        public async Task Enter(string userId)
+        public async Task Enter(string cardId, string userName)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, userId);
-            Console.WriteLine($"------------The userId ${userId} is connected!---------------------------");
+            Console.WriteLine($"--------------ConnectionId: {Context.ConnectionId}------------------------");
+            Console.WriteLine($"--------------UserId: {userName}------------------------");
+            await Groups.AddToGroupAsync(Context.ConnectionId, cardId);
         }
 
-        public async Task SendComment(string cardId, string message)
+        public async Task SendComment(string cardId,  string userName, string message)
         {
             Console.WriteLine($"--------------------CARDID: {cardId}----------------------");
             try
             {
-                
-            Console.WriteLine("===========================Startnig Sending comment==========================");   
-            var user = Context?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(user))
-                Console.WriteLine("============================UserNULL========================");
+                if (string.IsNullOrEmpty(userName))
+                    Console.WriteLine("To pizdec user is null");
+                Console.WriteLine("===========================Startnig Sending comment==========================");   
 
-            await Clients.Group(cardId).SendAsync("ReceiveComment", user, message);
+                await Clients.Group(cardId).SendAsync("ReceiveComment", userName, message);
             }
             catch (Exception ex)
             {

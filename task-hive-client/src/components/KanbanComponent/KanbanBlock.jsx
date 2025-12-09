@@ -62,7 +62,6 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
       .configureLogging(LogLevel.Information)
       .withAutomaticReconnect()
       .build();
-
     conn.on('ReceiveComment', (senderName, message) => {
       setMessages(prev => [
         ...prev,
@@ -71,7 +70,10 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
     });
     conn
       .start()
-      .then(() => console.log('SignalR connected for card:', card.id))
+      .then(() => {
+        console.log('SignalR connected for card:', card.id, user.userName);
+        return conn.invoke('Enter', card.id, user.userName);
+      })
       .catch(error => console.error('SignalR error:', error));
 
     setConnection(conn);
@@ -91,7 +93,8 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
     if (!connection || !message.trim() || !card) return;
 
     try {
-      await connection.invoke('SendComment', groupId, card.id, message);
+      await connection.invoke('SendComment', card.id, user.userName, message);
+      console.log('message was sended');
       setMessage('');
     } catch (error) {
       console.error('Error send comment:', error);
@@ -263,13 +266,14 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             ></textarea>
             <Button onClick={sendComment}>Send</Button>
           </div>
-          <div className="border border-cyan-600 w-full h-full">
+          <div className="flex flex-col items-center border border-cyan-600 w-full h-full">
             {messages.map((msg, index) => (
-              <div key={index}>
-                <strong>{msg.sender}</strong>
-                <p>
-                  {msg.message} <sub>{msg.timestamp.toLocaleTimeString()}</sub>
-                </p>
+              <div key={index} className="bg-amber-600 w-[60%]">
+                <div className="flex justify-between items-center border border-black">
+                  <strong>{msg.sender}</strong>
+                  <sub>{msg.timestamp.toLocaleTimeString()}</sub>
+                </div>
+                <p>{msg.message}</p>
               </div>
             ))}
           </div>
