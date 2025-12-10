@@ -58,7 +58,7 @@ export default function WorkingSpace() {
   }, []);
 
   return (
-    <div className="flex h-full">
+    <div className="flex border border-black">
       <div className="workingSpace">
         <div className="createKanbanContainer">
           <Button variant={'group'} onClick={() => setShowModal(true)}>
@@ -77,7 +77,17 @@ export default function WorkingSpace() {
             ))
           : null}
       </div>
-      <div className="menu-space">bokova panel</div>
+      <div className="menu-space">
+        <div className="menu-list">
+          <ul>
+            <li>Boards</li>
+            <li>Chat</li>
+            <li>Users</li>
+            <li>Settings</li>
+            <li>My tasks</li>
+          </ul>
+        </div>
+      </div>
 
       {showModal && (
         <CreateKanbanTable
