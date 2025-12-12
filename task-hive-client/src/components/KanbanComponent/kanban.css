@@ -37,7 +37,7 @@
 .x {
   display: flex;
   flex-direction: column;
-  background-color: #000;
+  background-color: #5c7285;
   gap: 10px;
   border-radius: 10px;
 }
@@ -130,8 +130,8 @@
   max-height: auto;
   display: flex;
   flex-direction: row;
-  background-color: #000;
-  border: 1px solid #fff;
+  background-color: #fff;
+  border: 1px solid #000;
   border-radius: 10px;
   padding: 24px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
