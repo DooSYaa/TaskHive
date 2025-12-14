@@ -79,12 +79,22 @@ export default function WorkingSpace() {
       </div>
       <div className="menu-space">
         <div className="menu-list">
-          <ul>
-            <li>Boards</li>
-            <li>Chat</li>
-            <li>Users</li>
-            <li>Settings</li>
-            <li>My tasks</li>
+          <ul className="flex flex-col gap-3 border w-full">
+            <li className="border w-full">
+              <Button>Boards</Button>
+            </li>
+            <li>
+              <Button>Chat</Button>
+            </li>
+            <li>
+              <Button>Users</Button>
+            </li>
+            <li>
+              <Button>Settings</Button>
+            </li>
+            <li>
+              <Button>My tasks</Button>
+            </li>
           </ul>
         </div>
       </div>

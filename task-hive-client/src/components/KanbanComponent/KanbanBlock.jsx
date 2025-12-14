@@ -13,7 +13,7 @@ import 'primereact/resources/themes/lara-light-blue/theme.css';
 import { useAuth } from '../Context/AuthContext.jsx';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import DescriptionEditor from '../ModalComponents/DescriptionEditor.jsx';
-function Modal({ isExpandedCard, onClose, children }) {
+function Modal({ isExpandedCard, setIsExpandedCard, onClose, children }) {
   useEffect(() => {
     const handleKey = e => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', handleKey);
@@ -30,7 +30,12 @@ function Modal({ isExpandedCard, onClose, children }) {
 
   return createPortal(
     <div className="modal-overlay" onClick={handleOverlayClick}>
-      <div className="modal-content">{children}</div>
+      <div className=" flex flex-col w-[80%] rounded-2xl bg-white">
+        <div className="flex justify-end items-center modal-header rounded-t-2xl h-12">
+          <Button onClick={() => setIsExpandedCard(false)}>x</Button>
+        </div>
+        <div className="modal-content">{children}</div>
+      </div>
     </div>,
     document.body,
   );
@@ -175,6 +180,7 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
         )}
       </Draggable>
       <Modal
+        setIsExpandedCard={setIsExpandedCard}
         isExpandedCard={isExpandedCard}
         onClose={() => {
           setIsExpandedCard(false);
@@ -249,15 +255,9 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             >
               Save
             </button>
-            <button
-              className="modal-btn secondary"
-              onClick={() => setIsExpandedCard(false)}
-            >
-              Cancel
-            </button>
           </div>
         </div>
-        <div className="flex flex-col flex-1 gap-3 items-center ">
+        <div className="flex flex-col flex-1 gap-3 items-center bg-gray-400">
           <div className=" w-full">Coments</div>
           <div className="flex justify-center items-center gap-3 w-full">
             <textarea
