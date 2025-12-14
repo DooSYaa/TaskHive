@@ -5,13 +5,14 @@ import Users from '../ModalComponents/Users.jsx';
 import CalendarComponent from '../ModalComponents/Calendar.jsx';
 import CalendarIcon from '../../assets/CalendarIcon.jsx';
 import AddUserIcon from '../../assets/AddUserIcon.jsx';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import Mark from '../ModalComponents/Mark.jsx';
 import 'primereact/resources/themes/lara-light-blue/theme.css';
 import { useAuth } from '../Context/AuthContext.jsx';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import DescriptionEditor from '../ModalComponents/DescriptionEditor.jsx';
 function Modal({ isExpandedCard, onClose, children }) {
   useEffect(() => {
     const handleKey = e => e.key === 'Escape' && onClose();
@@ -49,6 +50,7 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   const groupId = useRef();
   const latestCardId = useRef();
 
+  const [description, setDescription] = useState();
   useEffect(() => {
     if (!isExpandedCard || !card || !user?.token) {
       return;
@@ -180,8 +182,8 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
           setActivePanel(null);
         }}
       >
-        <div className="flex flex-col flex-1 justify-between w-max border border-cyan-500">
-          <div className="flex flex-col justify-center w-[80%] border border-amber-600">
+        <div className="title-container">
+          <div className="flex flex-col justify-center w-[80%]">
             <h2 className="modal-title">{card ? card.title : null}</h2>
           </div>
           <div className="relative flex gap-3 text-center justify-center ">
@@ -231,9 +233,11 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
           </div>
           <div>
             <h6 className="">Description</h6>
-            {/* <div className="">
-              <ToastEditor />
-              </div> */}
+            <div className="flex justify-center description-container">
+              <DescriptionEditor
+                onChange={content => setDescription(content)}
+              />
+            </div>
           </div>
           <div className="modal-actions">
             <button
@@ -253,23 +257,23 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             </button>
           </div>
         </div>
-        <div className="flex flex-col flex-1 gap-3 items-center border border-purple-700">
-          <div className="border border-amber-200 w-full">Coments</div>
-          <div className="flex justify-center items-center gap-3 border border-red-400 w-full">
+        <div className="flex flex-col flex-1 gap-3 items-center ">
+          <div className=" w-full">Coments</div>
+          <div className="flex justify-center items-center gap-3 w-full">
             <textarea
               name=""
               id=""
-              className="resize-none w-[70%] rounded-[5px]"
+              className="resize-none w-[70%] rounded-[5px] border border-black"
               placeholder="text coment"
               value={message}
               onChange={e => setMessage(e.target.value)}
             ></textarea>
             <Button onClick={sendComment}>Send</Button>
           </div>
-          <div className="flex flex-col items-center border border-cyan-600 w-full h-full">
+          <div className="flex flex-col items-center   w-full h-full">
             {messages.map((msg, index) => (
               <div key={index} className="bg-amber-600 w-[60%]">
-                <div className="flex justify-between items-center border border-black">
+                <div className="flex justify-between items-center  ">
                   <strong>{msg.sender}</strong>
                   <sub>{msg.timestamp.toLocaleTimeString()}</sub>
                 </div>

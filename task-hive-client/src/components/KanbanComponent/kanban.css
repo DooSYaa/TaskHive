@@ -126,7 +126,7 @@
 }
 .modal-content {
   width: 80%;
-  height: 40%;
+  height: auto;
   max-height: auto;
   display: flex;
   flex-direction: row;
@@ -141,6 +141,14 @@
   padding-left: 10px;
   font-size: 1.25rem;
   font-weight: 600;
+}
+.title-container {
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 10px;
+  justify-content: space-between;
 }
 .modal-textarea {
   width: 30vw;
@@ -204,6 +212,11 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.description-container {
+  display: flex;
+  justify-content: center;
 }
 .editor {
   width: 90%;

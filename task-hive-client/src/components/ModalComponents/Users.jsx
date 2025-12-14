@@ -75,10 +75,6 @@ import { AutoComplete } from 'primereact/autocomplete';
 import 'primereact/resources/themes/lara-light-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 
-/**
- * @param {function} setActivePanel - функция закрытия панели
- * @param {function} onUserSelect - (NEW) функция, которая вернет выбранного юзера родителю
- */
 function Users({ setActivePanel, onUserSelect }) {
   // Храним объект пользователя, а не просто строку
   const [selectedUser, setSelectedUser] = useState(null);
