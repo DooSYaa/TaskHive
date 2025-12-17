@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TaskHiveApi.Data;
 using TaskHiveApi.Models;
 using TaskHiveApi.Models.DTO;
+using TaskHiveApi.Models.DTO.Kanban;
 using TaskHiveApi.Models.Enums;
 
 namespace TaskHiveApi.Controllers
@@ -125,6 +126,30 @@ namespace TaskHiveApi.Controllers
             });
             await _context.SaveChangesAsync();
             return Ok(new { message = "User successfully added to group" });
+        }
+
+        [HttpGet("GetGroupUsers")]
+        public async Task<IActionResult> GetGroupUsers([FromQuery] GetGroupUsersDto groupUsersDto)
+        {
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var existingGroup = await _context.Groups
+                .Include(x => x.GroupUsers)
+                .ThenInclude(u => u.User)
+                .FirstOrDefaultAsync(x => x.Id == groupUsersDto.groupId);
+            if (existingGroup == null)
+                return NotFound("Group not found");
+
+            var isMember = existingGroup.GroupUsers.Any(x => x.UserId == currentUserId);
+            if (!isMember)
+                return Forbid();
+
+            var groupUsers = existingGroup.GroupUsers.Select(x => new
+            {
+                userId = x.UserId,
+                userName = x.User.UserName,
+                userRole = x.Role.ToString(),
+            });
+            return Ok(groupUsers);
         }
     }
 }

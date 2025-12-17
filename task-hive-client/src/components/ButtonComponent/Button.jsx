@@ -5,9 +5,8 @@ export default function Button({
   variant = 'default',
   style,
 }) {
-  const classNames = `button ${variant}`;
   return (
-    <button className={classNames} onClick={onClick} style={style}>
+    <button className={`button ${variant}`} onClick={onClick} style={style}>
       {children}
     </button>
   );
