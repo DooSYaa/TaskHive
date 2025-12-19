@@ -5,14 +5,17 @@ import { PrimeReactProvider } from 'primereact/api';
 import App from './App.jsx';
 import './index.css';
 import { AuthProvider } from './components/Context/AuthContext.jsx';
+import { SignalRProvider } from './components/Context/SignalRContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   //<StrictMode>
   <BrowserRouter>
     <AuthProvider>
-      <PrimeReactProvider>
-        <App />
-      </PrimeReactProvider>
+      <SignalRProvider>
+        <PrimeReactProvider>
+          <App />
+        </PrimeReactProvider>
+      </SignalRProvider>
     </AuthProvider>
   </BrowserRouter>,
   //</StrictMode>,

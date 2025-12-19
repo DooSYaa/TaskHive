@@ -110,7 +110,7 @@ namespace TaskHiveApi.Controllers
             var group = await _context.Groups
                 .FirstOrDefaultAsync(u => u.GroupUsers
                     .Any(x => x.UserId == user.Id &&
-                              x.Group.GroupName == addUserToGroupDto.groupName));
+                              x.Group.Id == addUserToGroupDto.groupId));
             if(group == null)
                 return NotFound(new { message = "Group not found" });
             

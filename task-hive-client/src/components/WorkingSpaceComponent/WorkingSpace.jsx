@@ -19,6 +19,7 @@ export default function WorkingSpace() {
   const [users, setUsers] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [KanbanTableName, setKanbanTableName] = useState('');
+  const [friendName, setFriendName] = useState('');
 
   const [activeTab, setActiveTab] = useState('dashboards');
   const menuItems = [
@@ -29,7 +30,7 @@ export default function WorkingSpace() {
     { id: 'myTasks', label: 'My Tasks' },
   ];
 
-  const handleSubmit = async e => {
+  const handleCreateKanbanTable = async e => {
     e.preventDefault();
     const response = await fetch(
       'http://localhost:5292/api/Kanban/CreateKanbanTable',
@@ -49,6 +50,29 @@ export default function WorkingSpace() {
       throw new Error('Failed to create KanbanTable\n' + response.status);
     }
     fetchTables();
+    setShowModal(false);
+  };
+
+  const handleAddUserToGroup = async e => {
+    e.preventDefault();
+    const response = await fetch(
+      'http://localhost:5292/api/Group/AddUserToGroup',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          groupId: groupId,
+          friendName: friendName,
+        }),
+      },
+    );
+    if (!response.ok) {
+      throw new Error('Failed to add user to group\n' + response.status);
+    }
+    fetchUsers();
     setShowModal(false);
   };
 
@@ -119,10 +143,13 @@ export default function WorkingSpace() {
       {showModal && (
         <CreateKanbanTable
           KanbanTableName={KanbanTableName}
+          handleCreateKanbanTable={handleCreateKanbanTable}
           setKanbanTableName={setKanbanTableName}
           showModal={showModal}
           setShowModal={setShowModal}
-          handleSubmit={handleSubmit}
+          handleAddUserToGroup={handleAddUserToGroup}
+          friendName={friendName}
+          setFriendName={setFriendName}
         />
       )}
     </div>

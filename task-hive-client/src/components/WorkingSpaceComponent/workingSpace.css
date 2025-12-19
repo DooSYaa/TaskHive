@@ -33,9 +33,12 @@
 }
 
 .createKanbanContainer {
-  margin: 10px 20px 0 0;
+  height: 40px;
+  margin: 10px 0 0;
+  padding-right: 15px;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .createKanbanButton {

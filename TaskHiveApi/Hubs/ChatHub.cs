@@ -27,7 +27,7 @@ namespace TaskHiveApi.Hubs
 
         public async Task SendPrivateMessage(string from, string to, string message)
         {
-            var userId = Context?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = Context.UserIdentifier;
             var friendId = _context.Users.Where(f => f.UserName == to).Select(f => f.Id).FirstOrDefault();
             if (string.IsNullOrEmpty(userId))
                 throw new NullReferenceException("User is null");
@@ -40,19 +40,15 @@ namespace TaskHiveApi.Hubs
 
         public async Task Enter(string cardId, string userName)
         {
-            Console.WriteLine($"--------------ConnectionId: {Context.ConnectionId}------------------------");
-            Console.WriteLine($"--------------UserId: {userName}------------------------");
             await Groups.AddToGroupAsync(Context.ConnectionId, cardId);
         }
 
         public async Task SendComment(string cardId,  string userName, string message)
         {
-            Console.WriteLine($"--------------------CARDID: {cardId}----------------------");
             try
             {
                 if (string.IsNullOrEmpty(userName))
                     Console.WriteLine("To pizdec user is null");
-                Console.WriteLine("===========================Startnig Sending comment==========================");   
 
                 await Clients.Group(cardId).SendAsync("ReceiveComment", userName, message);
             }

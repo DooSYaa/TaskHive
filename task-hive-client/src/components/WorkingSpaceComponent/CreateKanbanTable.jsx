@@ -3,9 +3,12 @@ import Button from '../ButtonComponent/Button.jsx';
 export default function CreateKanbanTable({
   KanbanTableName,
   setKanbanTableName,
-  handleSubmit,
+  handleCreateKanbanTable,
   showModal,
   setShowModal,
+  handleAddUserToGroup,
+  friendName,
+  setFriendName,
 }) {
   return (
     <>
@@ -13,7 +16,7 @@ export default function CreateKanbanTable({
         <div className="createKanbanTable">
           <div className="createKanbanTableForm">
             <h2>Create new kanban</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleCreateKanbanTable}>
               <input
                 type="text"
                 placeholder="Enter kanban name"
@@ -35,12 +38,12 @@ export default function CreateKanbanTable({
         <div className="createKanbanTable">
           <div className="createKanbanTableForm">
             <h2>Add users</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleAddUserToGroup}>
               <input
                 type="text"
                 placeholder="Enter user name"
-                value={KanbanTableName}
-                onChange={e => setKanbanTableName(e.target.value)}
+                value={friendName}
+                onChange={e => setFriendName(e.target.value)}
                 style={{ width: '100%', marginBottom: '10px' }}
               />
               <div style={{ display: 'flex', gap: '10px' }}>
