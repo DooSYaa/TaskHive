@@ -11,8 +11,10 @@ export const SignalRProvider = ({ children }) => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user.token) return;
-
+    if (!user || !user.token) {
+      setConnection(null);
+      return;
+    }
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl('http://localhost:5292/hubs/chat', {
         accessTokenFactory: () => user.token,

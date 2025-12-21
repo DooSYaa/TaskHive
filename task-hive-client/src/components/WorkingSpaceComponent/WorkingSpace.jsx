@@ -131,7 +131,7 @@ export default function WorkingSpace() {
         {activeTab === 'settings' && <WorkingSpaceSettings />}
         {activeTab === 'myTasks' && <WorkingSpaceMyTasks />}
       </div>
-      <div className="menu-space">
+      <div className="menu-space border">
         <div className="menu-list">
           <SideMenu
             activeTab={activeTab}
