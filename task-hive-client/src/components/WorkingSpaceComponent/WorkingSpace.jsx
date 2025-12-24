@@ -11,9 +11,12 @@ import WorkingSpaceChat from './WorkingSpaceChat.jsx';
 import WorkingSpaceSettings from './WorkingSpaceSettings.jsx';
 import WorkingSpaceMyTasks from './WorkingSpaceMyTasks.jsx';
 import WorkingSpaceDashboards from './WorkingSpaceDashboards.jsx';
+import { HubConnectionState } from '@microsoft/signalr';
+import { useSignalR } from '../Context/SignalRContext.jsx';
 
 export default function WorkingSpace() {
   const { groupId } = useParams();
+  const { connection } = useSignalR();
   const { user } = useAuth();
   const [kanbanTables, setKanbanTables] = useState(null);
   const [users, setUsers] = useState(null);
@@ -29,6 +32,26 @@ export default function WorkingSpace() {
     { id: 'settings', label: 'Settings' },
     { id: 'myTasks', label: 'My Tasks' },
   ];
+
+  console.log('WorkingSpace Connection ID:', connection?.connectionId);
+
+  useEffect(() => {
+    if (!connection || !groupId) return;
+
+    if (connection.state === HubConnectionState.Connected) {
+      connection
+        .invoke('JoinGroup', groupId)
+        .catch(error => console.error('failed to join group', error));
+    }
+
+    return () => {
+      // if (connection.state === HubConnectionState.Connected) {
+      //   connection
+      //     .invoke('LeaveGroup', groupId)
+      //     .catch(err => console.error('Failed to leave group', err));
+      // }
+    };
+  }, [connection, groupId]);
 
   const handleCreateKanbanTable = async e => {
     e.preventDefault();

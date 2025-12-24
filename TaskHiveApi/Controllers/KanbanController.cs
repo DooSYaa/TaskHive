@@ -128,6 +128,41 @@ public class KanbanController : ControllerBase
             position = newKanbanblock.Position,
         });
     }
+
+    [HttpGet("GetMyTasks")]
+    public async Task<IActionResult> GetMyTasks()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+        
+        var groupLists = await _context.GroupUsers
+            .Where(x => x.UserId == userId)
+            .Select(x => x.GroupId)
+            .ToListAsync();
+        var tasks = await _context.KanbanTables
+            .Where(x => groupLists.Contains(x.GroupId))
+            .SelectMany(x => x.Cards)
+            .Include(x => x.KanbanStatus)
+            .Include(x => x.KanbanTable)
+            .Where(card => card.AssignedUserId == userId || card.AssignedUserId == null)
+            .Select(card => new
+            {
+                Id = card.Id,
+                Title = card.Title,
+                Description = card.Description,
+                DueDate = card.DueDate,
+                Priority = card.Priority,
+                AssignedUserId = card.AssignedUserId,
+                TableName = card.KanbanTable.KanbanTableName,
+                StatusName = card.KanbanStatus.StatusName,
+            })
+            .OrderBy(t => t.DueDate)
+            .ToListAsync();
+        return Ok(tasks);
+
+    } 
+
     [HttpPost("CreateKanbanCard")]
     public async Task<IActionResult> CreateKanbanCard(
         [FromQuery] string kanbanTableId,

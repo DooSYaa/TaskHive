@@ -1,0 +1,37 @@
+.messages {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  white-space: pre-wrap;
+  overflow-y: auto;
+}
+.group-message {
+  padding: 10px 16px;
+  border-radius: 12px;
+  max-width: 70%;
+  font-size: 15px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+.group-message.sent {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  align-self: flex-end;
+  background-color: #4a90e2;
+  color: #fff;
+  border-bottom-right-radius: 2px;
+  background-color: blueviolet;
+}
+.group-message.received {
+  align-self: flex-start;
+  background-color: #ffffff;
+  color: #333;
+  border-bottom-left-radius: 2px;
+  background-color: brown;
+}

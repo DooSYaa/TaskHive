@@ -47,6 +47,7 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   const [activePanel, setActivePanel] = useState(null);
   const [date, setDate] = useState(null);
 
+  const [selectedUser, setSelectedUser] = useState(null);
   //SignalR
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -223,6 +224,14 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             >
               Marks
             </Button>
+            <Button
+              variant="actions"
+              onClick={() =>
+                setActivePanel(activePanel === 'priority' ? null : 'priority')
+              }
+            >
+              Priority
+            </Button>
             {activePanel === 'date' && (
               <CalendarComponent
                 date={date}
@@ -231,11 +240,18 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
               />
             )}
             {activePanel === 'users' && (
-              <Users setActivePanel={setActivePanel} />
+              <Users
+                setActivePanel={setActivePanel}
+                setSelectedUser={setSelectedUser}
+              />
             )}
             {activePanel === 'marks' && (
               <Mark setActivePanel={setActivePanel} />
             )}
+          </div>
+          <div className="flex gap-6 border border-amber-400">
+            {date !== null && <div>{date.toLocaleDateString('pl-PL')}</div>}
+            {selectedUser !== null && <div>{selectedUser.username}</div>}
           </div>
           <div>
             <h6 className="">Description</h6>

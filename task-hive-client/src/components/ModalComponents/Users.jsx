@@ -1,73 +1,3 @@
-// import { useState } from 'react';
-// import { Mention } from 'primereact/mention';
-// import Button from '../ButtonComponent/Button.jsx';
-// import { AutoComplete } from 'primereact/autocomplete';
-// import 'primereact/resources/themes/lara-dark-blue/theme.css';
-// import 'primereact/resources/primereact.min.css';
-
-// function Users({ setActivePanel }) {
-//   const [value, setValue] = useState('');
-//   const [customers, setCustomers] = useState([
-//     'DooSyaa',
-//     'eurosting73',
-//     'rozmarin41',
-//     'BonnZaiiTree',
-//     'BonnZaiiTwo',
-//     'CraftHunter',
-//   ]);
-//   const [suggestions, setSuggestions] = useState([]);
-//   const search = event => {
-//     //in a real application, make a request to a remote url with the query and return suggestions, for demo we filter at client side
-//     setTimeout(() => {
-//       const query = event.query;
-//       let suggestions;
-
-//       if (!query.trim().length) {
-//         suggestions = [...customers];
-//       } else {
-//         suggestions = customers.filter(customer => {
-//           return customer.toLowerCase().startsWith(query.toLowerCase());
-//         });
-//       }
-
-//       setSuggestions(suggestions);
-//     }, 250);
-//   };
-
-//   const itemTemplate = suggestion => {
-//     return (
-//       <div className="p-autocomplete-items">
-//         <span className="p-autocomplete-item">{suggestion}</span>
-//       </div>
-//     );
-//   };
-//   return (
-//     <div className="w-72 flex flex-col gap-6 absolute top-10 right-48 border border-amber-300 rounded-[15px]">
-//       <div className="border border-sky-500">
-//         <h3>Participants</h3>
-//       </div>
-//       <div className="">
-//         <AutoComplete
-//           value={value}
-//           suggestions={suggestions}
-//           completeMethod={search}
-//           onChange={e => setValue(e.value)}
-//           placeholder="Enter the nickname"
-//           itemTemplate={itemTemplate}
-//           dropdown
-//           panelClassName="w-72 shadow-lg border border-gray-300 rounded-md mt-1"
-//           className="w-full"
-//         />
-//       </div>
-//       <div>
-//         <Button onClick={() => setActivePanel(null)}>Close</Button>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Users;
-
 import { useState, useEffect } from 'react';
 import Button from '../ButtonComponent/Button.jsx';
 import { AutoComplete } from 'primereact/autocomplete';
@@ -75,9 +5,9 @@ import { AutoComplete } from 'primereact/autocomplete';
 import 'primereact/resources/themes/lara-light-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 
-function Users({ setActivePanel, onUserSelect }) {
+function Users({ setActivePanel, setSelectedUser }) {
   // Храним объект пользователя, а не просто строку
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [localSelectedUser, setLocalSelectedUser] = useState(null);
   const [users, setUsers] = useState([]); // Список загруженный с API
   const [filteredUsers, setFilteredUsers] = useState([]); // Список для автокомплита
 
@@ -115,10 +45,10 @@ function Users({ setActivePanel, onUserSelect }) {
   };
 
   const handleBind = () => {
-    if (selectedUser) {
-      console.log('Привязываем пользователя ID:', selectedUser.id);
+    if (localSelectedUser) {
+      console.log('Привязываем пользователя ID:', localSelectedUser.id);
       // Вызываем функцию родителя, чтобы передать данные
-      if (onUserSelect) onUserSelect(selectedUser);
+      setSelectedUser(localSelectedUser);
       setActivePanel(null);
     } else {
       alert('Пожалуйста, выберите пользователя из списка.');
@@ -139,7 +69,7 @@ function Users({ setActivePanel, onUserSelect }) {
 
   return (
     // Используем z-50 и shadow-2xl для эффекта "поверх всего"
-    <div className="absolute top-12 right-0 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 p-5 animate-fade-in-down">
+    <div className="absolute top-12 right-52 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 p-5 animate-fade-in-down">
       {/* Заголовок */}
       <div className="mb-5 pb-3 border-b border-gray-100">
         <h3 className="text-lg font-bold text-gray-800">Выбор Исполнителя</h3>
@@ -159,11 +89,11 @@ function Users({ setActivePanel, onUserSelect }) {
 
         <AutoComplete
           id="user-autocomplete"
-          value={selectedUser}
+          value={localSelectedUser}
           suggestions={filteredUsers}
           completeMethod={search}
           field="username" // Важно: указываем какое поле объекта показывать в инпуте
-          onChange={e => setSelectedUser(e.value)}
+          onChange={e => setLocalSelectedUser(e.value)}
           placeholder="Начните вводить имя..."
           itemTemplate={itemTemplate}
           dropdown
@@ -179,7 +109,7 @@ function Users({ setActivePanel, onUserSelect }) {
         {/* Кнопка Отмены - серая/прозрачная */}
         <div onClick={() => setActivePanel(null)}>
           <Button className="bg-gray-100 text-gray-600 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm transition">
-            Отмена
+            Cancel
           </Button>
         </div>
 
@@ -187,9 +117,9 @@ function Users({ setActivePanel, onUserSelect }) {
         <div onClick={handleBind}>
           <Button
             className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg text-sm shadow-md transition disabled:opacity-50"
-            disabled={!selectedUser}
+            disabled={!localSelectedUser}
           >
-            Привязать
+            Save
           </Button>
         </div>
       </div>
@@ -198,16 +128,3 @@ function Users({ setActivePanel, onUserSelect }) {
 }
 
 export default Users;
-
-{
-  /* <Mention
-  className="h-5"
-  value={value}
-  onChange={e => setValue(e.target.value)}
-  suggestions={suggestions}
-  onSearch={onSearch}
-  placeholder="Enter @ the nickname"
-  itemTemplate={itemTemplate}
-  autoResize
-/> */
-}

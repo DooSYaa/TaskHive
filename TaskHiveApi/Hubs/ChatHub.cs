@@ -1,8 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using TaskHiveApi.Data;
+using TaskHiveApi.Models;
 using TaskHiveApi.Service;
 
 namespace TaskHiveApi.Hubs
@@ -38,9 +41,37 @@ namespace TaskHiveApi.Hubs
             await Clients.Users(userId, friendId).SendAsync("ReceivePrivateMessage", message, from);
         }
 
-        public async Task Enter(string cardId, string userName)
+        public async Task SendGroupMessage(string groupId, string messageContetnt)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, cardId);
+            System.Console.WriteLine($"===================GROUP ID: {groupId}==========================");
+            if(string.IsNullOrWhiteSpace(messageContetnt)) return;
+
+            var senderId = Context.UserIdentifier;
+            var userName = Context.User.Identity.Name;
+            Console.WriteLine($"Отправка в группу {groupId}: {messageContetnt}");
+            await Clients.Group(groupId).SendAsync("ReceiveGroupMessage", new
+            {
+                Id = Guid.NewGuid().ToString(),
+                SenderId = senderId, 
+                SenderName = userName,
+                Message = messageContetnt,
+                CreatedAt = DateTime.UtcNow,
+            });
+            System.Console.WriteLine("==================Message received!=================");
+            System.Console.WriteLine(messageContetnt);
+        }
+
+        public async Task JoinGroup(string groupId)
+        {
+            Console.WriteLine($"Пользователь {Context.ConnectionId} подключается к группе: {groupId}");
+            var userId = Context.UserIdentifier;
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+        }
+
+        public async Task LeaveGroup(string groupId)
+        {
+            var userId = Context.UserIdentifier;
+            await Groups.RemoveFromGroupAsync(userId, groupId);
         }
 
         public async Task SendComment(string cardId,  string userName, string message)
@@ -48,7 +79,7 @@ namespace TaskHiveApi.Hubs
             try
             {
                 if (string.IsNullOrEmpty(userName))
-                    Console.WriteLine("To pizdec user is null");
+                    Console.WriteLine("user is null");
 
                 await Clients.Group(cardId).SendAsync("ReceiveComment", userName, message);
             }
