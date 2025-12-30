@@ -26,5 +26,7 @@ public class KanbanData
 
     public KanbanTable KanbanTable { get; set; }
     public KanbanStatus KanbanStatus { get; set; }
+
+    public List<Mark> Marks { get; set; } = new List<Mark>();
 }
   

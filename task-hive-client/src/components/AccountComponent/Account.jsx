@@ -1,8 +1,10 @@
 import './account.model.css';
 import Avatar from '@mui/material/Avatar';
 import { useAuth } from '../Context/AuthContext';
-
+import { ColorPicker } from 'primereact/colorpicker';
+import { useState } from 'react';
 export default function BasicDemo() {
+  const [color, setColor] = useState(null);
   const { user } = useAuth();
 
   return (
@@ -16,6 +18,7 @@ export default function BasicDemo() {
         }
         {user.userName}
       </div>
+      <ColorPicker value={color} onChange={e => setColor(e.value)} />
     </div>
   );
 }

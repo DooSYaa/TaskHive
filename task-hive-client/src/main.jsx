@@ -7,6 +7,11 @@ import './index.css';
 import { AuthProvider } from './components/Context/AuthContext.jsx';
 import { SignalRProvider } from './components/Context/SignalRContext.jsx';
 
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
+
+// Ядро (размеры, отступы, позиционирование). БЕЗ НЕГО ColorPicker сломан.
+import 'primereact/resources/primereact.min.css';
+
 createRoot(document.getElementById('root')).render(
   //<StrictMode>
   <BrowserRouter>

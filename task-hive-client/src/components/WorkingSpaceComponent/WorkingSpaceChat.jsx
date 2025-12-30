@@ -12,12 +12,10 @@ function WorkingSpaceChat() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
-  console.log('WorkingSpaceChat Connection ID:', connection?.connectionId);
   useEffect(() => {
     if (!connection) return;
 
     const handleReceiveMessage = incomingMessage => {
-      console.log('new message', incomingMessage);
       setMessages(prev => [...prev, incomingMessage]);
     };
     connection.on('ReceiveGroupMessage', handleReceiveMessage);

@@ -24,6 +24,12 @@
   width: auto;
   background-color: rgb(63, 189, 161);
 }
+.button.delete {
+  border: 1px solid #dc0000;
+}
+.button.delete:hover {
+  background-color: #dc0000;
+}
 .button.login {
   width: 300px;
   background-color: #169976;

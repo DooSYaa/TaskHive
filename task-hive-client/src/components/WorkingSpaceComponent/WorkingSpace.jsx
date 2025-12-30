@@ -33,8 +33,6 @@ export default function WorkingSpace() {
     { id: 'myTasks', label: 'My Tasks' },
   ];
 
-  console.log('WorkingSpace Connection ID:', connection?.connectionId);
-
   useEffect(() => {
     if (!connection || !groupId) return;
 
@@ -45,11 +43,11 @@ export default function WorkingSpace() {
     }
 
     return () => {
-      // if (connection.state === HubConnectionState.Connected) {
-      //   connection
-      //     .invoke('LeaveGroup', groupId)
-      //     .catch(err => console.error('Failed to leave group', err));
-      // }
+      if (connection.state === HubConnectionState.Connected) {
+        connection
+          .invoke('LeaveGroup', groupId)
+          .catch(err => console.error('Failed to leave group', err));
+      }
     };
   }, [connection, groupId]);
 

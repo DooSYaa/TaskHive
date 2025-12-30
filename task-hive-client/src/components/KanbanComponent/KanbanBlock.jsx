@@ -5,7 +5,7 @@ import Users from '../ModalComponents/Users.jsx';
 import CalendarComponent from '../ModalComponents/Calendar.jsx';
 import CalendarIcon from '../../assets/CalendarIcon.jsx';
 import AddUserIcon from '../../assets/AddUserIcon.jsx';
-import { useState, useEffect, useRef, use } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import Mark from '../ModalComponents/Mark.jsx';
@@ -250,8 +250,18 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             )}
           </div>
           <div className="flex gap-6 border border-amber-400">
-            {date !== null && <div>{date.toLocaleDateString('pl-PL')}</div>}
-            {selectedUser !== null && <div>{selectedUser.username}</div>}
+            {date !== null && (
+              <div className="border">
+                <div className="text-[12px] font-bold">Term</div>
+                {date.toLocaleDateString('pl-PL')}
+              </div>
+            )}
+            {selectedUser !== null && (
+              <div className="border">
+                <div className="text-[12px] font-bold">Member</div>
+                {selectedUser.username}
+              </div>
+            )}
           </div>
           <div>
             <h6 className="">Description</h6>

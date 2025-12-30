@@ -16,6 +16,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public DbSet<KanbanTable> KanbanTables { get; set; }
     public DbSet<KanbanData> KanbanCards { get; set; }
     public DbSet<KanbanStatus> KanbanStatuses { get; set; }
+    public DbSet<Mark> Marks { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -47,5 +48,9 @@ public class ApplicationDbContext : IdentityDbContext<User>
                 .HasForeignKey(gu => gu.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+        modelBuilder.Entity<KanbanData>()
+            .HasMany(card => card.Marks)
+            .WithMany(mark => mark.Cards)
+            .UsingEntity(j => j.ToTable("CardMarks"));
     }
 }
