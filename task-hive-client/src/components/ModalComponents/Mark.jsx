@@ -2,6 +2,8 @@ import React from 'react';
 import reactCSS from 'reactcss';
 import Button from '../ButtonComponent/Button';
 
+import { Checkbox } from 'primereact/checkbox';
+
 // import { ColorPicker } from 'primereact/colorpicker';
 // import { HexColorPicker } from 'react-colorful';
 import { ChromePicker } from 'react-color';
@@ -11,7 +13,7 @@ import { useState } from 'react';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
-function Mark({ setActivePanel }) {
+function Mark({ setActivePanel, activeMarksIds = [], onToggleMark }) {
   const [isCreating, setIsCreating] = useState(false);
   const [newMarkName, setNewMarkName] = useState('');
   const [marks, setMarks] = useState([
@@ -44,8 +46,6 @@ function Mark({ setActivePanel }) {
       hexColor: currentHex, // Берем цвет из пикера
     };
     setMarks(prev => [...prev, newMark]); // Добавляем в массив
-
-    // Сбрасываем форму и закрываем режим создания
     setNewMarkName('');
     setIsCreating(false);
     setDisplayColorPicker(false);
@@ -81,33 +81,46 @@ function Mark({ setActivePanel }) {
     },
   });
   return (
-    <div className="card absolute top-10 right-56 border w-80 bg-white">
-      <div>
-        <div className=" text-[16px] font-bold">Marks</div>
-        <div className="border border-amber-400 flex flex-col gap-0.5 items-center">
-          {marks?.map((mark, index) => (
-            <div
-              key={index}
-              className="border border-blue-600 flex w-full justify-center items-center gap-0.5"
-            >
+    <div className="card absolute top-10 right-56 border w-80 bg-white z-50">
+      <div className=" text-[16px] font-bold">Marks</div>
+      <div className="border border-amber-400 flex flex-col gap-0.5 items-center">
+        {marks?.map((mark, index) => {
+          const isAssigned = (activeMarksIds || []).includes(mark.id);
+          return (
+            <div>
               <div
-                className="h-8 w-[60%] flex items-center justify-center"
-                style={{ backgroundColor: mark.hexColor }}
+                key={index}
+                className="border border-blue-600 flex w-full justify-center items-center gap-0.5"
               >
-                {mark.markName}
+                <Button
+                  className={
+                    isAssigned
+                      ? '!bg-red-100 !text-red-600'
+                      : 'bg-green-100 text-green-600'
+                  }
+                  onClick={() => onToggleMark(mark.id)}
+                >
+                  {isAssigned ? '-' : '+'}
+                </Button>
+                <div
+                  className="h-8 w-[60%] flex items-center justify-center"
+                  style={{ backgroundColor: mark.hexColor }}
+                >
+                  {mark.markName}
+                </div>
+                <Button
+                  variant="delete"
+                  onClick={() => {
+                    setMarks(prev => prev.filter(item => item.id !== mark.id));
+                  }}
+                >
+                  delete
+                </Button>
+                <Button>Edit</Button>
               </div>
-              <Button
-                variant="delete"
-                onClick={() => {
-                  setMarks(prev => prev.filter(item => item.id !== mark.id));
-                }}
-              >
-                delete
-              </Button>
-              <Button>Edit</Button>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
       {isCreating ? (
         <div className="w-full">

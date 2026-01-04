@@ -13,6 +13,7 @@ import 'primereact/resources/themes/lara-light-blue/theme.css';
 import { useAuth } from '../Context/AuthContext.jsx';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import DescriptionEditor from '../ModalComponents/DescriptionEditor.jsx';
+import Priority from '../ModalComponents/Priority.jsx';
 function Modal({ isExpandedCard, setIsExpandedCard, onClose, children }) {
   useEffect(() => {
     const handleKey = e => e.key === 'Escape' && onClose();
@@ -46,8 +47,10 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   const [card, setCard] = useState(null);
   const [activePanel, setActivePanel] = useState(null);
   const [date, setDate] = useState(null);
-
+  const [priority, setPriority] = useState('low');
   const [selectedUser, setSelectedUser] = useState(null);
+  const [activeMarkIds, setActiveMarkIds] = useState([]);
+  console.log(activeMarkIds);
   //SignalR
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -57,6 +60,12 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   const latestCardId = useRef();
 
   const [description, setDescription] = useState();
+  const handleToggleMark = markId => {
+    setActiveMarkIds(prev => {
+      if (prev.includes(markId)) return prev.filter(id => id !== markId);
+      else return [...prev, markId];
+    });
+  };
   useEffect(() => {
     if (!isExpandedCard || !card || !user?.token) {
       return;
@@ -224,14 +233,10 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             >
               Marks
             </Button>
-            <Button
-              variant="actions"
-              onClick={() =>
-                setActivePanel(activePanel === 'priority' ? null : 'priority')
-              }
-            >
-              Priority
-            </Button>
+            <Priority
+              value={priority}
+              onChange={newValue => setPriority(newValue)}
+            />
             {activePanel === 'date' && (
               <CalendarComponent
                 date={date}
@@ -246,7 +251,11 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
               />
             )}
             {activePanel === 'marks' && (
-              <Mark setActivePanel={setActivePanel} />
+              <Mark
+                setActivePanel={setActivePanel}
+                onToggleMark={handleToggleMark}
+                activeMarksIds={activeMarkIds}
+              />
             )}
           </div>
           <div className="flex gap-6 border border-amber-400">
