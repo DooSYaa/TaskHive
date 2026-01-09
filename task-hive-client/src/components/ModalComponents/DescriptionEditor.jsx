@@ -1,55 +1,12 @@
-// // DescriptionEditor.jsx
-// import React from 'react';
-// import { useEditor, EditorContent } from '@tiptap/react';
-// import StarterKit from '@tiptap/starter-kit';
-// import './DescriptionEditor.css'; // Файл стилей (см. ниже)
-
-// const DescriptionEditor = ({ initialValue, onChange }) => {
-//   const editor = useEditor({
-//     extensions: [
-//       StarterKit, // Включает Bold, Italic, Code, Heading, List и т.д.
-//     ],
-//     content: initialValue || '', // Начальный контент
-//     editorProps: {
-//       attributes: {
-//         class: 'prose prose-sm sm:prose focus:outline-none', // Если используешь Tailwind
-//       },
-//     },
-//     onUpdate: ({ editor }) => {
-//       // Здесь мы получаем HTML.
-//       // Если бэкенду нужен именно Markdown, читай "Важный нюанс" ниже.
-//       const html = editor.getHTML();
-//       onChange(html);
-//     },
-//   });
-
-//   if (!editor) {
-//     return null;
-//   }
-
-//   return (
-//     <div className="editor-container">
-//       {/* Само поле редактора */}
-//       <EditorContent editor={editor} />
-//     </div>
-//   );
-// };
-
-// export default DescriptionEditor;
-
-// DescriptionEditor.jsx
-import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import './DescriptionEditor.css';
+import Button from '../ButtonComponent/Button';
 
 const MenuBar = ({ editor }) => {
   if (!editor) {
     return null;
   }
-
-  // Вспомогательная функция для назначения класса кнопке
-  // Если стиль активен (например, курсор на жирном), добавляем класс 'is-active'
   const getBtnClass = activeCheck =>
     activeCheck ? 'menu-btn is-active' : 'menu-btn';
 
@@ -156,13 +113,23 @@ const DescriptionEditor = ({ initialValue, onChange }) => {
   });
 
   return (
-    <div className="editor-container">
-      {/* Сначала рендерим меню */}
-      <MenuBar editor={editor} />
+    <div
+      className="w-full flex flex-col items-center"
+      style={{ padding: '20px' }}
+    >
+      <div className="editor-container">
+        <MenuBar editor={editor} />
 
-      {/* Потом сам редактор */}
-      <div className="editor-content">
-        <EditorContent editor={editor} />
+        <div className="editor-content">
+          <EditorContent editor={editor} />
+        </div>
+      </div>
+      <div
+        className="w-full flex gap-2"
+        style={{ marginTop: '5px', marginLeft: '76px' }}
+      >
+        <Button>Save</Button>
+        <Button>Cancel</Button>
       </div>
     </div>
   );

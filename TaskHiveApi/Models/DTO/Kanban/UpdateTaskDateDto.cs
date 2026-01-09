@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace TaskHiveApi.Models.DTO.Kanban
 {
-    public class ToggleMarkDto
+    public class UpdateTaskDateDto
     {
         public string GroupId { get; set; }
         public string KanbanId { get; set; }
         public string CardId { get; set; }
-        public string MarkId { get; set; }
+        public DateTime? DueDateTime { get; set; }
     }
 }

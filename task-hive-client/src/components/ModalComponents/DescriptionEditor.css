@@ -1,5 +1,5 @@
 .editor-container {
-  width: 80%;
+  width: 90%;
   border: 1px solid #ccc;
   border-radius: 8px;
   background: #fff;
@@ -8,7 +8,6 @@
   flex-direction: column;
 }
 
-/* --- Стили для Меню (Toolbar) --- */
 .menu-bar {
   background-color: #f5f5f5;
   padding: 8px;
@@ -51,24 +50,66 @@
 
 /* --- Стили области редактирования --- */
 .editor-content {
-  padding: 1rem;
   min-height: 150px;
   cursor: text;
 }
 
 /* Стандартные стили TipTap (как было раньше) */
 .ProseMirror {
-  outline: none;
+  padding: 5px;
+  min-height: 10rem;
+  max-height: 20rem;
+  overflow-y: auto;
 }
 .ProseMirror p {
   margin: 0.5em 0;
 }
-.ProseMirror h1 {
-  font-size: 1.5em;
+/* .ProseMirror h1 {
+  font-size: 2em;
   font-weight: bold;
 }
 .ProseMirror h2 {
-  font-size: 1.25em;
+  font-size: 1.8em;
+  font-weight: bold;
+}
+.ProseMirror h3 {
+  font-size: 1.6em;
+  font-weight: bold;
+}
+.ProseMirror h4 {
+  font-size: 1.4em;
+  font-weight: bold;
+}
+.ProseMirror h5 {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+.ProseMirror h6 {
+  font-size: 1em;
+  font-weight: bold;
+} */
+.ProseMirror h1 {
+  font-size: 2em; /* ~32px */
+  font-weight: bold;
+}
+.ProseMirror h2 {
+  font-size: 1.75em; /* ~28px */
+  font-weight: bold;
+}
+.ProseMirror h3 {
+  font-size: 1.5em; /* ~24px */
+  font-weight: bold;
+}
+.ProseMirror h4 {
+  font-size: 1.25em; /* ~20px */
+  font-weight: bold;
+}
+.ProseMirror h5 {
+  font-size: 1.1em; /* ~17.6px (Чуть больше обычного текста) */
+  font-weight: bold;
+}
+.ProseMirror h6 {
+  font-size: 0.9em; /* ~14.4px (Чуть меньше обычного текста) */
   font-weight: bold;
 }
 .ProseMirror ul,

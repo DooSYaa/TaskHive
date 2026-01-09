@@ -1,26 +1,29 @@
-import React from 'react';
 import reactCSS from 'reactcss';
 import Button from '../ButtonComponent/Button';
-
-import { Checkbox } from 'primereact/checkbox';
-
-// import { ColorPicker } from 'primereact/colorpicker';
-// import { HexColorPicker } from 'react-colorful';
 import { ChromePicker } from 'react-color';
-
-import { useState } from 'react';
-
+import { useEffect, useState } from 'react';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import EditIcon from '../../assets/EditIcon';
+import TrashIcon from '../../assets/TrashIcon';
+import MinusIcon from '../../assets/MinusIcon';
+import PlusIcon from '../../assets/PlusIcon';
+import CloseIcon from '../../assets/CloseIcon';
+import AcceptIcon from '../../assets/AcceptIcon';
+import { useAuth } from '../Context/AuthContext';
 
-function Mark({ setActivePanel, activeMarksIds = [], onToggleMark }) {
+function Mark({
+  setActivePanel,
+  activeMarksIds = [],
+  onToggleMark,
+  groupId,
+  kanbanId,
+  cardId,
+}) {
+  const { user } = useAuth();
   const [isCreating, setIsCreating] = useState(false);
   const [newMarkName, setNewMarkName] = useState('');
-  const [marks, setMarks] = useState([
-    { id: 1, markName: '', hexColor: '#000000' },
-    { id: 2, markName: 'Backend', hexColor: '#123456' },
-    { id: 3, markName: 'Frontend', hexColor: '#32a852' },
-  ]);
+  const [marks, setMarks] = useState([]);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [color, setColor] = useState({
     r: '241',
@@ -29,6 +32,96 @@ function Mark({ setActivePanel, activeMarksIds = [], onToggleMark }) {
     a: '1',
   });
   const [currentHex, setCurrentHex] = useState('#F17013');
+  const fetchMarks = async () => {
+    const response = await fetch(
+      `http://localhost:5292/api/Kanban/GetMarks?GroupId=${groupId}&KanbanId=${kanbanId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+      },
+    );
+    if (!response.ok) throw new Error(`Error loading marks ${response.status}`);
+    const data = await response.json();
+    setMarks(data);
+  };
+  useEffect(() => {
+    fetchMarks();
+  }, [groupId, kanbanId, user]);
+  const handleCreateTaskMark = async () => {
+    const response = await fetch(
+      'http://localhost:5292/api/Kanban/CreateTaskMark',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({
+          markName: newMarkName,
+          hexColor: currentHex,
+          groupId: groupId,
+          kanbanId: kanbanId,
+        }),
+      },
+    );
+    if (!response.ok)
+      throw new Error(`Error creating new mark: ${response.status}`);
+    const data = await response.json();
+    setMarks(prev => [...prev, data]);
+    setNewMarkName('');
+    setIsCreating(false);
+    setDisplayColorPicker(false);
+  };
+  const handleUpdateTaskMarks = async (markId, action) => {
+    if (action === 'update') {
+      const response = await fetch(
+        'http://localhost:5292/api/Kanban/UpdateTaskMarks',
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`,
+          },
+          body: JSON.stringify({
+            groupId: groupId,
+            kanbanId: kanbanId,
+            cardId: cardId,
+            markId: markId,
+          }),
+        },
+      );
+      if (!response.ok)
+        throw new Error(`Error updating marks: ${await response.text()}`);
+      const data = await response.json();
+      onToggleMark(data);
+    }
+    if (action === 'remove') {
+      const response = await fetch(
+        'http://localhost:5292/api/Kanban/RemoveTaskMarks',
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`,
+          },
+          body: JSON.stringify({
+            groupId: groupId,
+            kanbanId: kanbanId,
+            cardId: cardId,
+            markId: markId,
+          }),
+        },
+      );
+      if (!response.ok)
+        throw new Error(`Error updating marks: ${await response.text()}`);
+      const data = await response.json();
+      onToggleMark(data);
+    }
+  };
+
   const handleClick = () => {
     setDisplayColorPicker(!displayColorPicker);
   };
@@ -38,17 +131,6 @@ function Mark({ setActivePanel, activeMarksIds = [], onToggleMark }) {
   const handleChange = newColor => {
     setColor(newColor.rgb);
     setCurrentHex(newColor.hex);
-  };
-  const handleSave = () => {
-    const newMark = {
-      id: Date.now(), // Генерируем уникальный ID
-      markName: newMarkName, // Берем имя из инпута
-      hexColor: currentHex, // Берем цвет из пикера
-    };
-    setMarks(prev => [...prev, newMark]); // Добавляем в массив
-    setNewMarkName('');
-    setIsCreating(false);
-    setDisplayColorPicker(false);
   };
   const styles = reactCSS({
     default: {
@@ -83,89 +165,98 @@ function Mark({ setActivePanel, activeMarksIds = [], onToggleMark }) {
   return (
     <div className="card absolute top-10 right-56 border w-80 bg-white z-50">
       <div className=" text-[16px] font-bold">Marks</div>
-      <div className="border border-amber-400 flex flex-col gap-0.5 items-center">
+      <div className="flex flex-col gap-0.5 items-center">
         {marks?.map((mark, index) => {
-          const isAssigned = (activeMarksIds || []).includes(mark.id);
+          const isAssigned = (activeMarksIds || []).some(
+            activeMark => activeMark.id === mark.id,
+          );
           return (
-            <div>
-              <div
-                key={index}
-                className="border border-blue-600 flex w-full justify-center items-center gap-0.5"
-              >
+            <div
+              key={index}
+              className="flex w-full justify-between items-center gap-0.5"
+            >
+              <div className="w-[10%] flex justify-center items-center">
                 <Button
-                  className={
+                  variant="action"
+                  onClick={() => {
                     isAssigned
-                      ? '!bg-red-100 !text-red-600'
-                      : 'bg-green-100 text-green-600'
-                  }
-                  onClick={() => onToggleMark(mark.id)}
+                      ? handleUpdateTaskMarks(mark.id, 'remove')
+                      : handleUpdateTaskMarks(mark.id, 'update');
+                  }}
                 >
-                  {isAssigned ? '-' : '+'}
+                  {isAssigned ? <MinusIcon /> : <PlusIcon />}
                 </Button>
-                <div
-                  className="h-8 w-[60%] flex items-center justify-center"
-                  style={{ backgroundColor: mark.hexColor }}
-                >
-                  {mark.markName}
-                </div>
+              </div>
+              <div
+                className="h-8 w-full flex items-center justify-center rounded-[5px]"
+                style={{ backgroundColor: mark.hexColor }}
+              >
+                {mark.markName}
+              </div>
+              <div className="flex">
                 <Button
                   variant="delete"
                   onClick={() => {
                     setMarks(prev => prev.filter(item => item.id !== mark.id));
                   }}
                 >
-                  delete
+                  <TrashIcon />
                 </Button>
-                <Button>Edit</Button>
+                <Button variant="edit">
+                  <EditIcon />
+                </Button>
               </div>
             </div>
           );
         })}
       </div>
       {isCreating ? (
-        <div className="w-full">
-          <div className="flex justify-center">
-            <div className="w-[90%] flex justify-center items-center">
-              <div className="flex justify-center">
-                <div style={styles.swatch} onClick={handleClick}>
-                  <div style={styles.color} />
+        <div className="w-full" style={{ marginTop: '10px' }}>
+          <div className=" flex flex-row justify-around items-end">
+            <div className="flex justify-center">
+              <div style={styles.swatch} onClick={handleClick}>
+                <div style={styles.color} />
+              </div>
+              {displayColorPicker ? (
+                <div style={styles.popover}>
+                  <div style={styles.cover} onClick={handleClose} />
+                  <ChromePicker color={color} onChange={handleChange} />
                 </div>
-                {displayColorPicker ? (
-                  <div style={styles.popover}>
-                    <div style={styles.cover} onClick={handleClose} />
-                    <ChromePicker color={color} onChange={handleChange} />
-                  </div>
-                ) : null}
-              </div>
-              <div className="border">
-                <input
-                  type="text"
-                  placeholder="Mark name..."
-                  value={newMarkName}
-                  onChange={e => setNewMarkName(e.target.value)}
-                />
-              </div>
+              ) : null}
             </div>
-            <div className="flex justify-center gap-0.5 w-[80px]">
-              <Button onClick={handleSave}>A</Button>
+            <div className="border">
+              <input
+                type="text"
+                placeholder="Mark name..."
+                value={newMarkName}
+                onChange={e => setNewMarkName(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-center gap-0.5 w-[60px]">
+              <Button variant="action" onClick={handleCreateTaskMark}>
+                <AcceptIcon />
+              </Button>
               <Button
+                variant="action"
                 onClick={() => {
                   setIsCreating(false);
                   setNewMarkName('');
                 }}
               >
-                X
+                <CloseIcon variant={'rounded'} />
               </Button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="">
+        <div className="" style={{ marginTop: '10px' }}>
           <Button onClick={() => setIsCreating(true)}>Create mark</Button>
         </div>
       )}
 
-      <Button onClick={() => setActivePanel(null)}>Close</Button>
+      <Button variant="action" onClick={() => setActivePanel(null)}>
+        <CloseIcon variant={'rounded'} />
+      </Button>
     </div>
   );
 }

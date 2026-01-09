@@ -19,7 +19,7 @@ public class KanbanData
 
     public DateTime? DueDate {get; set;}
 
-    public TaskPriority Priority { get; set; } = TaskPriority.Medium;
+    public TaskPriority Priority { get; set; } = TaskPriority.Low;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdateAt { get; set; }

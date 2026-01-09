@@ -140,3 +140,72 @@
     transform: scale(1);
   }
 }
+
+/*My tasks*/
+
+/* Панель управления (где кнопка сортировки) */
+.tasks-control-panel {
+  border-bottom: 1px solid #e5e7eb;
+  height: 80px; /* h-20 */
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  background-color: white;
+}
+
+/* Кнопка сортировки (можно адаптировать под твои классы Button) */
+.sort-button {
+  min-width: 200px;
+  justify-content: space-between;
+}
+
+/* Само выпадающее меню */
+.sort-dropdown-menu {
+  position: absolute;
+  top: 110%; /* Чуть ниже кнопки */
+  left: 0;
+  width: 250px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 50; /* Чтобы было поверх карточек */
+  overflow: hidden;
+  animation: fadeIn 0.15s ease-out;
+}
+
+/* Пункты меню */
+.sort-option {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+  transition: background-color 0.2s;
+}
+
+.sort-option:hover {
+  background-color: #f3f4f6;
+}
+
+.sort-option.active {
+  background-color: #eff6ff; /* Светло-голубой */
+  color: #2563eb; /* Синий текст */
+  font-weight: 600;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Вспомогательный класс для относительного позиционирования */
+.relative {
+  position: relative;
+}

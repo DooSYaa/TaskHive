@@ -13,6 +13,10 @@
   width: auto;
   background-color: rgba(80, 161, 67, 0.99);
 }
+.button.action {
+  width: auto;
+  height: auto;
+}
 .button.default {
   padding: 0 5px 0 5px;
   width: auto;
@@ -25,10 +29,15 @@
   background-color: rgb(63, 189, 161);
 }
 .button.delete {
-  border: 1px solid #dc0000;
+  width: auto;
+  height: auto;
+  border: 1px solid #fff;
 }
-.button.delete:hover {
-  background-color: #dc0000;
+
+.button.edit {
+  width: auto;
+  height: auto;
+  border: 1px solid #fff;
 }
 .button.login {
   width: 300px;
@@ -85,6 +94,12 @@ button.group {
   height: 3rem;
   font-size: 16px;
   border: 1px solid black;
+}
+.button.sorting {
+  width: auto;
+  height: auto;
+  padding: 0 5px 0 5px;
+  border: 1px solid #ccc;
 }
 .button.menu-btn.active {
   background-color: #ccc;

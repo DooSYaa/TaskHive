@@ -5,7 +5,8 @@ import Users from '../ModalComponents/Users.jsx';
 import CalendarComponent from '../ModalComponents/Calendar.jsx';
 import CalendarIcon from '../../assets/CalendarIcon.jsx';
 import AddUserIcon from '../../assets/AddUserIcon.jsx';
-import { useState, useEffect, useRef } from 'react';
+import CloseIcon from '../../assets/CloseIcon';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import Mark from '../ModalComponents/Mark.jsx';
@@ -14,6 +15,7 @@ import { useAuth } from '../Context/AuthContext.jsx';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import DescriptionEditor from '../ModalComponents/DescriptionEditor.jsx';
 import Priority from '../ModalComponents/Priority.jsx';
+import { useParams } from 'react-router-dom';
 function Modal({ isExpandedCard, setIsExpandedCard, onClose, children }) {
   useEffect(() => {
     const handleKey = e => e.key === 'Escape' && onClose();
@@ -22,7 +24,6 @@ function Modal({ isExpandedCard, setIsExpandedCard, onClose, children }) {
   }, [onClose]);
 
   const handleOverlayClick = e => {
-    // Если клик был именно по overlay (а не по вложенному .modal-content)
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -33,7 +34,9 @@ function Modal({ isExpandedCard, setIsExpandedCard, onClose, children }) {
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className=" flex flex-col w-[80%] rounded-2xl bg-white">
         <div className="flex justify-end items-center modal-header rounded-t-2xl h-12">
-          <Button onClick={() => setIsExpandedCard(false)}>x</Button>
+          <Button variant={'action'} onClick={() => setIsExpandedCard(false)}>
+            <CloseIcon variant={'mark'} />
+          </Button>
         </div>
         <div className="modal-content">{children}</div>
       </div>
@@ -47,65 +50,79 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   const [card, setCard] = useState(null);
   const [activePanel, setActivePanel] = useState(null);
   const [date, setDate] = useState(null);
-  const [priority, setPriority] = useState('low');
+  const [priority, setPriority] = useState(0);
   const [selectedUser, setSelectedUser] = useState(null);
   const [activeMarkIds, setActiveMarkIds] = useState([]);
-  console.log(activeMarkIds);
   //SignalR
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const { user } = useAuth();
-  const groupId = useRef();
-  const latestCardId = useRef();
-
+  const { groupId } = useParams();
+  const { kanbanId } = useParams();
   const [description, setDescription] = useState();
-  const handleToggleMark = markId => {
-    setActiveMarkIds(prev => {
-      if (prev.includes(markId)) return prev.filter(id => id !== markId);
-      else return [...prev, markId];
-    });
+
+  const handlePriorityUpdate = newPriorityValue => {
+    setPriority(newPriorityValue);
+    setCard(prev => ({ ...prev, priority: newPriorityValue }));
+    if (column && column.cards) {
+      const cardInOriginalArray = column.cards.find(c => c.id === card.id);
+      if (cardInOriginalArray) {
+        cardInOriginalArray.priority = newPriorityValue;
+      }
+    }
   };
-  useEffect(() => {
-    if (!isExpandedCard || !card || !user?.token) {
-      return;
+  const handleToggleMark = mark => {
+    const currentMarks = [...activeMarkIds];
+    const exists = currentMarks.some(m => m.id === mark.id);
+
+    let newMarksList;
+    if (exists) {
+      newMarksList = currentMarks.filter(m => m.id !== mark.id);
+    } else {
+      newMarksList = [...currentMarks, mark];
     }
 
-    latestCardId.current = card.id;
-    const conn = new HubConnectionBuilder()
-      .withUrl('http://localhost:5292/hubs/chat', {
-        accessTokenFactory: () => user.token,
-      })
-      .configureLogging(LogLevel.Information)
-      .withAutomaticReconnect()
-      .build();
-    conn.on('ReceiveComment', (senderName, message) => {
-      setMessages(prev => [
-        ...prev,
-        { message: message, sender: senderName, timestamp: new Date() },
-      ]);
-    });
-    conn
-      .start()
-      .then(() => {
-        console.log('SignalR connected for card:', card.id, user.userName);
-        return conn.invoke('Enter', card.id, user.userName);
-      })
-      .catch(error => console.error('SignalR error:', error));
+    setActiveMarkIds(newMarksList);
 
-    setConnection(conn);
-
-    return () => {
-      conn
-        .stop()
-        .then(() => console.log('SignalR disconnected from card:', card.id))
-        .catch(() => {});
-
-      setConnection(null);
-      setMessages([]);
-    };
-  }, [isExpandedCard, card, user]);
-
+    setCard(prev => ({ ...prev, marks: newMarksList }));
+    if (column && column.cards) {
+      const cardInOriginalArray = column.cards.find(c => c.id === card.id);
+      if (cardInOriginalArray) {
+        cardInOriginalArray.marks = newMarksList;
+      }
+    }
+  };
+  const handleAssignUser = user => {
+    setSelectedUser(user);
+    setCard(prev => ({
+      ...prev,
+      assignedUser: {
+        id: user.userId,
+        userName: user.userName,
+      },
+    }));
+    if (column && column.cards) {
+      const cardsInOriginalArray = column.cards.find(c => c.id === card.id);
+      if (cardsInOriginalArray) {
+        cardsInOriginalArray.assignedUser = {
+          id: user.userId,
+          userName: user.userName,
+        };
+      }
+    }
+  };
+  const handleDate = date => {
+    const dateString = date ? date.toISOString() : null;
+    setDate(dateString);
+    setCard(prev => ({ ...prev, dueDate: dateString }));
+    if (column && column.cards) {
+      const cardInOriginalArray = column.cards.find(c => c.id === card.id);
+      if (cardInOriginalArray) {
+        cardInOriginalArray.dueDate = dateString;
+      }
+    }
+  };
   const sendComment = async () => {
     if (!connection || !message.trim() || !card) return;
 
@@ -122,7 +139,27 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
     onCardCreated(newCard);
     setShowInput(false);
   };
-
+  useEffect(() => {
+    if (card) {
+      setActiveMarkIds(card.marks || []);
+      setDate(card.dueDate);
+      setPriority(card.priority !== undefined ? card.priority : 0);
+      if (card.assignedUser) {
+        setSelectedUser({
+          id: card.assignedUser.id,
+          userName: card.assignedUser.userName,
+        });
+      } else {
+        setSelectedUser(null);
+      }
+    } else {
+      setActiveMarkIds([]);
+      setDate(null);
+      setPriority(0);
+      setSelectedUser(null);
+    }
+  }, [card]);
+  useEffect;
   return (
     <div>
       <Draggable draggableId={column.id} index={index}>
@@ -234,20 +271,32 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
               Marks
             </Button>
             <Priority
-              value={priority}
-              onChange={newValue => setPriority(newValue)}
+              priority={priority}
+              setPriority={setPriority}
+              onPriorityUpdate={handlePriorityUpdate}
+              groupId={groupId}
+              kanbanId={kanbanId}
+              cardId={card ? card.id : null}
             />
             {activePanel === 'date' && (
               <CalendarComponent
                 date={date}
                 setDate={setDate}
+                onDateUpdate={handleDate}
                 setActivePanel={setActivePanel}
+                groupId={groupId}
+                kanbanId={kanbanId}
+                cardId={card.id}
               />
             )}
             {activePanel === 'users' && (
               <Users
                 setActivePanel={setActivePanel}
                 setSelectedUser={setSelectedUser}
+                groupId={groupId}
+                kanbanId={kanbanId}
+                cardId={card.id}
+                onAssignUser={handleAssignUser}
               />
             )}
             {activePanel === 'marks' && (
@@ -255,6 +304,9 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
                 setActivePanel={setActivePanel}
                 onToggleMark={handleToggleMark}
                 activeMarksIds={activeMarkIds}
+                groupId={groupId}
+                kanbanId={kanbanId}
+                cardId={card.id}
               />
             )}
           </div>
@@ -262,13 +314,25 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             {date !== null && (
               <div className="border">
                 <div className="text-[12px] font-bold">Term</div>
-                {date.toLocaleDateString('pl-PL')}
+                {new Date(date).toLocaleDateString('pl-PL')}
               </div>
             )}
             {selectedUser !== null && (
               <div className="border">
                 <div className="text-[12px] font-bold">Member</div>
-                {selectedUser.username}
+                {selectedUser.userName}
+              </div>
+            )}
+            {activeMarkIds?.length !== 0 && (
+              <div className="border">
+                <div>Marks</div>
+                <div className="flex">
+                  {activeMarkIds.map(mark => (
+                    <div style={{ backgroundColor: mark.hexColor }}>
+                      {mark.markName === '' ? 'No name' : mark.markName}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -276,20 +340,10 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             <h6 className="">Description</h6>
             <div className="flex justify-center description-container">
               <DescriptionEditor
+                initialValue={description}
                 onChange={content => setDescription(content)}
               />
             </div>
-          </div>
-          <div className="modal-actions">
-            <button
-              className="modal-btn primary"
-              onClick={() => {
-                setIsExpandedCard(false);
-                setCard(null);
-              }}
-            >
-              Save
-            </button>
           </div>
         </div>
         <div className="flex flex-col flex-1 gap-3 items-center bg-gray-400">

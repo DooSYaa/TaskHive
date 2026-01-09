@@ -29,9 +29,11 @@
   border-radius: 10px 10px 0 0;
 }
 .main-kanban-card {
-  height: 50px;
+  min-height: 50px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  /* align-items: center; */
   flex: 0 0 auto;
 }
 .x {
@@ -226,11 +228,7 @@
 .editor {
   width: 90%;
 }
-.date-container {
-  background-color: #19183b;
-  color: white;
-  border: 1px solid red;
-}
+
 .date-picker {
   width: 80%;
   padding-left: 10px;

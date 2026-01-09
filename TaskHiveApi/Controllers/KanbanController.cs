@@ -30,11 +30,15 @@ public class KanbanController : ControllerBase
     [HttpGet("GetCurrentKanbanTable")]
     public async Task<IActionResult> GetCurrentKanbanTable([FromQuery] GetCurrentKanbanTableDto id)
     {
-        var currentKanbanTable = _context.KanbanTables
+        var currentKanbanTable = await _context.KanbanTables
             .Where(i => i.Id == id.kanbanId)
             .Include(ks => ks.Statuses)
             .ThenInclude(c => c.Cards)
-            .FirstOrDefault();
+            .ThenInclude(m => m.Marks)
+            .Include(ks => ks.Statuses)
+            .ThenInclude(c => c.Cards)
+            .ThenInclude(a => a.AssignedUser)
+            .FirstOrDefaultAsync();
         if (currentKanbanTable == null)
             return NotFound("Kanban not found");
         var newResult = new
@@ -48,15 +52,28 @@ public class KanbanController : ControllerBase
                     x.StatusName,
                     x.Position,
                     Cards = x.Cards
-                .OrderBy(x => x.Position)
-                .Select(x => new
-                {
-                    x.Id,
-                    x.KanbanStatusId,
-                    x.Title,
-                    x.Description,
-                    x.Position,
-                }),
+                        .OrderBy(x => x.Position)
+                        .Select(x => new
+                        {
+                            x.Id,
+                            x.KanbanStatusId,
+                            x.Title,
+                            x.Description,
+                            x.Position,
+                            x.DueDate,
+                            x.Priority,
+                            AssignedUser = x.AssignedUser != null ? new
+                            {
+                                Id = x.AssignedUser.Id,
+                                UserName = x.AssignedUser.UserName,
+                            } : null, 
+                            Marks = x.Marks.Select(x => new
+                            {
+                                x.Id,
+                                x.MarkName,
+                                x.HexColor,
+                            }).ToList()
+                        }),
             }),
         };
         return Ok(newResult);
@@ -143,8 +160,9 @@ public class KanbanController : ControllerBase
         var tasks = await _context.KanbanTables
             .Where(x => groupLists.Contains(x.GroupId))
             .SelectMany(x => x.Cards)
-            .Include(x => x.KanbanStatus)
-            .Include(x => x.KanbanTable)
+            // .Include(x => x.KanbanStatus)
+            // .Include(x => x.KanbanTable)
+            // .Include(x => x.Marks)
             .Where(card => card.AssignedUserId == userId || card.AssignedUserId == null)
             .Select(card => new
             {
@@ -156,6 +174,12 @@ public class KanbanController : ControllerBase
                 AssignedUserId = card.AssignedUserId,
                 TableName = card.KanbanTable.KanbanTableName,
                 StatusName = card.KanbanStatus.StatusName,
+                Marks = card.Marks.Select(x => new
+                {
+                    x.Id,
+                    x.MarkName,
+                    x.HexColor,
+                }).ToList()
             })
             .OrderBy(t => t.DueDate)
             .ToListAsync();
@@ -278,5 +302,194 @@ public class KanbanController : ControllerBase
 
         await _context.SaveChangesAsync();
         return Ok("Success!");
+    }
+
+    [HttpPatch]
+    public async Task<IActionResult> UpdateTaskDescription([FromBody] UpdateTaskDescriptionDto updateTaskDescriptionDto)
+    {
+        var existKanban =
+            await _context.KanbanTables.AnyAsync(x =>
+                x.Id == updateTaskDescriptionDto.KanbanId && 
+                x.GroupId == updateTaskDescriptionDto.GroupId);
+        if (!existKanban)
+            return NotFound("Kanban not found");
+        var existCard = await _context.KanbanCards
+            .FirstOrDefaultAsync(x => x.KanbanTableId == updateTaskDescriptionDto.KanbanId &&
+                                      x.Id == updateTaskDescriptionDto.CardId);
+        if (existCard == null)
+            return NotFound("Card not found");
+        if (existCard.Description != updateTaskDescriptionDto.Description)
+        {
+            existCard.Description = updateTaskDescriptionDto.Description;
+            await _context.SaveChangesAsync();
+        }
+        return Ok();
+    }
+    [HttpPatch("UpdateTaskDate")]
+    public async Task<IActionResult> UpdateTaskDate([FromBody] UpdateTaskDateDto updateTaskDateDto)
+    {
+        var existKanban =
+            await _context.KanbanTables.AnyAsync(x =>
+                x.Id == updateTaskDateDto.KanbanId && 
+                x.GroupId == updateTaskDateDto.GroupId);
+        if (!existKanban)
+            return NotFound("Kanban not found");
+        var existCard = await _context.KanbanCards
+            .FirstOrDefaultAsync(x => x.KanbanTableId == updateTaskDateDto.KanbanId &&
+                                      x.Id == updateTaskDateDto.CardId);
+        if (existCard == null)
+            return NotFound("Card not found");
+
+        existCard.DueDate = updateTaskDateDto.DueDateTime;
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [HttpPatch("UpdateTaskAssignedUser")]
+    public async Task<IActionResult> UpdateTaskAssignedUser([FromBody] UpdateAssignedUserDto updateAssignedUserDto)
+    {
+        var existKanban =
+            await _context.KanbanTables.AnyAsync(x =>
+                x.Id == updateAssignedUserDto.KanbanId && 
+                x.GroupId == updateAssignedUserDto.GroupId);
+        if (!existKanban)
+            return NotFound("Kanban not found");
+        var existCard = await _context.KanbanCards
+            .FirstOrDefaultAsync(x => x.KanbanTableId == updateAssignedUserDto.KanbanId &&
+                                      x.Id == updateAssignedUserDto.CardId);
+        if (existCard == null)
+            return NotFound("Card not found");
+        if(updateAssignedUserDto.AssignedUserId != null)
+        {
+            var userExists = await _context.Users.AnyAsync(x => x.Id == updateAssignedUserDto.AssignedUserId);
+            if (!userExists)
+                return BadRequest("User not found");
+        }
+        existCard.AssignedUserId = updateAssignedUserDto.AssignedUserId;
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpPatch("UpdateTaskMarks")]
+    public async Task<IActionResult> UpdateTaskMarks([FromBody] ToggleMarkDto toggleMarkDto)
+    {
+        var existKanban =
+            await _context.KanbanTables.AnyAsync(x =>
+                x.Id == toggleMarkDto.KanbanId && 
+                x.GroupId == toggleMarkDto.GroupId);
+        if (!existKanban)
+            return NotFound("Kanban not found");
+        var existCard = await _context.KanbanCards
+            .Include(x => x.Marks)
+            .FirstOrDefaultAsync(x => x.KanbanTableId == toggleMarkDto.KanbanId &&
+                                      x.Id == toggleMarkDto.CardId);
+        if (existCard == null)
+            return NotFound("Card not found");
+
+        var existMark = await _context.Marks
+            .FirstOrDefaultAsync(x => x.Id == toggleMarkDto.MarkId && 
+                                      x.GroupId == toggleMarkDto.GroupId);
+        if (existMark == null)
+            return NotFound("Mark not found");
+        
+        if (!existCard.Marks.Any(m => m.Id == existMark.Id))
+        {
+            existCard.Marks.Add(existMark);
+            await _context.SaveChangesAsync();
+        }
+        return Ok(new
+        {
+            existMark.Id,
+            existMark.MarkName,
+            existMark.HexColor,
+            existMark.GroupId,
+            existMark.KanbanId,
+        });
+    }
+
+    [HttpPatch("RemoveTaskMarks")]
+    public async Task<IActionResult> RemoveTaskMarks([FromBody] ToggleMarkDto toggleMarkDto)
+    {
+        var existKanban =
+            await _context.KanbanTables.AnyAsync(x =>
+                x.Id == toggleMarkDto.KanbanId && 
+                x.GroupId == toggleMarkDto.GroupId);
+        if (!existKanban)
+            return NotFound("Kanban not found");
+        var existCard = await _context.KanbanCards
+            .Include(x => x.Marks)
+            .FirstOrDefaultAsync(x => x.KanbanTableId == toggleMarkDto.KanbanId &&
+                                      x.Id == toggleMarkDto.CardId);
+        if (existCard == null)
+            return NotFound("Card not found");
+
+        var markToRemove = existCard.Marks.FirstOrDefault(x => x.Id == toggleMarkDto.MarkId);
+        if (markToRemove != null)
+        {
+            existCard.Marks.Remove(markToRemove);
+            await _context.SaveChangesAsync();
+        }
+
+        return Ok(new
+        {
+            markToRemove.Id,
+            markToRemove.MarkName,
+            markToRemove.HexColor,
+            markToRemove.GroupId,
+            markToRemove.KanbanId,
+        });
+    }
+
+    [HttpPatch("UpdateTaskPriority")]
+    public async Task<IActionResult> UpdateTaskPriority([FromBody] UpdateTaskPriorityDto updateTaskPriorityDto)
+    {
+        var existKanban = await _context.KanbanTables
+            .AnyAsync(x => x.Id == updateTaskPriorityDto.KanbanId && 
+                           x.GroupId == updateTaskPriorityDto.GroupId);
+        if (!existKanban)
+            return NotFound("Kanban not found or not exist");
+        var existCard = await _context.KanbanCards
+            .FirstOrDefaultAsync(x => x.Id == updateTaskPriorityDto.CardId &&
+                                    x.KanbanTableId == updateTaskPriorityDto.KanbanId);
+        if (existCard == null)
+            return NotFound("Card not found");
+
+        if (existCard.Priority != updateTaskPriorityDto.Priority)
+        {
+            existCard.Priority = updateTaskPriorityDto.Priority;
+            await _context.SaveChangesAsync();
+        }
+
+        return Ok();
+    }
+
+    [HttpGet("GetMarks")]
+    public async Task<IActionResult> GetMarks([FromQuery] GetMarksDto getMarksDto)
+    {
+        var marks = _context.Marks.Where(x => x.GroupId == getMarksDto.GroupId && x.KanbanId == getMarksDto.KanbanId);
+        return Ok(marks);
+    }
+    [HttpPost("CreateTaskMark")]
+    public async Task<IActionResult> CreateTaskMark([FromBody] CreateTaskMarkDto createTaskMarkDto)
+    {
+        var isKanbanExist = await _context.KanbanTables.AnyAsync(x =>
+            x.Id == createTaskMarkDto.KanbanId && 
+            x.GroupId == createTaskMarkDto.GroupId);
+        if (!isKanbanExist)
+            return NotFound("Kanban not found");
+        // 2. (Опционально) Проверка на дубликат имени в рамках этой доски
+        var newMark = new Mark
+        {
+            MarkName = createTaskMarkDto.MarkName,
+            HexColor = createTaskMarkDto.HexColor,
+            GroupId = createTaskMarkDto.GroupId,
+            KanbanId = createTaskMarkDto.KanbanId,
+        };
+
+        await _context.Marks.AddAsync(newMark);
+        await _context.SaveChangesAsync();
+
+        return Ok(newMark);
     }
 }
