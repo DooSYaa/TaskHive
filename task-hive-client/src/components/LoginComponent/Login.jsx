@@ -36,7 +36,7 @@ export default function Login() {
       const data = await response.json();
       const userName = data.userName;
       if (userName) {
-        login(userName, data.token, data.email);
+        login(data.id, userName, data.token, data.email);
         navigate('/');
       } else {
         throw new Error('Username not found in this response');

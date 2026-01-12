@@ -60,7 +60,7 @@ public class AccountController : ControllerBase
                 return Unauthorized("Invalid email or password");
             }
             return CreatedAtAction(nameof(Login), new {email = registerDto.Email},
-                new NewUserDto {UserName = user.UserName, Email = user.Email, Token = _jwtService.GenerateJwtToken(user)});
+                new {Id = user.Id, UserName = user.UserName, Email = user.Email, Token = _jwtService.GenerateJwtToken(user)});
         }
         catch (Exception ex)
         {
@@ -83,8 +83,9 @@ public class AccountController : ControllerBase
             return Unauthorized("Invalid credentials");
         var token = _jwtService.GenerateJwtToken(user);
 
-        return Ok(new NewUserDto
+        return Ok(new 
         {
+            Id = user.Id,
             UserName = user.UserName, 
             Email = user.Email, 
             Token = token /*_jwtService.GenerateJwtToken(user)*/

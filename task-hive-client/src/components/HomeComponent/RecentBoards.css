@@ -1,0 +1,59 @@
+/* RecentBoards.css */
+
+.boards-grid {
+  display: grid;
+  /* Адаптивная сетка: карточки поменьше, чем группы */
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 15px;
+}
+
+.board-card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  height: 90px; /* Компактная высота */
+}
+
+/* Цветной индикатор слева (Эффект "корешка книги") */
+/* Ховер эффект */
+.board-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: #bfdbfe;
+}
+
+/* Контент карточки */
+.board-context {
+  font-size: 11px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.board-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Иконка доски */
+.board-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.5;
+}

@@ -26,7 +26,7 @@ export default function Registration() {
     })
       .then(res => res.json())
       .then(data => {
-        login(data.userName, data.token, data.email);
+        login(data.id, data.userName, data.token, data.email);
         navigate('/');
       })
       .catch(err => console.log(err));

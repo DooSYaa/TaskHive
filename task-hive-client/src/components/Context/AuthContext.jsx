@@ -8,8 +8,8 @@ export const AuthProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const login = (userName, token, email) => {
-    const userData = { userName, token, email };
+  const login = (id, userName, token, email) => {
+    const userData = { id, userName, token, email };
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
   };

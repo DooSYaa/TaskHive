@@ -34,19 +34,17 @@ export default function TaskCard({ card, index, onClick }) {
             ></div>
           </div>
           <div className="flex">
-            {card.marks !== null
-              ? card.marks.map((mark, index) => (
-                  <div
-                    key={mark.id || index}
-                    style={{
-                      borderBottom: '2px solid black',
-                      backgroundColor: mark.hexColor,
-                      height: '15px',
-                      width: '30px',
-                    }}
-                  ></div>
-                ))
-              : ''}
+            {card.marks?.map((mark, index) => (
+              <div
+                key={mark.id || index}
+                style={{
+                  borderBottom: '2px solid black',
+                  backgroundColor: mark.hexColor,
+                  height: '15px',
+                  width: '30px',
+                }}
+              ></div>
+            ))}
           </div>
           <h4>{card.title}</h4>
           <div className="flex justify-between">

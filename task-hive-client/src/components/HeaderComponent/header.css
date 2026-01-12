@@ -1,4 +1,4 @@
-.header-component {
+/* .header-component {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -43,4 +43,25 @@
 }
 .nav-link:hover {
   color: #456882;
+} */
+.header-component {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  height: 60px; /* Фиксированная высота */
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 50; /* Чтобы меню было поверх всего */
 }
+
+.header-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Лого слева, профиль справа */
+}
+
+/* Стили для AccountDropDown нужно поправить, чтобы он позиционировался абсолютно относительно header-account */

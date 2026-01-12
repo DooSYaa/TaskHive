@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -174,6 +175,8 @@ public class KanbanController : ControllerBase
                 AssignedUserId = card.AssignedUserId,
                 TableName = card.KanbanTable.KanbanTableName,
                 StatusName = card.KanbanStatus.StatusName,
+                GroupId = card.KanbanTable.GroupId,
+                KanbanId = card.KanbanTable.Id,
                 Marks = card.Marks.Select(x => new
                 {
                     x.Id,
@@ -492,4 +495,28 @@ public class KanbanController : ControllerBase
 
         return Ok(newMark);
     }
+    [HttpGet("GetMyBoards")]
+    public async Task<IActionResult> GetMyBoards()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+        
+        var groupLists = await _context.GroupUsers
+            .Where(x => x.UserId == userId)
+            .Select(x => x.GroupId)
+            .ToListAsync();
+        var kanbanTables = await _context.KanbanTables
+            .Where(x => groupLists.Contains(x.GroupId))
+            .Select(kanbanTable => new
+            {
+                kanbanTable.Id,
+                kanbanTable.KanbanTableName,
+                kanbanTable.GroupId,
+                kanbanTable.Group.GroupName,
+            })
+            .ToListAsync();
+        return Ok(kanbanTables);
+    }
+
 }

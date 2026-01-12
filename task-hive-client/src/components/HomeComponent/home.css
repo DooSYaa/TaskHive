@@ -1,4 +1,4 @@
-.home-page {
+/* .home-page {
   height: 94vh;
   display: flex;
 }
@@ -38,4 +38,155 @@
 }
 .menu-items:hover {
   background-color: #456882;
+} */
+
+/* Home.css */
+
+/* --- Общий макет страницы --- */
+.home-page {
+  display: flex;
+  height: 100vh; /* На всю высоту экрана */
+  background-color: #f8f9fa; /* Светло-серый фон для всего приложения */
+  overflow: hidden; /* Чтобы скроллился только контент, а не меню */
+}
+
+/* --- Боковое меню (Sidebar) --- */
+.sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-shrink: 0; /* Меню не сжимается */
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #4b5563;
+  padding: 12px 15px;
+  border-radius: 8px;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+  font-weight: 500;
+}
+
+.menu-item:hover {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.menu-item svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* --- Основная область (Main Content) --- */
+.main-content {
+  flex-grow: 1;
+  padding: 30px 40px;
+  overflow-y: auto; /* Скролл только внутри этой области */
+}
+
+/* Заголовки секций */
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+/* --- СЕТКА ГРУПП (GRID) --- */
+.groups-grid {
+  display: grid;
+  /* Магия адаптивности: колонки минимум 260px, но растягиваются */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px; /* Отступ до секции Tables */
+}
+
+/* --- Карточка группы --- */
+.group-card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  height: 160px; /* Фиксированная высота для красоты */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-decoration: none;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Цветная полоска сверху для стиля */
+.group-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6); /* Градиент */
+}
+
+.group-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-color: #bfdbfe;
+}
+
+.group-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  /* Обрезка длинного текста */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.group-footer {
+  font-size: 13px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* --- Карточка "Создать новую" (Dashed) --- */
+.create-group-card {
+  border: 2px dashed #cbd5e1;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  height: 160px; /* Такая же высота */
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.create-group-card:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.plus-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
 }
