@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
+import { Markdown } from 'tiptap-markdown';
 import StarterKit from '@tiptap/starter-kit';
 import './DescriptionEditor.css';
 import Button from '../ButtonComponent/Button';
@@ -97,9 +99,9 @@ const MenuBar = ({ editor }) => {
   );
 };
 
-const DescriptionEditor = ({ initialValue, onChange }) => {
+const DescriptionEditor = ({ initialValue, onChange, onSave, onCancel }) => {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit, Markdown],
     content: initialValue || '',
     editorProps: {
       attributes: {
@@ -107,11 +109,32 @@ const DescriptionEditor = ({ initialValue, onChange }) => {
       },
     },
     onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange(html);
+      const markdown = editor.storage.markdown.getMarkdown();
+      if (onChange) {
+        onChange(markdown);
+      }
     },
   });
-
+  const handleSave = () => {
+    if (editor) {
+      const markdown = editor.storage.markdown.getMarkdown();
+      console.log('Saving markdown', markdown);
+      if (onSave) {
+        onSave(markdown);
+      }
+      if (onChange) {
+        onChange(markdown);
+      }
+    }
+  };
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    }
+    if (editor) {
+      editor.commands.setContent(initialValue || '');
+    }
+  };
   return (
     <div
       className="w-full flex flex-col items-center"
@@ -128,8 +151,8 @@ const DescriptionEditor = ({ initialValue, onChange }) => {
         className="w-full flex gap-2"
         style={{ marginTop: '5px', marginLeft: '76px' }}
       >
-        <Button>Save</Button>
-        <Button>Cancel</Button>
+        <Button onClick={handleSave}>Save</Button>
+        <Button onClick={handleCancel}>Cancel</Button>
       </div>
     </div>
   );

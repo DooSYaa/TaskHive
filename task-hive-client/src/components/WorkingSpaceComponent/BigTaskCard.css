@@ -46,7 +46,9 @@
   justify-content: space-between;
   align-items: center;
 }
-
+.group-name {
+  font-size: 1rem;
+}
 .board-name {
   font-size: 0.75rem; /* text-xs */
   font-weight: 700;

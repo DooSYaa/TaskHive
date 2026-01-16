@@ -284,3 +284,59 @@
 .dark-calendar .p-datepicker .p-datepicker-weeknumber {
   color: #64748b !important;
 }
+
+/* markdown content*/
+.markdown-content {
+  padding-left: 5px;
+  width: 100%;
+  height: 35rem;
+  overflow-y: auto;
+}
+.markdown-content h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.markdown-content h2 {
+  font-size: 1.75em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
+}
+
+.markdown-content h3 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
+}
+.markdown-content h4 {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
+}
+.markdown-content h5 {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
+}
+.markdown-content h6 {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  margin-top: 1em;
+}
+.markdown-content ul {
+  list-style-type: disc; /* Возвращаем точки */
+  padding-left: 1.5em; /* Возвращаем отступ слева */
+  margin-bottom: 1em;
+}
+
+.markdown-content ol {
+  list-style-type: decimal; /* Возвращаем цифры */
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}

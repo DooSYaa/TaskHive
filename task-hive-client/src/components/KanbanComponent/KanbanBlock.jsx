@@ -6,6 +6,7 @@ import CalendarComponent from '../ModalComponents/Calendar.jsx';
 import CalendarIcon from '../../assets/CalendarIcon.jsx';
 import AddUserIcon from '../../assets/AddUserIcon.jsx';
 import CloseIcon from '../../assets/CloseIcon';
+import ReactMarkdown from 'react-markdown';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
@@ -60,8 +61,19 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
   const { user } = useAuth();
   const { groupId } = useParams();
   const { kanbanId } = useParams();
-  const [description, setDescription] = useState();
+  const [description, setDescription] = useState(card?.description || '');
+  const [isEditing, setIsEditing] = useState(!card?.description);
 
+  const handleSave = newMarkdown => {
+    setDescription(newMarkdown);
+    setIsEditing(false);
+    console.log('sending to server', newMarkdown);
+  };
+  const handleCancel = () => {
+    if (description) {
+      setIsEditing(false);
+    }
+  };
   const handlePriorityUpdate = newPriorityValue => {
     setPriority(newPriorityValue);
     setCard(prev => ({ ...prev, priority: newPriorityValue }));
@@ -339,10 +351,28 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
           <div>
             <h6 className="">Description</h6>
             <div className="flex justify-center description-container">
-              <DescriptionEditor
-                initialValue={description}
-                onChange={content => setDescription(content)}
-              />
+              {isEditing ? (
+                <DescriptionEditor
+                  initialValue={description}
+                  onChange={content => setDescription(content)}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                />
+              ) : (
+                <div
+                  onClick={() => setIsEditing(true)}
+                  title="click"
+                  className="w-full"
+                >
+                  {description ? (
+                    <div className="markdown-content">
+                      <ReactMarkdown>{description}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <span>Add description...</span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

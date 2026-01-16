@@ -12,6 +12,7 @@ import Group from './components/GroupComponent/Group.jsx';
 import WorkingSpace from './components/WorkingSpaceComponent/WorkingSpace.jsx';
 import WelcomePage from './components/WelcomePageComponent/WelcomePage.jsx';
 import { useAuth } from './components/Context/AuthContext.jsx';
+import MyTasks from './components/HomeComponent/MyTasks.jsx';
 
 export default function App() {
   const { user } = useAuth();
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/user" element={<Account />} />
         <Route path="/friends" element={<Friend />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/myTasks" element={<MyTasks />} />
         <Route path="/group" element={<Group />} />
         <Route path="/group/:groupId" element={<WorkingSpace />} />
         <Route path="/group/:groupId/:kanbanId" element={<Kanban />} />

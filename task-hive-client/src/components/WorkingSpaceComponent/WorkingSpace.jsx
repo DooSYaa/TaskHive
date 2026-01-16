@@ -150,16 +150,14 @@ export default function WorkingSpace() {
         )}
         {activeTab === 'chat' && <WorkingSpaceChat />}
         {activeTab === 'settings' && <WorkingSpaceSettings />}
-        {activeTab === 'myTasks' && <WorkingSpaceMyTasks />}
+        {activeTab === 'myTasks' && <WorkingSpaceMyTasks groupId={groupId} />}
       </div>
-      <div className="menu-space border">
-        <div className="menu-list">
-          <SideMenu
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            menuItems={menuItems}
-          />
-        </div>
+      <div className="menu-space">
+        <SideMenu
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          menuItems={menuItems}
+        />
       </div>
       {showModal && (
         <CreateKanbanTable

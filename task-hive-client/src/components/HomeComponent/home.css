@@ -46,8 +46,8 @@
 .home-page {
   display: flex;
   height: 100vh; /* На всю высоту экрана */
-  background-color: #f8f9fa; /* Светло-серый фон для всего приложения */
-  overflow: hidden; /* Чтобы скроллился только контент, а не меню */
+  background-color: #f8f9fa;
+  overflow: hidden;
 }
 
 /* --- Боковое меню (Sidebar) --- */
@@ -59,7 +59,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  flex-shrink: 0; /* Меню не сжимается */
+  flex-shrink: 0;
 }
 
 .menu-item {

@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using TaskHiveApi.Data;
 using TaskHiveApi.Models.DTO.Kanban;
 using TaskHiveApi.Models.Kanban;
@@ -173,6 +174,7 @@ public class KanbanController : ControllerBase
                 DueDate = card.DueDate,
                 Priority = card.Priority,
                 AssignedUserId = card.AssignedUserId,
+                GroupName = card.KanbanTable.Group.GroupName,
                 TableName = card.KanbanTable.KanbanTableName,
                 StatusName = card.KanbanStatus.StatusName,
                 GroupId = card.KanbanTable.GroupId,
@@ -189,6 +191,41 @@ public class KanbanController : ControllerBase
         return Ok(tasks);
 
     } 
+    [HttpGet("GetMyGroupTasks")]
+    public async Task<IActionResult> GetMyGroupTasks(GetMyGroupTasksDto getMyGroupTasksDto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var tasks = await _context.KanbanTables
+            .Where(x => x.GroupId == getMyGroupTasksDto.GroupId)
+            .SelectMany(x => x.Cards)
+            .Select(card => new
+            {
+                Id = card.Id,
+                Title = card.Title,
+                Description = card.Description,
+                DueDate = card.DueDate,
+                Priority = card.Priority,
+                AssignedUserid = card.AssignedUserId,
+                TableName = card.KanbanTable.KanbanTableName,
+                StatusName = card.KanbanStatus.StatusName,
+                GroupId = card.KanbanTable.GroupId,
+                KanbanId = card.KanbanTable.Id,
+                Marks = card.Marks.Select(m => new
+                {
+                    m.Id,
+                    m.MarkName,
+                    m.HexColor,
+                }).ToList()
+            })
+            .OrderBy(t => t.DueDate)
+            .ToListAsync();
+
+        return Ok(tasks);
+
+    }
 
     [HttpPost("CreateKanbanCard")]
     public async Task<IActionResult> CreateKanbanCard(

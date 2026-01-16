@@ -93,7 +93,7 @@ export default function RecentBoards() {
     <div className="boards-grid">
       {boards.map(board => (
         <Link
-          to={`/board/${board.groupId}/${board.id}`}
+          to={`/group/${board.groupId}/${board.id}`}
           key={board.id}
           className="board-card"
           style={{ borderLeftColor: getRandomColor(board.id) }}

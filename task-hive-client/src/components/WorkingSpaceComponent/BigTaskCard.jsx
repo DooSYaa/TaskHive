@@ -9,8 +9,15 @@ function BigTaskCard({ task }) {
   return (
     <div className="big-task-card">
       <div className="card-header">
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-1.5">
+          {task.groupName && (
+            <div className="flex">
+              <span className="group-name">{task.groupName}</span>
+              <span className="divider">|</span>
+            </div>
+          )}
           <span className="board-name">{task.tableName}</span>
+          <span className="divider">|</span>
           <div className="status-badge">{task.statusName}</div>
         </div>
         <div className="priority-badge">

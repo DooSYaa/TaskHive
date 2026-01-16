@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../Context/AuthContext';
-import Button from '../ButtonComponent/Button.jsx';
-import BigTaskCard from './BigTaskCard';
+import Button from '../ButtonComponent/Button';
+import BigTaskCard from '../WorkingSpaceComponent/BigTaskCard';
 
-function WorkingSpaceMyTasks({ groupId }) {
+function MyTasks() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState();
   const [sortType, setSortType] = useState('dateAsc');
@@ -18,7 +18,7 @@ function WorkingSpaceMyTasks({ groupId }) {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
-        `http://localhost:5292/api/Kanban/GetMyGroupTasks?GroupId=${groupId}`,
+        'http://localhost:5292/api/Kanban/GetMyTasks',
         {
           method: 'GET',
           headers: {
@@ -105,4 +105,4 @@ function WorkingSpaceMyTasks({ groupId }) {
   );
 }
 
-export default WorkingSpaceMyTasks;
+export default MyTasks;

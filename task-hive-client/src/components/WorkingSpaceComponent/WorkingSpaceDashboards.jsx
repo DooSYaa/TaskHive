@@ -7,18 +7,18 @@ function WorkingSpaceDashboards({ kanbanTables, showModal, setShowModal }) {
 
   return (
     <div>
-      <div className="createKanbanContainer">
-        <Button
-          variant={'group'}
-          onClick={() =>
-            setShowModal(showModal === 'kanban' ? false : 'kanban')
-          }
-        >
-          Create kanban
-        </Button>
-      </div>
-      {kanbanTables
-        ? kanbanTables.map(kanban => (
+      {kanbanTables && kanbanTables.length > 0 ? (
+        <div className="dashboard-grid">
+          <div
+            className="create-dashboard-card"
+            onClick={() =>
+              setShowModal(showModal === 'kanban' ? false : 'kanban')
+            }
+          >
+            <span className="plus-icon">+</span>
+            <span className="font-semibold">Create new dashboard</span>
+          </div>
+          {kanbanTables.map(kanban => (
             <Link
               style={{ textDecoration: 'none' }}
               to={`/group/${groupId}/${kanban.id}`}
@@ -26,8 +26,9 @@ function WorkingSpaceDashboards({ kanbanTables, showModal, setShowModal }) {
             >
               <div className="kanbanTablesList">{kanban.kanbanTableName}</div>
             </Link>
-          ))
-        : null}
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

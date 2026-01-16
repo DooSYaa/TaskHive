@@ -6,6 +6,7 @@ import GroupModal from '../GroupComponent/GroupModal.jsx';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext.jsx';
 import { useState, useEffect } from 'react';
+import { GrTask } from 'react-icons/gr';
 import Button from '../ButtonComponent/Button.jsx';
 import VerticalDotsIcon from '../../assets/VerticalDotsIcon.jsx';
 import RecentBoards from './RecentBoards.jsx';
@@ -80,6 +81,10 @@ function Home() {
           <span>Chat</span>
         </Link>
 
+        <Link className="menu-item" to="/myTasks">
+          <GrTask />
+          <span>MyTasks</span>
+        </Link>
         {/* Сюда можно добавить кнопку Settings или Logout */}
       </div>
 
