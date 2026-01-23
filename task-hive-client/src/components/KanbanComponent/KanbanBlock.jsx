@@ -322,31 +322,53 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
               />
             )}
           </div>
-          <div className="flex gap-6 border border-amber-400">
-            {date !== null && (
-              <div className="border">
-                <div className="text-[12px] font-bold">Term</div>
-                {new Date(date).toLocaleDateString('pl-PL')}
-              </div>
-            )}
-            {selectedUser !== null && (
-              <div className="border">
-                <div className="text-[12px] font-bold">Member</div>
-                {selectedUser.userName}
-              </div>
-            )}
-            {activeMarkIds?.length !== 0 && (
-              <div className="border">
-                <div>Marks</div>
-                <div className="flex">
-                  {activeMarkIds.map(mark => (
-                    <div style={{ backgroundColor: mark.hexColor }}>
-                      {mark.markName === '' ? 'No name' : mark.markName}
-                    </div>
-                  ))}
+          <div className="flex flex-col gap-1">
+            <div>
+              {date !== null && (
+                <div
+                  className=" flex flex-col gap-2"
+                  style={{ padding: '5px' }}
+                >
+                  <div className="text-[16px] font-bold">Term</div>
+                  {new Date(date).toLocaleDateString('pl-PL')}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+            <div>
+              {selectedUser !== null && (
+                <div
+                  className=" flex flex-col gap-2"
+                  style={{ padding: '5px' }}
+                >
+                  <div className="text-[16px] font-bold">Member</div>
+                  {selectedUser.userName}
+                </div>
+              )}
+            </div>
+            <div>
+              {activeMarkIds?.length !== 0 && (
+                <div
+                  className=" flex flex-col gap-2"
+                  style={{ padding: '5px' }}
+                >
+                  <div className="text-[16px] font-bold">Marks</div>
+                  <div className="flex gap-0.5">
+                    {activeMarkIds.map(mark => (
+                      <div
+                        style={{
+                          backgroundColor: mark.hexColor,
+                          padding: '4px',
+                          borderRadius: '5px',
+                        }}
+                        key={mark.id}
+                      >
+                        {mark.markName === '' ? 'No name' : mark.markName}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           <div>
             <h6 className="">Description</h6>

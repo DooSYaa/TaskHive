@@ -55,7 +55,7 @@
   height: auto;
   width: 100%;
   border-radius: 0 0 10px 10px;
-  background-color: #000;
+  background-color: #cfdded;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,7 +72,9 @@ button.group {
   padding: 5px;
   width: auto;
   height: 30px;
-  border: 1px solid white;
+  display: flex;
+  align-items: center;
+  border: 1px dashed white;
   border-radius: 5px;
   cursor: pointer;
   transition-property: border;
@@ -135,10 +137,10 @@ button.group {
   background-color: rgba(136, 207, 1, 0.53);
 }
 .button.kanban:hover {
-  background-color: #57595b;
+  background-color: #afb9c4;
 }
 button.group:hover {
-  border: 1px solid #00b4d8;
+  border: 1px dashed #00b4d8;
 }
 .button.kanban-input:hover {
   background-color: #00b4d8;

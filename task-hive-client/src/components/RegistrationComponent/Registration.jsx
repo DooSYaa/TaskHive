@@ -109,7 +109,7 @@ export default function Registration() {
                 ))}
               </span>
             )}
-            <Button variant={'login'}>Sign up</Button>
+            <Button variant={'login'} type='submit'>Sign up</Button>
             <div className={styles.qwrt}>
               <p>Already have an account?</p>
               <Link to="/login">Sign In</Link>

@@ -105,7 +105,7 @@ export default function Login() {
             />{' '}
             <br />
             <br />
-            <Button variant={'login'}>Sign in</Button>
+            <Button variant={'login'} type='submit'>Sign in</Button>
           </form>
         </div>
       </div>

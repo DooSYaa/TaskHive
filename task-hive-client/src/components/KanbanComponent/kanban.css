@@ -39,7 +39,7 @@
 .x {
   display: flex;
   flex-direction: column;
-  background-color: #5c7285;
+  background-color: #cfdded;
   gap: 10px;
   border-radius: 10px;
 }
@@ -56,9 +56,7 @@
   margin: 15px 15px 0 0;
 }
 .main-add-card-container {
-  background: #19183b;
   padding: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -82,7 +80,7 @@
   min-height: 80px;
   resize: none;
   padding: 8px 10px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid black;
   border-radius: 8px;
   font-size: 0.9rem;
   outline: none;
