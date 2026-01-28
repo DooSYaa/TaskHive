@@ -5,7 +5,7 @@
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  height: 100%; /* Чтобы растягивался, если будет в колонке */
+  height: 100%;
 }
 
 .widget-header {
@@ -61,6 +61,7 @@
 
 /* Левая часть строки */
 .task-row-left {
+  width: 80%;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -68,17 +69,23 @@
 
 /* Цветная полоска приоритета */
 .priority-strip {
-  width: 4px;
+  width: 5px;
   height: 32px;
   border-radius: 4px;
 }
-
+.task-info {
+  width: 100%;
+}
 .task-info h4 {
+  width: 100%;
   margin: 0;
   font-size: 14px;
   font-weight: 600;
   color: #374151;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-context {

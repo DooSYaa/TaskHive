@@ -13,7 +13,8 @@ function WorkingSpaceDashboards({
 }) {
   const { user } = useAuth();
   const { groupId } = useParams();
-  const [cardMenu, setCardMenu] = useState(false);
+  const [kanbanMenu, setKanbanMenu] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState(null);
   const handleDeleteKanbanTable = async kanbanId => {
     try {
       const response = await fetch(
@@ -54,25 +55,27 @@ function WorkingSpaceDashboards({
         </div>
         {kanbanTables && kanbanTables.length > 0
           ? kanbanTables.map(kanban => {
-              const isOpen = cardMenu === kanban.id;
+              const isOpen = kanbanMenu === kanban.id;
+              const isHovered = hoveredCard === kanban.id;
               return (
                 <Link
                   style={{ textDecoration: 'none' }}
                   to={`/group/${groupId}/${kanban.id}`}
                   key={kanban.id}
                   className="kanbanTablesList"
+                  onMouseEnter={() => setHoveredCard(kanban.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
                 >
                   <div
                     className="absolute top-2 left-1"
                     onClick={e => {
                       e.preventDefault();
                       e.stopPropagation();
-                      setCardMenu(isOpen ? null : kanban.id);
+                      setKanbanMenu(isOpen ? null : kanban.id);
                     }}
+                    style={{ visibility: isHovered ? 'visible' : 'hidden' }}
                   >
-                    <div>
-                      <VerticalDotsIcon />
-                    </div>
+                    <VerticalDotsIcon />
                   </div>
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="">{kanban.kanbanTableName}</div>

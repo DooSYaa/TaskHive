@@ -138,7 +138,7 @@ function Home() {
           <RecentBoards />
         </section>
       </div>
-      <div className="right-column flex flex-col gap-6">
+      <div className="right-column">
         <TaskWidget />
         <div className="widget-container bg-blue-50 border-blue-100">
           <h3 className="text-blue-800 font-bold mb-2">💡 Tip of the day</h3>

@@ -19,6 +19,7 @@
     "@lexical/react": "^0.38.2",
     "@microsoft/signalr": "^8.0.7",
     "@mui/x-date-pickers": "^8.19.0",
+    "@radix-ui/themes": "^3.2.1",
     "@remirror/pm": "^3.0.1",
     "@remirror/react": "^3.0.3",
     "@remirror/react-editors": "^2.0.3",
