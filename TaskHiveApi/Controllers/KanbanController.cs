@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using TaskHiveApi.Data;
@@ -554,6 +555,32 @@ public class KanbanController : ControllerBase
             })
             .ToListAsync();
         return Ok(kanbanTables);
+    }
+    
+    [HttpDelete("DeleteKanbanTable")]
+    public async Task<IActionResult> DeleteKanbanTable([FromBody] DeleteKanbanTableDto deleteKanbanTableDto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        bool isUserInGroup =
+            await _context.GroupUsers.AnyAsync(x => x.UserId == userId && x.GroupId == deleteKanbanTableDto.GroupId);
+
+        if (!isUserInGroup)
+            return BadRequest(new { message = "Something went wront, try again later" });
+
+        var kanbanTableToDelete = await _context.KanbanTables.FirstOrDefaultAsync(x =>
+            x.Id == deleteKanbanTableDto.KanbanId && x.GroupId == deleteKanbanTableDto.GroupId);
+
+        if (kanbanTableToDelete == null)
+            return BadRequest(new { message = "Table is not exists" });
+
+        _context.KanbanTables.Remove(kanbanTableToDelete);
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "delete succesfull",
+        });
     }
 
 }

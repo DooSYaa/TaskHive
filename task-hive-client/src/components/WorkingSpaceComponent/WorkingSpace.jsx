@@ -141,6 +141,7 @@ export default function WorkingSpace() {
       <div className="workingSpace">
         {activeTab === 'dashboards' && (
           <WorkingSpaceDashboards
+            setKanbanTables={setKanbanTables}
             kanbanTables={kanbanTables}
             setShowModal={setShowModal}
           />

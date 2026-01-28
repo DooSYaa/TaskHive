@@ -13,23 +13,17 @@
   flex-shrink: 0;
 }
 .kanbanTablesList {
-  /* border: 1px solid #d0d7de;
-  border-radius: 10px;
-  background-color: #ffffff;
-  padding: 15px;
-  margin: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  text-decoration: none; */
+  position: relative;
   background-color: white;
   height: 120px;
   border-radius: 12px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
-  padding: 20px;
+  /* padding: 20px; */
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   font-weight: bold;
   font-size: 1.1rem;
   color: #374151;
@@ -40,19 +34,12 @@
 }
 
 .kanbanTablesList:hover {
-  /* box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1); */
   transform: translateY(-4px);
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6; /* Цвет твоей темы */
+  border-color: #3b82f6;
 }
 
 .createKanbanContainer {
-  /* height: 40px;
-  margin: 10px 0 0;
-  padding-right: 15px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center; */
   margin-top: 10px;
   display: flex;
   justify-content: flex-end;

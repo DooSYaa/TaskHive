@@ -46,7 +46,7 @@ export default function TaskCard({ card, index, onClick }) {
               ></div>
             ))}
           </div>
-          <h4>{card.title}</h4>
+          <h4 className="border">{card.title}</h4>
           <div className="flex justify-between">
             <div>
               {card.assignedUser && (
