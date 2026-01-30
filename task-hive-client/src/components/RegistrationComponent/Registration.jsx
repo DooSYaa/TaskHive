@@ -1,6 +1,7 @@
 import './registration.module.css';
 import styles from '../RegistrationComponent/registration.module.css';
-import Button from '../ButtonComponent/Button.jsx';
+// import Button from '../ButtonComponent/Button.jsx';
+import { Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../Context/AuthContext.jsx';
 import { Link, useNavigate } from 'react-router-dom';
@@ -109,7 +110,7 @@ export default function Registration() {
                 ))}
               </span>
             )}
-            <Button variant={'login'} type='submit'>Sign up</Button>
+            <Button color="jade">Sign Up</Button>
             <div className={styles.qwrt}>
               <p>Already have an account?</p>
               <Link to="/login">Sign In</Link>

@@ -1,16 +1,45 @@
-import reactCSS from 'reactcss';
-import Button from '../ButtonComponent/Button';
-import { ChromePicker } from 'react-color';
 import { useEffect, useState } from 'react';
-import 'primereact/resources/primereact.min.css';
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
-import EditIcon from '../../assets/EditIcon';
-import TrashIcon from '../../assets/TrashIcon';
-import MinusIcon from '../../assets/MinusIcon';
-import PlusIcon from '../../assets/PlusIcon';
-import CloseIcon from '../../assets/CloseIcon';
-import AcceptIcon from '../../assets/AcceptIcon';
 import { useAuth } from '../Context/AuthContext';
+import {
+  DropdownMenu,
+  Theme,
+  Button,
+  Text,
+  Flex,
+  TextField,
+  ScrollArea,
+  Box,
+  Grid,
+} from '@radix-ui/themes';
+import {
+  MinusCircledIcon,
+  PlusCircledIcon,
+  PlusIcon,
+  TrashIcon,
+} from '@radix-ui/react-icons';
+
+const COLORS = [
+  'yellow',
+  'amber',
+  'orange',
+  'tomato',
+  'red',
+  'ruby',
+  'crimson',
+  'pink',
+  'plum',
+  'purple',
+  'violet',
+  'iris',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'jade',
+  'green',
+  'grass',
+  'lime',
+];
 
 function Mark({
   setActivePanel,
@@ -24,14 +53,7 @@ function Mark({
   const [isCreating, setIsCreating] = useState(false);
   const [newMarkName, setNewMarkName] = useState('');
   const [marks, setMarks] = useState([]);
-  const [displayColorPicker, setDisplayColorPicker] = useState(false);
-  const [color, setColor] = useState({
-    r: '241',
-    g: '112',
-    b: '19',
-    a: '1',
-  });
-  const [currentHex, setCurrentHex] = useState('#F17013');
+  const [color, setColor] = useState('');
   const fetchMarks = async () => {
     const response = await fetch(
       `http://localhost:5292/api/Kanban/GetMarks?GroupId=${groupId}&KanbanId=${kanbanId}`,
@@ -61,7 +83,7 @@ function Mark({
         },
         body: JSON.stringify({
           markName: newMarkName,
-          hexColor: currentHex,
+          hexColor: '',
           groupId: groupId,
           kanbanId: kanbanId,
         }),
@@ -121,144 +143,123 @@ function Mark({
       onToggleMark(data);
     }
   };
-
-  const handleClick = () => {
-    setDisplayColorPicker(!displayColorPicker);
-  };
-  const handleClose = () => {
-    setDisplayColorPicker(false);
-  };
-  const handleChange = newColor => {
-    setColor(newColor.rgb);
-    setCurrentHex(newColor.hex);
-  };
-  const styles = reactCSS({
-    default: {
-      color: {
-        width: '36px',
-        height: '14px',
-        borderRadius: '2px',
-        background: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`,
-      },
-      swatch: {
-        padding: '5px',
-        background: '#fff',
-        borderRadius: '1px',
-        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-        display: 'inline-block',
-        cursor: 'pointer',
-      },
-      popover: {
-        position: 'absolute',
-        zIndex: '2',
-        marginTop: '30px',
-      },
-      cover: {
-        position: 'fixed',
-        top: '0px',
-        right: '0px',
-        bottom: '0px',
-        left: '0px',
-      },
-    },
-  });
   return (
-    <div className="card absolute top-10 right-56 border w-80 bg-white z-50">
-      <div className=" text-[16px] font-bold">Marks</div>
-      <div className="flex flex-col gap-0.5 items-center">
-        {marks?.map((mark, index) => {
-          const isAssigned = (activeMarksIds || []).some(
-            activeMark => activeMark.id === mark.id,
-          );
-          return (
-            <div
-              key={index}
-              className="flex w-full justify-between items-center gap-0.5"
+    <Theme>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <Button variant="soft">Marks</Button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content
+          style={{ zIndex: '9999' }}
+          align={'center'}
+          onCloseAutoFocus={() => setIsCreating(false)}
+        >
+          {isCreating ? (
+            <Flex
+              direction={'column'}
+              width={'300px'}
+              align={'center'}
+              gap={'2'}
             >
-              <div className="w-[10%] flex justify-center items-center">
-                <Button
-                  variant="action"
-                  onClick={() => {
-                    isAssigned
-                      ? handleUpdateTaskMarks(mark.id, 'remove')
-                      : handleUpdateTaskMarks(mark.id, 'update');
-                  }}
-                >
-                  {isAssigned ? <MinusIcon /> : <PlusIcon />}
-                </Button>
-              </div>
-              <div
-                className="h-8 w-full flex items-center justify-center rounded-[5px]"
-                style={{ backgroundColor: mark.hexColor }}
+              <Text>Create mark</Text>
+              <Box width={'80%'}>
+                <TextField.Root placeholder="Enter the mark name" />
+              </Box>
+              <Box>
+                <Text>Select color</Text>
+              </Box>
+              <Grid
+                columns={'5'}
+                rows={'5'}
+                gap={'2'}
+                style={{ zIndex: '9999' }}
               >
-                {mark.markName}
-              </div>
-              <div className="flex">
-                <Button
-                  variant="delete"
-                  onClick={() => {
-                    setMarks(prev => prev.filter(item => item.id !== mark.id));
-                  }}
-                >
-                  <TrashIcon />
-                </Button>
-                <Button variant="edit">
-                  <EditIcon />
-                </Button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      {isCreating ? (
-        <div className="w-full" style={{ marginTop: '10px' }}>
-          <div className=" flex flex-row justify-around items-end">
-            <div className="flex justify-center">
-              <div style={styles.swatch} onClick={handleClick}>
-                <div style={styles.color} />
-              </div>
-              {displayColorPicker ? (
-                <div style={styles.popover}>
-                  <div style={styles.cover} onClick={handleClose} />
-                  <ChromePicker color={color} onChange={handleChange} />
-                </div>
-              ) : null}
-            </div>
-            <div className="border">
-              <input
-                type="text"
-                placeholder="Mark name..."
-                value={newMarkName}
-                onChange={e => setNewMarkName(e.target.value)}
-              />
-            </div>
-            <div className="flex justify-center gap-0.5 w-[60px]">
-              <Button variant="action" onClick={handleCreateTaskMark}>
-                <AcceptIcon />
+                {COLORS.map(colorName => (
+                  <Box
+                    display={'block'}
+                    key={colorName}
+                    width={'30px'}
+                    height={'30px'}
+                    onClick={() => setColor(colorName)}
+                    style={{
+                      backgroundColor: `var(--${colorName}-9)`,
+                      cursor: 'pointer',
+                      borderRadius: 'var(--radius-1)',
+                      outline:
+                        color === colorName
+                          ? '2px solid var(--gray-12)'
+                          : 'none',
+                      outlineOffset: '1px',
+                    }}
+                  ></Box>
+                ))}
+              </Grid>
+              <Flex gap={'2'}>
+                <Button>Create</Button>
+                <Button onClick={() => setIsCreating(false)}>Cancel</Button>
+              </Flex>
+            </Flex>
+          ) : (
+            <>
+              <DropdownMenu.Label>
+                <Text>Current marks</Text>
+              </DropdownMenu.Label>
+              <ScrollArea scrollbars={'vertical'} style={{ height: 350 }}>
+                {marks.map(mark => {
+                  const isAssigned = (activeMarksIds || []).some(
+                    am => am.id === mark.id,
+                  );
+                  return (
+                    <Flex align={'center'} gap={'2'} p={'1'} width={'300px'}>
+                      <Button
+                        size={'1'}
+                        variant="ghost"
+                        onClick={() =>
+                          handleUpdateTaskMarks(
+                            mark.id,
+                            isAssigned ? 'remove' : 'update',
+                          )
+                        }
+                      >
+                        {isAssigned ? (
+                          <MinusCircledIcon />
+                        ) : (
+                          <PlusCircledIcon />
+                        )}
+                      </Button>
+                      <Flex
+                        flexGrow={'1'}
+                        align={'center'}
+                        justify={'center'}
+                        style={{
+                          backgroundColor: mark.hexColor,
+                          borderRadius: 'var(--radius-2)',
+                          height: '28px',
+                          color: '#fff',
+                          fontSize: '12px',
+                        }}
+                      >
+                        {mark.markName}
+                      </Flex>
+                      <Flex gap={'1'}>
+                        <Button size={'1'} variant="ghost" color="red">
+                          <TrashIcon />
+                        </Button>
+                      </Flex>
+                    </Flex>
+                  );
+                })}
+              </ScrollArea>
+              <DropdownMenu.Separator />
+              <Button onClick={() => setIsCreating(true)}>
+                <Text>Create mark</Text>
+                <PlusIcon />
               </Button>
-              <Button
-                variant="action"
-                onClick={() => {
-                  setIsCreating(false);
-                  setNewMarkName('');
-                }}
-              >
-                <CloseIcon variant={'rounded'} />
-              </Button>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="" style={{ marginTop: '10px' }}>
-          <Button onClick={() => setIsCreating(true)}>Create mark</Button>
-        </div>
-      )}
-
-      <Button variant="action" onClick={() => setActivePanel(null)}>
-        <CloseIcon variant={'rounded'} />
-      </Button>
-    </div>
+            </>
+          )}
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </Theme>
   );
 }
-
 export default Mark;

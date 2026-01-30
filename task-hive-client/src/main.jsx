@@ -2,28 +2,28 @@
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Theme } from '@radix-ui/themes';
-import { PrimeReactProvider } from 'primereact/api';
+// import { PrimeReactProvider } from 'primereact/api';
 import App from './App.jsx';
 import './index.css';
 import { AuthProvider } from './components/Context/AuthContext.jsx';
 import { SignalRProvider } from './components/Context/SignalRContext.jsx';
 
 import '@radix-ui/themes/styles.css';
-import 'primereact/resources/themes/lara-light-indigo/theme.css';
+// import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 // Ядро (размеры, отступы, позиционирование). БЕЗ НЕГО ColorPicker сломан.
-import 'primereact/resources/primereact.min.css';
+// import 'primereact/resources/primereact.min.css';
 
 createRoot(document.getElementById('root')).render(
   //<StrictMode>
   <BrowserRouter>
     <AuthProvider>
       <SignalRProvider>
-        <PrimeReactProvider>
-          <Theme>
-            <App />
-          </Theme>
-        </PrimeReactProvider>
+        {/* <PrimeReactProvider> */}
+        <Theme>
+          <App />
+        </Theme>
+        {/* </PrimeReactProvider> */}
       </SignalRProvider>
     </AuthProvider>
   </BrowserRouter>,

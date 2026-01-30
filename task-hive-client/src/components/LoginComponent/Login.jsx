@@ -1,5 +1,6 @@
-import Button from '../ButtonComponent/Button.jsx';
+// import Button from '../ButtonComponent/Button.jsx';
 import styles from './login.module.css';
+import { Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../Context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
@@ -105,7 +106,8 @@ export default function Login() {
             />{' '}
             <br />
             <br />
-            <Button variant={'login'} type='submit'>Sign in</Button>
+            <Button color="jade">Sign In</Button>
+            {/* <Button variant={'login'} type='submit'>Sign in</Button> */}
           </form>
         </div>
       </div>

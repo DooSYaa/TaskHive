@@ -1,8 +1,8 @@
 import { Draggable } from '@hello-pangea/dnd';
 import { useState } from 'react';
-import { DropdownMenu, Button } from '@radix-ui/themes';
+import { DropdownMenu, Button, Badge } from '@radix-ui/themes';
 import VerticalDotsIcon from '../../assets/VerticalDotsIcon';
-import { createPortal } from 'react-dom';
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
 export default function TaskCard({ card, index, onClick }) {
   const [hoveredCard, setHoveredCard] = useState(null);
   const [cardMenu, setCardMenu] = useState(null);
@@ -44,15 +44,16 @@ export default function TaskCard({ card, index, onClick }) {
           </div>
           <div className="flex">
             {card.marks?.map((mark, index) => (
-              <div
-                key={mark.id || index}
-                style={{
-                  borderBottom: '2px solid black',
-                  backgroundColor: mark.hexColor,
-                  height: '15px',
-                  width: '30px',
-                }}
-              ></div>
+              // <div
+              //   key={mark.id || index}
+              //   style={{
+              //     borderBottom: '2px solid black',
+              //     backgroundColor: mark.hexColor,
+              //     height: '15px',
+              //     width: '30px',
+              //   }}
+              // ></div>
+              <Badge color="orange">mrks</Badge>
             ))}
           </div>
           <div className="flex items-center justify-between">
@@ -71,7 +72,7 @@ export default function TaskCard({ card, index, onClick }) {
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger>
                     <Button variant="soft">
-                      <VerticalDotsIcon />
+                      <DotsVerticalIcon />
                     </Button>
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content>

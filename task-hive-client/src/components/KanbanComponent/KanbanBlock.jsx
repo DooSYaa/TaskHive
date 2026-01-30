@@ -1,22 +1,19 @@
-import Button from '../ButtonComponent/Button.jsx';
 import TaskCard from './TaskCard.jsx';
 import KanbanInput from './KanbanInput.jsx';
 import Users from '../ModalComponents/Users.jsx';
 import CalendarComponent from '../ModalComponents/Calendar.jsx';
-import CalendarIcon from '../../assets/CalendarIcon.jsx';
-import AddUserIcon from '../../assets/AddUserIcon.jsx';
-import CloseIcon from '../../assets/CloseIcon';
+import { CalendarIcon, Cross1Icon, PersonIcon } from '@radix-ui/react-icons';
 import ReactMarkdown from 'react-markdown';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import Mark from '../ModalComponents/Mark.jsx';
-import 'primereact/resources/themes/lara-light-blue/theme.css';
 import { useAuth } from '../Context/AuthContext.jsx';
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import DescriptionEditor from '../ModalComponents/DescriptionEditor.jsx';
 import Priority from '../ModalComponents/Priority.jsx';
 import { useParams } from 'react-router-dom';
+import { Button, Theme, TextArea, DropdownMenu } from '@radix-ui/themes';
 function Modal({ isExpandedCard, setIsExpandedCard, onClose, children }) {
   useEffect(() => {
     const handleKey = e => e.key === 'Escape' && onClose();
@@ -32,16 +29,18 @@ function Modal({ isExpandedCard, setIsExpandedCard, onClose, children }) {
   if (!isExpandedCard) return null;
 
   return createPortal(
-    <div className="modal-overlay" onClick={handleOverlayClick}>
-      <div className=" flex flex-col w-[80%] rounded-2xl bg-white">
-        <div className="flex justify-end items-center modal-header rounded-t-2xl h-12">
-          <Button variant={'action'} onClick={() => setIsExpandedCard(false)}>
-            <CloseIcon variant={'mark'} />
-          </Button>
+    <Theme accentColor="cyan">
+      <div className="modal-overlay" onClick={handleOverlayClick}>
+        <div className=" flex flex-col w-[80%] rounded-2xl bg-white">
+          <div className="flex justify-end items-center modal-header rounded-t-2xl h-12">
+            <Button variant="surface" onClick={() => setIsExpandedCard(false)}>
+              <Cross1Icon />
+            </Button>
+          </div>
+          <div className="modal-content">{children}</div>
         </div>
-        <div className="modal-content">{children}</div>
       </div>
-    </div>,
+    </Theme>,
     document.body,
   );
 }
@@ -251,8 +250,8 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
           <div className="flex flex-col justify-center w-[80%]">
             <h2 className="modal-title">{card ? card.title : null}</h2>
           </div>
-          <div className="relative flex gap-3 text-center justify-center ">
-            <Button
+          <div className="relative flex gap-3 text-center justify-center">
+            {/* <Button
               variant="actions"
               onClick={() =>
                 setActivePanel(activePanel === 'date' ? null : 'date')
@@ -262,26 +261,47 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
                 <CalendarIcon />
                 Select date
               </div>
+            </Button> */}
+            <Button
+              variant="soft"
+              color="cyan"
+              onClick={() =>
+                setActivePanel(activePanel === 'date' ? null : 'date')
+              }
+            >
+              <CalendarIcon />
+              Select date
             </Button>
             <Button
-              variant="actions"
+              color="cyan"
+              variant="soft"
               onClick={() =>
                 setActivePanel(activePanel === 'users' ? null : 'users')
               }
             >
               <div className="flex flex-row gap-1.5">
-                <AddUserIcon />
+                <PersonIcon />
+                {/* <AddUserIcon /> */}
                 Add user
               </div>
             </Button>
-            <Button
-              variant="actions"
+            {/* <Button
+              color="cyan"
+              variant="soft"
               onClick={() =>
                 setActivePanel(activePanel === 'marks' ? null : 'marks')
               }
             >
               Marks
-            </Button>
+            </Button> */}
+            <Mark
+              setActivePanel={setActivePanel}
+              onToggleMark={handleToggleMark}
+              activeMarksIds={activeMarkIds}
+              groupId={groupId}
+              kanbanId={kanbanId}
+              cardId={card?.id}
+            />
             <Priority
               priority={priority}
               setPriority={setPriority}
@@ -309,16 +329,6 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
                 kanbanId={kanbanId}
                 cardId={card.id}
                 onAssignUser={handleAssignUser}
-              />
-            )}
-            {activePanel === 'marks' && (
-              <Mark
-                setActivePanel={setActivePanel}
-                onToggleMark={handleToggleMark}
-                activeMarksIds={activeMarkIds}
-                groupId={groupId}
-                kanbanId={kanbanId}
-                cardId={card.id}
               />
             )}
           </div>
@@ -398,18 +408,21 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
             </div>
           </div>
         </div>
-        <div className="flex flex-col flex-1 gap-3 items-center bg-gray-400">
+        <div className="flex flex-col flex-1 gap-3 items-center bg">
           <div className=" w-full">Coments</div>
           <div className="flex justify-center items-center gap-3 w-full">
-            <textarea
+            {/* <textarea
               name=""
               id=""
               className="resize-none w-[70%] rounded-[5px] border border-black"
               placeholder="text coment"
               value={message}
               onChange={e => setMessage(e.target.value)}
-            ></textarea>
-            <Button onClick={sendComment}>Send</Button>
+            ></textarea> */}
+            <TextArea placeholder="Text comment" size={3} className="w-[70%]" />
+            <Button color="cyan" variant="soft" onClick={sendComment}>
+              Send
+            </Button>
           </div>
           <div className="flex flex-col items-center   w-full h-full">
             {messages.map((msg, index) => (
