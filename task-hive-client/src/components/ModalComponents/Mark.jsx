@@ -7,7 +7,6 @@ import {
   Text,
   Flex,
   TextField,
-  ScrollArea,
   Box,
   Grid,
 } from '@radix-ui/themes';
@@ -42,7 +41,6 @@ const COLORS = [
 ];
 
 function Mark({
-  setActivePanel,
   activeMarksIds = [],
   onToggleMark,
   groupId,
@@ -73,6 +71,8 @@ function Mark({
     fetchMarks();
   }, [groupId, kanbanId, user]);
   const handleCreateTaskMark = async () => {
+    console.log(color);
+    console.log(newMarkName);
     const response = await fetch(
       'http://localhost:5292/api/Kanban/CreateTaskMark',
       {
@@ -83,7 +83,7 @@ function Mark({
         },
         body: JSON.stringify({
           markName: newMarkName,
-          hexColor: '',
+          hexColor: color,
           groupId: groupId,
           kanbanId: kanbanId,
         }),
@@ -92,10 +92,11 @@ function Mark({
     if (!response.ok)
       throw new Error(`Error creating new mark: ${response.status}`);
     const data = await response.json();
+    console.log(data);
     setMarks(prev => [...prev, data]);
     setNewMarkName('');
+    setColor('');
     setIsCreating(false);
-    setDisplayColorPicker(false);
   };
   const handleUpdateTaskMarks = async (markId, action) => {
     if (action === 'update') {
@@ -150,9 +151,12 @@ function Mark({
           <Button variant="soft">Marks</Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content
-          style={{ zIndex: '9999' }}
+          style={{ zIndex: '9999', width: '300px' }}
           align={'center'}
-          onCloseAutoFocus={() => setIsCreating(false)}
+          onCloseAutoFocus={() => {
+            setIsCreating(false);
+            setColor('');
+          }}
         >
           {isCreating ? (
             <Flex
@@ -163,7 +167,11 @@ function Mark({
             >
               <Text>Create mark</Text>
               <Box width={'80%'}>
-                <TextField.Root placeholder="Enter the mark name" />
+                <TextField.Root
+                  placeholder="Enter the mark name"
+                  value={newMarkName}
+                  onChange={e => setNewMarkName(e.target.value)}
+                />
               </Box>
               <Box>
                 <Text>Select color</Text>
@@ -195,8 +203,15 @@ function Mark({
                 ))}
               </Grid>
               <Flex gap={'2'}>
-                <Button>Create</Button>
-                <Button onClick={() => setIsCreating(false)}>Cancel</Button>
+                <Button onClick={() => handleCreateTaskMark()}>Create</Button>
+                <Button
+                  onClick={() => {
+                    setIsCreating(false);
+                    setColor('');
+                  }}
+                >
+                  Cancel
+                </Button>
               </Flex>
             </Flex>
           ) : (
@@ -204,13 +219,26 @@ function Mark({
               <DropdownMenu.Label>
                 <Text>Current marks</Text>
               </DropdownMenu.Label>
-              <ScrollArea scrollbars={'vertical'} style={{ height: 350 }}>
+              <Box
+                style={{
+                  maxHeight: '250px',
+                  overflowY: 'auto',
+                  padding: '8px',
+                  scrollbarWidth: 'thin',
+                }}
+              >
                 {marks.map(mark => {
                   const isAssigned = (activeMarksIds || []).some(
                     am => am.id === mark.id,
                   );
                   return (
-                    <Flex align={'center'} gap={'2'} p={'1'} width={'300px'}>
+                    <Flex
+                      key={mark.id}
+                      align={'center'}
+                      gap={'2'}
+                      p={'1'}
+                      width={'100%'}
+                    >
                       <Button
                         size={'1'}
                         variant="ghost"
@@ -232,7 +260,7 @@ function Mark({
                         align={'center'}
                         justify={'center'}
                         style={{
-                          backgroundColor: mark.hexColor,
+                          backgroundColor: `var(--${mark.hexColor}-9)`,
                           borderRadius: 'var(--radius-2)',
                           height: '28px',
                           color: '#fff',
@@ -249,12 +277,14 @@ function Mark({
                     </Flex>
                   );
                 })}
-              </ScrollArea>
-              <DropdownMenu.Separator />
-              <Button onClick={() => setIsCreating(true)}>
-                <Text>Create mark</Text>
-                <PlusIcon />
-              </Button>
+              </Box>
+
+              <Box p="1" style={{ borderTop: '1px solid var(--gray-4)' }}>
+                <Button onClick={() => setIsCreating(true)}>
+                  <Text>Create mark</Text>
+                  <PlusIcon />
+                </Button>
+              </Box>
             </>
           )}
         </DropdownMenu.Content>

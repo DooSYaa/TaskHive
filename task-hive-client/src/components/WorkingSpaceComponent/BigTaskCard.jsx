@@ -1,59 +1,87 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import './BigTaskCard.css';
+import { Badge, Card, Flex, Separator, Text, Box } from '@radix-ui/themes';
 function BigTaskCard({ task }) {
-  const navigate = useNavigate();
   const priorityColors = ['#22c55e', '#eab308', '#ef4444', '#000000'];
   const priorityLabels = ['Low', 'Medium', 'High', 'Urgent'];
   const isOverdue = new Date(task.dueDate) < new Date();
   return (
-    <div className="big-task-card">
-      <div className="card-header">
-        <div className="flex items-center justify-center gap-1.5">
+    <Flex
+      direction={'column'}
+      justify={'between'}
+      height={'280px'}
+      p={'1.25rem'}
+      className="big-task-card"
+    >
+      <Flex justify={'between'} align={'center'}>
+        <Flex justify={'center'} align={'center'} gap={'6px'}>
           {task.groupName && (
-            <div className="flex">
-              <span className="group-name">{task.groupName}</span>
-              <span className="divider">|</span>
-            </div>
+            <Flex align={'center'} gap={'6px'}>
+              <Badge>
+                <Text>{task.groupName}</Text>
+              </Badge>
+              <Separator orientation="vertical" />
+            </Flex>
           )}
-          <span className="board-name">{task.tableName}</span>
-          <span className="divider">|</span>
-          <div className="status-badge">{task.statusName}</div>
-        </div>
-        <div className="priority-badge">
+          <Badge color="gray">
+            <Text size={'2'} weight={'bold'}>
+              {task.tableName}
+            </Text>
+          </Badge>
+          <Separator orientation="vertical" />
+          <Badge color="blue" radius={'large'}>
+            <Text size={'2'} weight={'bold'}>
+              {task.statusName}
+            </Text>
+          </Badge>
+        </Flex>
+        {/* <div className="priority-badge">
           <div
             className="priority-dot"
             style={{ background: priorityColors[task.priority] }}
           ></div>
           <span className="priority-text">{priorityLabels[task.priority]}</span>
-        </div>
-      </div>
+        </div> */}
+        <Card size={'1'}>
+          <Flex m={'-1'} justify={'center'} align={'center'} gap={'6px'}>
+            <Box
+              width={'0.625rem'}
+              height={'0.625rem'}
+              style={{
+                backgroundColor: priorityColors[task.priority],
+                borderRadius: '50%',
+              }}
+            ></Box>
+            <Text>{priorityLabels[task.priority]}</Text>
+          </Flex>
+        </Card>
+      </Flex>
       <div className="card-content">
         <h3 className="card-title">{task.title}</h3>
         <p className="card-description">
-          {task.description || 'Нет описания...'}
+          {task.description || 'No description...'}
         </p>
       </div>
       <div className="card-footer">
         <div className="marks-container">
           {task.marks.map(mark => (
-            <div
-              key={mark.id}
-              className="mark-item"
-              style={{ backgroundColor: mark.hexColor }}
-            >
-              {mark.markName}
-            </div>
+            <Badge key={mark.id} color={mark.hexColor}>
+              <Text size={'2'}>{mark.markName}</Text>
+            </Badge>
           ))}
         </div>
         <div className="date-container">
           <div className="date-label">Deadline</div>
           <div className={`date-value ${isOverdue ? 'overdue' : ''}`}>
-            {new Date(task.dueDate).toLocaleDateString('pl-PL')}
+            {task.dueDate
+              ? new Date(task.dueDate).toLocaleDateString(undefined, {
+                  day: 'numeric',
+                  month: 'short',
+                })
+              : 'No deadline'}
           </div>
         </div>
       </div>
-    </div>
+    </Flex>
   );
 }
 

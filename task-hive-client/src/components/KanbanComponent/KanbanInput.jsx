@@ -1,8 +1,9 @@
 import './kanban.css';
 import { useState, useRef } from 'react';
-import Button from '../ButtonComponent/Button.jsx';
+// import Button from '../ButtonComponent/Button.jsx';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext.jsx';
+import { Button, TextArea } from '@radix-ui/themes';
 
 export default function KanbanInput({
   onCancel,
@@ -40,7 +41,6 @@ export default function KanbanInput({
         throw new Error('Failed to create Kanban card', request.status);
       }
       const newCard = await request.json();
-      console.log(newCard);
       onCardCreated(newCard);
       setTitle('');
     } catch (error) {
@@ -66,7 +66,6 @@ export default function KanbanInput({
         throw new Error('Failed to create Kanban', request.status);
       }
       const newColumn = await request.json();
-      console.log(newColumn);
       onColumnCreated(newColumn);
       setTitle('');
     } catch (error) {
@@ -82,26 +81,25 @@ export default function KanbanInput({
       }
     >
       <div className="textarea-container">
-        <textarea
+        <TextArea
           value={title}
           onChange={e => setTitle(e.target.value)}
           ref={textareaRef}
           placeholder={
             type === 'card' ? 'Enter task title...' : 'Enter column name'
           }
-          className={
-            type === 'card' ? 'add-card-textarea' : 'add-column-textarea'
-          }
+          variant={'soft'}
           onInput={handleInput}
-        ></textarea>
+        />
         <div className={'add-card-buttons-container'}>
           <Button
-            variant={'kanban-input'}
+            variant={'soft'}
+            color={'jade'}
             onClick={type === 'card' ? handleCreateCard : handleCreateColumn}
           >
             Submit
           </Button>
-          <Button variant={'kanban-input-cancel'} onClick={onCancel}>
+          <Button variant={'soft'} color={'red'} onClick={onCancel}>
             X
           </Button>
         </div>

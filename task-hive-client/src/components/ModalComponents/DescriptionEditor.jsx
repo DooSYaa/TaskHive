@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { Markdown } from 'tiptap-markdown';
 import StarterKit from '@tiptap/starter-kit';
 import './DescriptionEditor.css';
-import Button from '../ButtonComponent/Button';
+import { Button, Flex, Separator } from '@radix-ui/themes';
+import { ListBulletIcon } from '@radix-ui/react-icons';
 
 const MenuBar = ({ editor }) => {
   if (!editor) {
@@ -15,93 +15,118 @@ const MenuBar = ({ editor }) => {
   return (
     <div className="menu-bar">
       {/* Жирный */}
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleBold().run()}
         disabled={!editor.can().chain().focus().toggleBold().run()}
         className={getBtnClass(editor.isActive('bold'))}
       >
         <b>B</b>
-      </button>
+      </Button>
 
       {/* Курсив */}
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleItalic().run()}
         disabled={!editor.can().chain().focus().toggleItalic().run()}
         className={getBtnClass(editor.isActive('italic'))}
       >
         <i>I</i>
-      </button>
+      </Button>
 
-      <span className="divider">|</span>
+      <Separator orientation={'vertical'} />
 
       {/* Заголовок H1 */}
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={getBtnClass(editor.isActive('heading', { level: 1 }))}
       >
         H1
-      </button>
+      </Button>
 
       {/* Заголовок H2 */}
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={getBtnClass(editor.isActive('heading', { level: 2 }))}
       >
         H2
-      </button>
+      </Button>
 
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         className={getBtnClass(editor.isActive('heading', { level: 3 }))}
       >
         H3
-      </button>
+      </Button>
 
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
         className={getBtnClass(editor.isActive('heading', { level: 4 }))}
       >
         H4
-      </button>
+      </Button>
 
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
         className={getBtnClass(editor.isActive('heading', { level: 5 }))}
       >
         H5
-      </button>
+      </Button>
 
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
         className={getBtnClass(editor.isActive('heading', { level: 6 }))}
       >
         H6
-      </button>
+      </Button>
 
-      <span className="divider">|</span>
+      <Separator orientation={'vertical'} />
 
       {/* Маркированный список */}
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={getBtnClass(editor.isActive('bulletList'))}
       >
-        Bullet lsit •
-      </button>
+        <ListBulletIcon />
+      </Button>
 
       {/* Нумерованный список */}
-      <button
+      <Button
+        size={'1'}
+        variant={'surface'}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={getBtnClass(editor.isActive('orderedList'))}
       >
-        Ordered lsit 1.
-      </button>
+        1.
+      </Button>
     </div>
   );
 };
 
 const DescriptionEditor = ({ initialValue, onChange, onSave, onCancel }) => {
   const editor = useEditor({
-    extensions: [StarterKit, Markdown],
+    extensions: [
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3, 4, 5, 6] },
+      }),
+      Markdown,
+    ],
     content: initialValue || '',
     editorProps: {
       attributes: {
@@ -136,25 +161,34 @@ const DescriptionEditor = ({ initialValue, onChange, onSave, onCancel }) => {
     }
   };
   return (
-    <div
-      className="w-full flex flex-col items-center"
-      style={{ padding: '20px' }}
+    <Flex
+      direction={'column'}
+      align={'center'}
+      width={'100%'}
+      px={'10px'}
+      py={'5px'}
     >
-      <div className="editor-container">
+      <Flex
+        direction={'column'}
+        overflow={'hidden'}
+        width={'100%'}
+        className="editor-container"
+      >
         <MenuBar editor={editor} />
 
         <div className="editor-content">
           <EditorContent editor={editor} />
         </div>
-      </div>
-      <div
-        className="w-full flex gap-2"
-        style={{ marginTop: '5px', marginLeft: '76px' }}
-      >
-        <Button onClick={handleSave}>Save</Button>
-        <Button onClick={handleCancel}>Cancel</Button>
-      </div>
-    </div>
+      </Flex>
+      <Flex width={'100%'} gap={'2'} mt={'5px'}>
+        <Button variant="soft" onClick={handleSave}>
+          Save
+        </Button>
+        <Button variant="soft" onClick={handleCancel}>
+          Cancel
+        </Button>
+      </Flex>
+    </Flex>
   );
 };
 

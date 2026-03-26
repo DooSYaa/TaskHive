@@ -1,11 +1,7 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using TaskHiveApi.Data;
-using TaskHiveApi.Models;
 using TaskHiveApi.Service;
 
 namespace TaskHiveApi.Hubs
@@ -13,13 +9,17 @@ namespace TaskHiveApi.Hubs
     [Authorize]
     public class ChatHub : Hub
     {
-        private readonly ChatService _chatService;
+        private readonly PrivateChatService _privateChatService;
+        private readonly GroupChatService _groupChatService;
+        private readonly CommentService _commentService;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ChatHub> _logger;
 
-        public ChatHub(ChatService chatService, ApplicationDbContext context, ILogger<ChatHub> logger)
+        public ChatHub(PrivateChatService privateChatService, GroupChatService groupChatService, CommentService commentService, ApplicationDbContext context, ILogger<ChatHub> logger)
         {
-            _chatService = chatService;
+            _privateChatService = privateChatService;
+            _groupChatService = groupChatService;
+            _commentService = commentService;
             _context = context;
             _logger = logger;
         }
@@ -28,60 +28,126 @@ namespace TaskHiveApi.Hubs
             await Clients.All.SendAsync("ReceiveMessage", message, userName);
         }
 
-        public async Task SendPrivateMessage(string from, string to, string message)
+        public async Task SendPrivateMessage(string receiverId, string message)
         {
-            var userId = Context.UserIdentifier;
-            var friendId = _context.Users.Where(f => f.UserName == to).Select(f => f.Id).FirstOrDefault();
-            if (string.IsNullOrEmpty(userId))
-                throw new NullReferenceException("User is null");
-            if (friendId == null)
-                throw new ArgumentNullException("friendId is null");
-
-            var users = new[] { to, from };
-            await Clients.Users(userId, friendId).SendAsync("ReceivePrivateMessage", message, from);
-        }
-
-        public async Task SendGroupMessage(string groupId, string messageContetnt)
-        {
-            System.Console.WriteLine($"===================GROUP ID: {groupId}==========================");
-            if(string.IsNullOrWhiteSpace(messageContetnt)) return;
-
+            _logger.LogInformation("Send Private Message");
+            _logger.LogInformation(receiverId);
+            _logger.LogInformation(message);
+            if(string.IsNullOrEmpty(receiverId))
+                throw new NullReferenceException("receiverId");
+            
             var senderId = Context.UserIdentifier;
-            var userName = Context.User.Identity.Name;
-            Console.WriteLine($"Отправка в группу {groupId}: {messageContetnt}");
-            await Clients.Group(groupId).SendAsync("ReceiveGroupMessage", new
+            if (string.IsNullOrEmpty(senderId))
+                throw new NullReferenceException("User is null");
+            await _privateChatService.SaveMessageAsync(senderId, receiverId, message);
+            var sender = await _context.Users
+                .Where(x => x.Id == senderId)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.UserName,
+                    x.AvatarUrl,                
+                })
+                .FirstOrDefaultAsync(); 
+            if (sender == null)
+                throw new NullReferenceException("User not found");
+            var receiver = await _context.Users
+                .Where(f => f.Id == receiverId)
+                .Select(f => new
+                {
+                    f.Id,
+                    f.UserName,
+                    f.AvatarUrl,
+                })
+                .FirstOrDefaultAsync();
+            if (receiver == null)
+                throw new NullReferenceException("friendId is null");
+
+            var messageDto = new
             {
                 Id = Guid.NewGuid().ToString(),
-                SenderId = senderId, 
-                SenderName = userName,
-                Message = messageContetnt,
-                CreatedAt = DateTime.UtcNow,
-            });
-            System.Console.WriteLine("==================Message received!=================");
-            System.Console.WriteLine(messageContetnt);
+                SenderId = sender.Id,
+                SenderName = sender.UserName,
+                SenderAvatar = sender.AvatarUrl,
+                ReceiverId = receiver.Id,
+                ReceiverName = receiver.UserName,
+                ReceiverAvatar = receiver.AvatarUrl,
+                Message = message,
+                CreatedAt = DateTime.UtcNow
+            };
+            await Clients
+                .Users(senderId, receiverId)
+                .SendAsync("ReceivePrivateMessage",  messageDto);
+        }
+
+        public async Task SendGroupMessage(string groupId, string messageContent)
+        {
+            if(string.IsNullOrWhiteSpace(messageContent) || string.IsNullOrEmpty(groupId)) return;
+            var senderId = Context.UserIdentifier;
+            if (string.IsNullOrEmpty(senderId))
+                throw new NullReferenceException("senderId");
+            await _groupChatService.SaveMessageAsync(groupId, senderId, messageContent);
+            var sender = await _context.Users
+                .Where(x => x.Id == senderId)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.UserName,
+                    x.AvatarUrl,
+                })
+                .FirstOrDefaultAsync();
+            if (sender == null)
+                throw new NullReferenceException("User not found");
+            var messageDto = new
+            {
+                Id = Guid.NewGuid().ToString(),
+                SenderId = sender.Id,
+                SenderName = sender.UserName,
+                SenderAvatar = sender.AvatarUrl,
+                Message = messageContent,
+                CreatedAt = DateTime.UtcNow
+            };
+            await Clients
+                .Group(groupId)
+                .SendAsync("ReceiveGroupMessage", messageDto);
         }
 
         public async Task JoinGroup(string groupId)
         {
-            Console.WriteLine($"Пользователь {Context.ConnectionId} подключается к группе: {groupId}");
-            var userId = Context.UserIdentifier;
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+            _logger.LogInformation("Joining group {groupId}", groupId);
         }
 
         public async Task LeaveGroup(string groupId)
         {
-            var userId = Context.UserIdentifier;
-            await Groups.RemoveFromGroupAsync(userId, groupId);
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
+            _logger.LogInformation("Leaving group {groupId}", groupId);
         }
 
-        public async Task SendComment(string cardId,  string userName, string message)
+        public async Task SendComment(string cardId, string message)
         {
+            _logger.LogInformation("Sending comment {cardId}", cardId);
             try
             {
-                if (string.IsNullOrEmpty(userName))
-                    Console.WriteLine("user is null");
-
-                await Clients.Group(cardId).SendAsync("ReceiveComment", userName, message);
+                _logger.LogInformation("Send Comment");
+                var userId = Context.UserIdentifier;
+                if (string.IsNullOrEmpty(userId))
+                    throw new NullReferenceException("User is null");
+                
+                _logger.Log(LogLevel.Information, "Saving message to database");
+                await _commentService.AddCommentAsync(cardId, userId, message);
+                _logger.Log(LogLevel.Information, "Saved message to database");
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                var commentDto = new
+                {
+                    CardId = cardId,
+                    SenderId = user.Id,
+                    SenderName = user.UserName,
+                    SenderAvatar = user.AvatarUrl,
+                    Message = message,
+                    CreatedAt = DateTime.UtcNow,
+                };
+                await Clients.Group(cardId).SendAsync("ReceiveComment", cardId, commentDto);
             }
             catch (Exception ex)
             {

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../Context/AuthContext.jsx';
 import Button from '../ButtonComponent/Button.jsx';
 import KanbanInput from './KanbanInput.jsx';
+import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils.js';
 
 export default function Kanban() {
   const { kanbanId } = useParams();
@@ -20,7 +21,7 @@ export default function Kanban() {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`,
+            'Authorization': `Bearer ${user?.token}`,
           },
         },
       );
@@ -31,7 +32,7 @@ export default function Kanban() {
       setColumns(data.statuses || []);
     };
     fetchData();
-  }, [user.token, kanbanId]);
+  }, [user?.token, kanbanId]);
   const handleUpdateCardPosition = async cardToUpdate => {
     try {
       const request = await fetch('http://localhost:5292/api/Kanban/MoveCard', {
@@ -69,7 +70,6 @@ export default function Kanban() {
           }),
         },
       );
-      console.log('column position updated!');
       if (!request.ok) throw new Error(request.status);
     } catch (error) {
       console.error('Error request', error);
@@ -83,6 +83,14 @@ export default function Kanban() {
         }
         return column;
       }),
+    );
+  };
+  const handleCardDeleted = cardId => {
+    setColumns(prev =>
+      prev.map(column => ({
+        ...column,
+        cards: column.cards.filter(card => card.id !== cardId),
+      })),
     );
   };
   const handleColumnCreated = newColumn => {
@@ -195,6 +203,7 @@ export default function Kanban() {
                       column={col}
                       index={index}
                       onCardCreated={handleCardCreated}
+                      onCardDeleted={handleCardDeleted}
                     />
                   ))
                 : null}

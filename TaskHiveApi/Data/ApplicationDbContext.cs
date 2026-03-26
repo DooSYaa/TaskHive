@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TaskHiveApi.Models;
+using TaskHiveApi.Models.Chat;
 using TaskHiveApi.Models.Kanban;
 
 namespace TaskHiveApi.Data;
@@ -10,7 +11,9 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) {}
     public DbSet<Friends> Friends { get; set; }
-    public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<PrivateMessage> PrivateMessages { get; set; }
+    public DbSet<GroupMessage> GroupMessages { get; set; }
+    public DbSet<Comment> Comments { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupUser> GroupUsers { get; set; }
     public DbSet<KanbanTable> KanbanTables { get; set; }

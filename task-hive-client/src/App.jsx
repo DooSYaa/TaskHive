@@ -8,7 +8,6 @@ import Account from './components/AccountComponent/Account.jsx';
 import Friend from './components/FriendComponent/Friend.jsx';
 import Chat from './components/ChatComponent/Chat.jsx';
 import Kanban from './components/KanbanComponent/Kanban.jsx';
-import Group from './components/GroupComponent/Group.jsx';
 import WorkingSpace from './components/WorkingSpaceComponent/WorkingSpace.jsx';
 import WelcomePage from './components/WelcomePageComponent/WelcomePage.jsx';
 import { useAuth } from './components/Context/AuthContext.jsx';
@@ -32,7 +31,6 @@ export default function App() {
         <Route path="/friends" element={<Friend />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/myTasks" element={<MyTasks />} />
-        <Route path="/group" element={<Group />} />
         <Route path="/group/:groupId" element={<WorkingSpace />} />
         <Route path="/group/:groupId/:kanbanId" element={<Kanban />} />
       </Routes>

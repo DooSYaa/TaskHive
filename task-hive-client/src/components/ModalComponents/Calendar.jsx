@@ -1,23 +1,56 @@
-import { Calendar } from 'primereact/calendar';
+import { Day, DayPicker } from 'react-day-picker';
 import { useState } from 'react';
-import 'primereact/resources/themes/lara-light-blue/theme.css';
-
-import Button from '../ButtonComponent/Button';
+import { format, isValid, parse } from 'date-fns';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Flex,
+  Popover,
+  Text,
+  TextField,
+} from '@radix-ui/themes';
 import { useAuth } from '../Context/AuthContext';
+import 'react-day-picker/style.css';
 
 function CalendarComponent({
   date,
-  setDate,
   onDateUpdate,
-  setActivePanel,
   groupId,
   kanbanId,
   cardId,
 }) {
   const { user } = useAuth();
-  const [localDate, setLocalDate] = useState(date ? new Date(date) : null);
-  console.log(localDate);
+  const [range, setRange] = useState({
+    from: date ? new Date(date) : new Date(),
+    to: undefined,
+  });
+  const [fromInput, setFromInput] = useState(
+    date ? format(new Date(date), 'dd/MM/yyyy') : '',
+  );
+  const [toInput, setToInput] = useState('');
+  const [month, setMonth] = useState(range.from || new Date());
+  const [enableRange, setEnableRange] = useState(false);
+
+  const handleRangeSelect = newRange => {
+    setRange(newRange || { from: undefined, to: undefined });
+    if (newRange?.from) setFromInput(format(newRange.from, 'dd/MM/yyyy'));
+    if (newRange?.to) setToInput(format(newRange.to, 'dd/MM/yyyy'));
+  };
+  const handleTextChange = (value, field) => {
+    if (field === 'from') setFromInput(value);
+    else setToInput(value);
+
+    const parsedDate = parse(value, 'dd/MM/yyyy', new Date());
+    if (isValid(parsedDate)) {
+      setMonth(parsedDate);
+      setRange(prev => ({ ...prev, [field]: parsedDate }));
+    }
+  };
+
   const handleSave = async () => {
+    console.log('Saving date:', range.from);
+    const dateStr = format(range.from, "yyyy-MM-dd'T'HH:mm:ss");
     try {
       const response = await fetch(
         'http://localhost:5292/api/Kanban/UpdateTaskDate',
@@ -31,56 +64,69 @@ function CalendarComponent({
             groupId: groupId,
             kanbanId: kanbanId,
             cardId: cardId,
-            dueDateTime: localDate,
+            dueDateTime: dateStr,
           }),
         },
       );
       if (!response.ok) throw new Error(`Error: ${response.status}`);
       // setDate(JSON.stringify(localDate));
-      onDateUpdate(localDate);
-      setActivePanel(null);
+      onDateUpdate(range.from);
     } catch (error) {
       console.error('Error save date:', error);
     }
   };
-
-  const handleCancel = () => {
-    setActivePanel(null);
-  };
-
   return (
-    <div
-      className="absolute top-10 right-72 w-72 h-auto p-5 
-                 bg-white rounded-lg shadow-2xl border border-gray-200 z-50"
-    >
-      <div className="mb-4 pb-2 border-b border-gray-300">
-        <h3 className="text-lg font-semibold text-gray-800">Term</h3>
-      </div>
-      <div className="flex flex-col items-start w-full mb-6">
-        <label
-          htmlFor="end-term-date"
-          className="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Выберите дату окончания:
-        </label>
-        <div className="w-full">
-          <Calendar
-            id="end-term-date"
-            value={localDate}
-            onChange={e => setLocalDate(e.value)}
-            dateFormat="dd.mm.yy"
-            className="p-inputtext w-full text-base h-10 
-                       bg-white text-gray-800 border border-gray-300 
-                       rounded-md focus:border-blue-500 focus:ring-blue-500"
-            showIcon={true}
+    <Popover.Root>
+      <Popover.Trigger>
+        <Button variant={'soft'}>Select date</Button>
+      </Popover.Trigger>
+      <Popover.Content align={'center'} style={{ zIndex: '9999' }}>
+        <Flex direction={'column'}>
+          <DayPicker
+            mode={enableRange ? 'range' : 'single'}
+            selected={enableRange ? range : range.from}
+            onSelect={
+              enableRange
+                ? handleRangeSelect
+                : d => handleRangeSelect({ from: d })
+            }
+            month={month}
+            onMonthChange={setMonth}
+            showOutsideDays
           />
-        </div>
-      </div>
-      <div className="w-full flex justify-between gap-3 pt-4 border-t border-gray-300">
-        <Button onClick={handleCancel}>Cancel</Button>
-        <Button onClick={handleSave}>Save</Button>
-      </div>
-    </div>
+          <Box my={'2'}>
+            <Text weight={'medium'}>Date:</Text>
+            <Flex direction={'column'} width={'250px'} gap={'2'}>
+              <TextField.Root
+                placeholder="From: dd/MM/yyyy"
+                value={fromInput}
+                onChange={e => handleTextChange(e.target.value, 'from')}
+              />
+              {/* <Flex direction={'column'}>
+                <Flex gap={'2'} align={'center'} m={'1'}>
+                  <Checkbox onCheckedChange={setEnableRange} />
+                  Enable range
+                </Flex>
+                <TextField.Root
+                  placeholder="dd/MM/yyyy"
+                  value={enableRange ? toInput : ''}
+                  onChange={e => handleTextChange(e.target.value, 'to')}
+                  disabled={!enableRange}
+                />
+              </Flex> */}
+            </Flex>
+          </Box>
+          <Flex gap={'2'}>
+            <Popover.Close>
+              <Button onClick={handleSave}>Save</Button>
+            </Popover.Close>
+            <Popover.Close>
+              <Button>Cancel</Button>
+            </Popover.Close>
+          </Flex>
+        </Flex>
+      </Popover.Content>
+    </Popover.Root>
   );
 }
 

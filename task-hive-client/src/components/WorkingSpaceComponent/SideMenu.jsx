@@ -1,20 +1,25 @@
-import { useState } from 'react';
-import './sideMenu.css';
-import Button from '../ButtonComponent/Button';
+import { Button, Flex } from '@radix-ui/themes';
 
 function SideMenu({ activeTab, setActiveTab, menuItems }) {
   return (
-    <div className="side-menu">
+    <Flex
+      p={'5'}
+      width={'350px'}
+      direction={'column'}
+      gap={'2'}
+      style={{ borderLeft: '1px solid #ccc' }}
+    >
       {menuItems.map(item => (
         <Button
+          size={'3'}
           key={item.id}
-          variant={`menu-btn ${activeTab === item.id ? 'active' : ''}`}
+          variant={item.id === activeTab ? 'soft' : 'surface'}
           onClick={() => setActiveTab(item.id)}
         >
           {item.label}
         </Button>
       ))}
-    </div>
+    </Flex>
   );
 }
 

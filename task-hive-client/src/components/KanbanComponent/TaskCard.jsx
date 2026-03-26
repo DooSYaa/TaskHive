@@ -1,12 +1,48 @@
 import { Draggable } from '@hello-pangea/dnd';
 import { useState } from 'react';
-import { DropdownMenu, Button, Badge } from '@radix-ui/themes';
-import VerticalDotsIcon from '../../assets/VerticalDotsIcon';
-import { DotsVerticalIcon } from '@radix-ui/react-icons';
-export default function TaskCard({ card, index, onClick }) {
+import {
+  DropdownMenu,
+  Button,
+  Badge,
+  Box,
+  Flex,
+  Avatar,
+  IconButton,
+} from '@radix-ui/themes';
+import { CalendarIcon, DotsVerticalIcon } from '@radix-ui/react-icons';
+import { useParams } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
+export default function TaskCard({ card, handleDeleteCard, index, onClick }) {
+  const { user } = useAuth();
+  const { groupId } = useParams();
+  const { kanbanId } = useParams();
   const [hoveredCard, setHoveredCard] = useState(null);
   const [cardMenu, setCardMenu] = useState(null);
   const priorityColors = ['#22c55e', '#eab308', '#ef4444', '#000000'];
+
+  const handleRemoveCard = async cardId => {
+    try {
+      const response = await fetch(
+        `http://localhost:5292/api/Kanban/DeleteKanbanCard?GroupId=${groupId}&KanbanId=${kanbanId}&CardId=${cardId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`,
+          },
+          body: JSON.stringify({
+            groupId: groupId,
+            kanbanId: kanbanId,
+            cardId: cardId,
+          }),
+        },
+      );
+      if (!response.ok) throw new Error('Something wrong', response.status);
+      handleDeleteCard(cardId);
+    } catch (error) {
+      console.error('Error deleting', error);
+    }
+  };
   return (
     <Draggable draggableId={card.id} index={index}>
       {(provided, snapshot) => (
@@ -42,58 +78,66 @@ export default function TaskCard({ card, index, onClick }) {
               }}
             ></div>
           </div>
-          <div className="flex">
-            {card.marks?.map((mark, index) => (
-              // <div
-              //   key={mark.id || index}
-              //   style={{
-              //     borderBottom: '2px solid black',
-              //     backgroundColor: mark.hexColor,
-              //     height: '15px',
-              //     width: '30px',
-              //   }}
-              // ></div>
-              <Badge color="orange">mrks</Badge>
-            ))}
-          </div>
-          <div className="flex items-center justify-between">
+          <Flex align={'center'} justify={'between'}>
             <h4 className="wrap-break-word overflow-hidden">{card.title}</h4>
-            <div className="relative">
-              <div
-                onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setCardMenu(cardMenu === card.id ? null : card.id);
-                }}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger
                 style={{
                   visibility: hoveredCard === card.id ? 'visible' : 'hidden',
                 }}
               >
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger>
-                    <Button variant="soft">
-                      <DotsVerticalIcon />
-                    </Button>
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content>
-                    <DropdownMenu.Item>Rename</DropdownMenu.Item>
-                    <DropdownMenu.Item>Delete</DropdownMenu.Item>
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between">
-            <div>
+                <IconButton
+                  variant={'surface'}
+                  size={'1'}
+                  onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setCardMenu(cardMenu === card.id ? null : card.id);
+                  }}
+                >
+                  <DotsVerticalIcon />
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content>
+                <DropdownMenu.Item>Rename</DropdownMenu.Item>
+                <DropdownMenu.Item
+                  color="red"
+                  onClick={() => handleRemoveCard(card.id)}
+                >
+                  Delete
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </Flex>
+          <Flex gap={'1'} wrap={'wrap'}>
+            {card.marks?.map(mark => (
+              <Badge variant={'surface'} color={`${mark.hexColor}`}>
+                {mark.markName}
+              </Badge>
+            ))}
+          </Flex>
+          <Flex justify={'between'}>
+            <Flex gap={'1'} className="text-[12px]" align={'center'}>
               {card.assignedUser && (
-                <div className="h-5">{card.assignedUser.userName}</div>
+                <>
+                  <Avatar
+                    size={'1'}
+                    fallback={`${card.assignedUser.userName[0]}`}
+                    radius={'full'}
+                  />
+                  <div className="h-5">{card.assignedUser.userName}</div>
+                </>
               )}
-            </div>
-            <div>
-              {card.dueDate &&
-                new Date(card.dueDate).toLocaleDateString('pl-PL')}
-            </div>
-          </div>
+            </Flex>
+            <Box className="text-[12px]">
+              {card.dueDate && (
+                <Flex gap={'1'}>
+                  <CalendarIcon />
+                  {new Date(card.dueDate).toLocaleDateString('pl-PL')}
+                </Flex>
+              )}
+            </Box>
+          </Flex>
         </div>
       )}
     </Draggable>

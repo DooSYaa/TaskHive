@@ -1,72 +1,33 @@
 import TaskCard from './TaskCard.jsx';
 import KanbanInput from './KanbanInput.jsx';
-import Users from '../ModalComponents/Users.jsx';
-import CalendarComponent from '../ModalComponents/Calendar.jsx';
-import { CalendarIcon, Cross1Icon, PersonIcon } from '@radix-ui/react-icons';
-import ReactMarkdown from 'react-markdown';
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
-import Mark from '../ModalComponents/Mark.jsx';
-import { useAuth } from '../Context/AuthContext.jsx';
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
-import DescriptionEditor from '../ModalComponents/DescriptionEditor.jsx';
-import Priority from '../ModalComponents/Priority.jsx';
-import { useParams } from 'react-router-dom';
-import { Button, Theme, TextArea, DropdownMenu } from '@radix-ui/themes';
-function Modal({ isExpandedCard, setIsExpandedCard, onClose, children }) {
-  useEffect(() => {
-    const handleKey = e => e.key === 'Escape' && onClose();
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [onClose]);
+import { Button, DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
+import TaskModal from './TaskModal.jsx';
 
-  const handleOverlayClick = e => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-  if (!isExpandedCard) return null;
-
-  return createPortal(
-    <Theme accentColor="cyan">
-      <div className="modal-overlay" onClick={handleOverlayClick}>
-        <div className=" flex flex-col w-[80%] rounded-2xl bg-white">
-          <div className="flex justify-end items-center modal-header rounded-t-2xl h-12">
-            <Button variant="surface" onClick={() => setIsExpandedCard(false)}>
-              <Cross1Icon />
-            </Button>
-          </div>
-          <div className="modal-content">{children}</div>
-        </div>
-      </div>
-    </Theme>,
-    document.body,
-  );
-}
-export default function KanbanBlock({ column, index, onCardCreated }) {
+export default function KanbanBlock({
+  column,
+  index,
+  onCardCreated,
+  onCardDeleted,
+}) {
+  const [hoveredColumn, setHoveredColumn] = useState(null);
+  const [columnMenu, setColumnMenu] = useState(null);
   const [showInput, setShowInput] = useState(false);
   const [isExpandedCard, setIsExpandedCard] = useState(false);
   const [card, setCard] = useState(null);
-  const [activePanel, setActivePanel] = useState(null);
   const [date, setDate] = useState(null);
   const [priority, setPriority] = useState(0);
   const [selectedUser, setSelectedUser] = useState(null);
   const [activeMarkIds, setActiveMarkIds] = useState([]);
-  //SignalR
-  const [connection, setConnection] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState('');
-  const { user } = useAuth();
-  const { groupId } = useParams();
-  const { kanbanId } = useParams();
+
   const [description, setDescription] = useState(card?.description || '');
   const [isEditing, setIsEditing] = useState(!card?.description);
 
   const handleSave = newMarkdown => {
     setDescription(newMarkdown);
     setIsEditing(false);
-    console.log('sending to server', newMarkdown);
   };
   const handleCancel = () => {
     if (description) {
@@ -134,21 +95,13 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
       }
     }
   };
-  const sendComment = async () => {
-    if (!connection || !message.trim() || !card) return;
-
-    try {
-      await connection.invoke('SendComment', card.id, user.userName, message);
-      console.log('message was sended');
-      setMessage('');
-    } catch (error) {
-      console.error('Error send comment:', error);
-    }
-  };
 
   const handleCardCreatedLocal = newCard => {
     onCardCreated(newCard);
     setShowInput(false);
+  };
+  const handleDeleteCardLocal = cardId => {
+    onCardDeleted(cardId);
   };
   useEffect(() => {
     if (card) {
@@ -186,13 +139,48 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
               ...provided.draggableProps.style,
             }}
           >
-            <div className="x">
-              <div
+            <Flex direction={'column'} gap={'1'} className="x">
+              <Flex
+                justify={'between'}
+                align={'center'}
+                height={'4vh'}
+                style={{ cursor: snapshot.isDragging ? 'grabbing' : 'pointer' }}
                 {...provided.dragHandleProps}
                 className="kanban-column-title"
+                pl={'8px'}
+                pr={'8px'}
+                onMouseEnter={() => setHoveredColumn(column.id)}
+                onMouseLeave={() => setHoveredColumn(null)}
               >
                 <h2>{column.statusName}</h2>
-              </div>
+
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger
+                    style={{
+                      visibility:
+                        hoveredColumn === column.id ? 'visible' : 'hidden',
+                    }}
+                  >
+                    <IconButton
+                      variant={'surface'}
+                      size={'1'}
+                      onClick={e => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setColumnMenu(
+                          columnMenu === column.id ? null : column.id,
+                        );
+                      }}
+                    >
+                      <DotsVerticalIcon />
+                    </IconButton>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content variant={'soft'} color={'indigo'}>
+                    <DropdownMenu.Item>Rename</DropdownMenu.Item>
+                    <DropdownMenu.Item color="red">Delete</DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              </Flex>
               <Droppable droppableId={column.id} type="task">
                 {provided => (
                   <div
@@ -204,6 +192,7 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
                       <TaskCard
                         key={card.id}
                         card={card}
+                        handleDeleteCard={handleDeleteCardLocal}
                         index={index}
                         onClick={() => {
                           setIsExpandedCard(true);
@@ -223,220 +212,36 @@ export default function KanbanBlock({ column, index, onCardCreated }) {
                   onCardCreated={handleCardCreatedLocal}
                 />
               )}
-              <div>
+              {!showInput && (
                 <Button
-                  variant="kanban"
+                  style={{ margin: '5px' }}
+                  variant="surface"
                   onClick={() => {
                     setShowInput(true);
                   }}
                 >
                   add card
                 </Button>
-              </div>
-            </div>
+              )}
+            </Flex>{' '}
           </div>
         )}
       </Draggable>
-      <Modal
-        setIsExpandedCard={setIsExpandedCard}
+      <TaskModal
+        card={card}
         isExpandedCard={isExpandedCard}
-        onClose={() => {
-          setIsExpandedCard(false);
-          setCard(null);
-          setActivePanel(null);
-        }}
-      >
-        <div className="title-container">
-          <div className="flex flex-col justify-center w-[80%]">
-            <h2 className="modal-title">{card ? card.title : null}</h2>
-          </div>
-          <div className="relative flex gap-3 text-center justify-center">
-            {/* <Button
-              variant="actions"
-              onClick={() =>
-                setActivePanel(activePanel === 'date' ? null : 'date')
-              }
-            >
-              <div className="flex flex-row gap-1.5">
-                <CalendarIcon />
-                Select date
-              </div>
-            </Button> */}
-            <Button
-              variant="soft"
-              color="cyan"
-              onClick={() =>
-                setActivePanel(activePanel === 'date' ? null : 'date')
-              }
-            >
-              <CalendarIcon />
-              Select date
-            </Button>
-            <Button
-              color="cyan"
-              variant="soft"
-              onClick={() =>
-                setActivePanel(activePanel === 'users' ? null : 'users')
-              }
-            >
-              <div className="flex flex-row gap-1.5">
-                <PersonIcon />
-                {/* <AddUserIcon /> */}
-                Add user
-              </div>
-            </Button>
-            {/* <Button
-              color="cyan"
-              variant="soft"
-              onClick={() =>
-                setActivePanel(activePanel === 'marks' ? null : 'marks')
-              }
-            >
-              Marks
-            </Button> */}
-            <Mark
-              setActivePanel={setActivePanel}
-              onToggleMark={handleToggleMark}
-              activeMarksIds={activeMarkIds}
-              groupId={groupId}
-              kanbanId={kanbanId}
-              cardId={card?.id}
-            />
-            <Priority
-              priority={priority}
-              setPriority={setPriority}
-              onPriorityUpdate={handlePriorityUpdate}
-              groupId={groupId}
-              kanbanId={kanbanId}
-              cardId={card ? card.id : null}
-            />
-            {activePanel === 'date' && (
-              <CalendarComponent
-                date={date}
-                setDate={setDate}
-                onDateUpdate={handleDate}
-                setActivePanel={setActivePanel}
-                groupId={groupId}
-                kanbanId={kanbanId}
-                cardId={card.id}
-              />
-            )}
-            {activePanel === 'users' && (
-              <Users
-                setActivePanel={setActivePanel}
-                setSelectedUser={setSelectedUser}
-                groupId={groupId}
-                kanbanId={kanbanId}
-                cardId={card.id}
-                onAssignUser={handleAssignUser}
-              />
-            )}
-          </div>
-          <div className="flex flex-col gap-1">
-            <div>
-              {date !== null && (
-                <div
-                  className=" flex flex-col gap-2"
-                  style={{ padding: '5px' }}
-                >
-                  <div className="text-[16px] font-bold">Term</div>
-                  {new Date(date).toLocaleDateString('pl-PL')}
-                </div>
-              )}
-            </div>
-            <div>
-              {selectedUser !== null && (
-                <div
-                  className=" flex flex-col gap-2"
-                  style={{ padding: '5px' }}
-                >
-                  <div className="text-[16px] font-bold">Member</div>
-                  {selectedUser.userName}
-                </div>
-              )}
-            </div>
-            <div>
-              {activeMarkIds?.length !== 0 && (
-                <div
-                  className=" flex flex-col gap-2"
-                  style={{ padding: '5px' }}
-                >
-                  <div className="text-[16px] font-bold">Marks</div>
-                  <div className="flex gap-0.5">
-                    {activeMarkIds.map(mark => (
-                      <div
-                        style={{
-                          backgroundColor: mark.hexColor,
-                          padding: '4px',
-                          borderRadius: '5px',
-                        }}
-                        key={mark.id}
-                      >
-                        {mark.markName === '' ? 'No name' : mark.markName}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-          <div>
-            <h6 className="">Description</h6>
-            <div className="flex justify-center description-container">
-              {isEditing ? (
-                <DescriptionEditor
-                  initialValue={description}
-                  onChange={content => setDescription(content)}
-                  onSave={handleSave}
-                  onCancel={handleCancel}
-                />
-              ) : (
-                <div
-                  onClick={() => setIsEditing(true)}
-                  title="click"
-                  className="w-full"
-                >
-                  {description ? (
-                    <div className="markdown-content">
-                      <ReactMarkdown>{description}</ReactMarkdown>
-                    </div>
-                  ) : (
-                    <span>Add description...</span>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col flex-1 gap-3 items-center bg">
-          <div className=" w-full">Coments</div>
-          <div className="flex justify-center items-center gap-3 w-full">
-            {/* <textarea
-              name=""
-              id=""
-              className="resize-none w-[70%] rounded-[5px] border border-black"
-              placeholder="text coment"
-              value={message}
-              onChange={e => setMessage(e.target.value)}
-            ></textarea> */}
-            <TextArea placeholder="Text comment" size={3} className="w-[70%]" />
-            <Button color="cyan" variant="soft" onClick={sendComment}>
-              Send
-            </Button>
-          </div>
-          <div className="flex flex-col items-center   w-full h-full">
-            {messages.map((msg, index) => (
-              <div key={index} className="bg-amber-600 w-[60%]">
-                <div className="flex justify-between items-center  ">
-                  <strong>{msg.sender}</strong>
-                  <sub>{msg.timestamp.toLocaleTimeString()}</sub>
-                </div>
-                <p>{msg.message}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Modal>
+        setIsExpandedCard={setIsExpandedCard}
+        date={date}
+        onDateUpdate={handleDate}
+        selectedUser={selectedUser}
+        onSelectUser={setSelectedUser}
+        onAssignUser={handleAssignUser}
+        activeMarkIds={activeMarkIds}
+        onToggleMark={handleToggleMark}
+        priority={priority}
+        setPriority={setPriority}
+        onPriorityUpdate={handlePriorityUpdate}
+      />
     </div>
   );
 }

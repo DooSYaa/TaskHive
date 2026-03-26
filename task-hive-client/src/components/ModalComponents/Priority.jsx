@@ -15,7 +15,6 @@ function Priority({
   kanbanId,
   cardId,
 }) {
-  console.log(priority);
   const { user } = useAuth();
 
   const handleSelect = async newItem => {
@@ -49,7 +48,6 @@ function Priority({
   const currentValue =
     priority !== null && priority !== undefined ? String(priority) : undefined;
   return (
-    <Theme accentColor="cyan">
       <Select.Root value={currentValue} onValueChange={handleSelect}>
         <Select.Trigger variant="soft" placeholder="Select priority" />
         <Select.Content
@@ -74,7 +72,6 @@ function Priority({
           ))}
         </Select.Content>
       </Select.Root>
-    </Theme>
   );
 }
 

@@ -13,6 +13,7 @@ import WorkingSpaceMyTasks from './WorkingSpaceMyTasks.jsx';
 import WorkingSpaceDashboards from './WorkingSpaceDashboards.jsx';
 import { HubConnectionState } from '@microsoft/signalr';
 import { useSignalR } from '../Context/SignalRContext.jsx';
+import { Flex, Box } from '@radix-ui/themes';
 
 export default function WorkingSpace() {
   const { groupId } = useParams();
@@ -137,8 +138,8 @@ export default function WorkingSpace() {
   }, []);
 
   return (
-    <div className="flex">
-      <div className="workingSpace">
+    <Flex>
+      <Box height={'93vh'} width={'100%'}>
         {activeTab === 'dashboards' && (
           <WorkingSpaceDashboards
             setKanbanTables={setKanbanTables}
@@ -152,14 +153,12 @@ export default function WorkingSpace() {
         {activeTab === 'chat' && <WorkingSpaceChat />}
         {activeTab === 'settings' && <WorkingSpaceSettings />}
         {activeTab === 'myTasks' && <WorkingSpaceMyTasks groupId={groupId} />}
-      </div>
-      <div className="menu-space">
-        <SideMenu
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          menuItems={menuItems}
-        />
-      </div>
+      </Box>
+      <SideMenu
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        menuItems={menuItems}
+      />
       {showModal && (
         <CreateKanbanTable
           KanbanTableName={KanbanTableName}
@@ -172,6 +171,6 @@ export default function WorkingSpace() {
           setFriendName={setFriendName}
         />
       )}
-    </div>
+    </Flex>
   );
 }

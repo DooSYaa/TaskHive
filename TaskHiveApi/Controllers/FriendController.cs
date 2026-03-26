@@ -30,7 +30,12 @@ namespace TaskHiveApi.Controllers
             }
             var friends = await _context.Friends
                 .Where(f => f.UserId == userId && f.Status == Status.Accepted)
-                .Select(f => f.Friend.UserName)
+                .Select(f => new
+                {
+                    Id = f.FriendId,
+                    f.Friend.UserName,
+                    f.Friend.AvatarUrl
+                })
                 .ToListAsync();
             
             return Ok(friends);

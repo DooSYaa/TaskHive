@@ -145,8 +145,11 @@ namespace TaskHiveApi.Controllers
 
             var groupUsers = existingGroup.GroupUsers.Select(x => new
             {
-                userId = x.UserId,
-                userName = x.User.UserName,
+                x.UserId,
+                x.User.FirstName,
+                x.User.LastName,
+                x.User.UserName,
+                x.User.AvatarUrl,
                 userRole = x.Role.ToString(),
             });
             return Ok(groupUsers);

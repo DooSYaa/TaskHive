@@ -7,9 +7,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext.jsx';
 import { useState, useEffect } from 'react';
 import { GrTask } from 'react-icons/gr';
-import Button from '../ButtonComponent/Button.jsx';
-import VerticalDotsIcon from '../../assets/VerticalDotsIcon.jsx';
 import RecentBoards from './RecentBoards.jsx';
+import { Flex, Box, Heading, Text, Section, Grid } from '@radix-ui/themes';
 
 function Home() {
   const [groupData, setGroupData] = useState(null);
@@ -63,13 +62,20 @@ function Home() {
   }, [user]);
 
   return (
-    <div className="home-page">
-      {/* --- SIDEBAR --- */}
-      <div className="sidebar">
-        <div className="mb-6 px-4">
-          {/* Сюда можно добавить Логотип приложения */}
-          <h2 className="text-xl font-bold text-blue-600">TaskHive</h2>
-        </div>
+    <Flex height={'100vh'} className="home-page" overflow={'hidden'}>
+      <Flex
+        direction={'column'}
+        gap={'4'}
+        flexShrink={'0'}
+        width={'250px'}
+        p={'20px'}
+        className="sidebar"
+      >
+        <Box>
+          <Heading as={'h2'} size={'20px'} weight={'bold'} color={'blue'}>
+            TaskHive
+          </Heading>
+        </Box>
 
         <Link className="menu-item" to="/friends">
           <FriendsIcon />
@@ -86,33 +92,38 @@ function Home() {
           <span>MyTasks</span>
         </Link>
         {/* Сюда можно добавить кнопку Settings или Logout */}
-      </div>
+      </Flex>
 
       {/* --- MAIN CONTENT --- */}
-      <div className="main-content">
-        {/* Секция приветствия (Опционально) */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">
+      <Box flexGrow={'1'} px={'6'} py={'5'} overflowY={'auto'}>
+        <Box mb={'32px'}>
+          <Heading as="h1" size={'8'} weight={'bold'} color="gray">
             Hello, {user?.userName}!
-          </h1>
-          <p className="text-gray-500">Here is what's happening today.</p>
-        </div>
+          </Heading>
+          <Text color="gray">Here is what's happening today.</Text>
+        </Box>
 
-        {/* Секция ГРУПП */}
-        <section>
-          <h2 className="section-title">Your Groups</h2>
+        <Section>
+          <Heading as={'h2'} size={'6'} weight={'bold'} color="black" mb={'5'}>
+            Your Groups
+          </Heading>
 
-          <div className="groups-grid">
-            {/* 1. Карточка создания новой группы (Всегда первая) */}
-            <div
+          <Grid
+            columns={'repeat(auto-fill, minmax(260px, 1fr))'}
+            gap={'4'}
+            mb={'40px'}
+          >
+            <Flex
+              direction={'column'}
+              align={'center'}
+              justify={'center'}
+              height={'160px'}
               className="create-group-card"
               onClick={() => setShowModal(true)}
             >
               <span className="plus-icon">+</span>
               <span className="font-semibold">Create New Group</span>
-            </div>
-
-            {/* 2. Список групп с сервера */}
+            </Flex>
             {groupData &&
               groupData.map(group => (
                 <Link
@@ -120,33 +131,36 @@ function Home() {
                   key={group.id}
                   className="group-card"
                 >
-                  <div className="group-info">
-                    <h3 className="group-name">{group.name}</h3>
-                  </div>
+                  <Box>
+                    <Heading
+                      as={'h3'}
+                      size={'5'}
+                      weight={'600'}
+                      m={'0'}
+                      color="black"
+                      className="group-name"
+                    >
+                      {group.name}
+                    </Heading>
+                  </Box>
 
-                  <div className="group-footer">
+                  <Flex align={'center'} gap={'5px'} className="group-footer">
                     <span>Open workspace →</span>
-                  </div>
+                  </Flex>
                 </Link>
               ))}
-          </div>
-        </section>
+          </Grid>
+        </Section>
 
         {/* Секция ДОСОК (Заготовка) */}
         <section className="mt-8">
           <h2 className="section-title">Your Tables</h2>
           <RecentBoards />
         </section>
-      </div>
-      <div className="right-column">
+      </Box>
+      <Flex direction={'column'} gap={'24px'} width={'450px'}>
         <TaskWidget />
-        <div className="widget-container bg-blue-50 border-blue-100">
-          <h3 className="text-blue-800 font-bold mb-2">💡 Tip of the day</h3>
-          <p className="text-sm text-blue-600">
-            Drag and drop tasks to update their status quickly!
-          </p>
-        </div>
-      </div>
+      </Flex>
       {showModal && (
         <GroupModal
           groupName={groupName}
@@ -155,7 +169,7 @@ function Home() {
           handleSubmit={handleSubmit}
         />
       )}
-    </div>
+    </Flex>
   );
 }
 

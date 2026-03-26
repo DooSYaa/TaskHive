@@ -15,7 +15,7 @@ export default function Freind() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
+          'Authorization': `Bearer ${user?.token}`,
         },
         credentials: 'include',
       })
@@ -33,7 +33,7 @@ export default function Freind() {
           setFriends([]);
         });
     }
-  }, [user]);
+  }, [user?.token]);
   const handleAddFriend = async () => {
     if (!searchQuery.trim()) {
       setError('Please enter a username');
@@ -44,7 +44,7 @@ export default function Freind() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
+          'Authorization': `Bearer ${user?.token}`,
         },
         credentials: 'include',
         body: JSON.stringify(searchQuery),
@@ -68,7 +68,7 @@ export default function Freind() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`,
+        'Authorization': `Bearer ${user?.token}`,
       },
     })
       .then(response => response.json())
@@ -76,14 +76,14 @@ export default function Freind() {
         console.log(data);
         setFriendsRequest(data);
       });
-  }, [user]);
+  }, [user?.token]);
 
   function acceptFriendRequest(friendName) {
     fetch('http://localhost:5292/api/Friend/addFriend', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`,
+        'Authorization': `Bearer ${user?.token}`,
       },
       body: JSON.stringify(friendName),
     })

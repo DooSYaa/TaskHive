@@ -54,7 +54,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddScoped<IJwtService, TokenService>();
-builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<PrivateChatService>();
+builder.Services.AddScoped<GroupChatService>();
+builder.Services.AddScoped<CommentService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("Connection string not found");
 
@@ -120,5 +122,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/hubs/chat");
+
+app.UseStaticFiles();
 
 app.Run();

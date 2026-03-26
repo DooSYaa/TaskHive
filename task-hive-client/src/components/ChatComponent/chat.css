@@ -1,14 +1,4 @@
 /* ====== Основной контейнер ====== */
-.main-chat-container {
-  height: 90vh;
-  display: flex;
-  flex-direction: row;
-  background-color: #f4f7fb;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-}
 
 /* ====== Левая панель друзей ====== */
 .friends-container {
@@ -110,11 +100,7 @@
 
 /* ====== Ввод и кнопка ====== */
 .chat-input-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background-color: #ffffff;
-  padding: 15px;
   border-top: 1px solid #d3dae1;
 }
 

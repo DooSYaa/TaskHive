@@ -34,6 +34,25 @@ public class AccountController : ControllerBase
         _logger = logger;
     }
 
+    [HttpGet("get-user")]
+    public async Task<IActionResult> GetUser([FromQuery] string userId)
+    {
+        if (userId == null) return Unauthorized();
+        
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return NotFound("User not found.");
+
+        return Ok(new
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            UserName = user.UserName,
+            Email = user.Email,
+            AvatarUrl = user.AvatarUrl
+        });
+    }
+
     [HttpPost("registration")]
     public async Task<IActionResult> Registration([FromBody] RegisterDto registerDto)
     {
@@ -44,23 +63,23 @@ public class AccountController : ControllerBase
 
             var user = new User
             {
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
                 UserName = registerDto.UserName,
                 Email = registerDto.Email,
             };
             var createdUser = await _userManager.CreateAsync(user, registerDto.Password);
-            if (!createdUser.Succeeded)
-                return BadRequest(createdUser.Errors);
-            var result = await _signInManager.PasswordSignInAsync(user, registerDto.Password, false, false);
-            if (!result.Succeeded)
-            {
-                if (result.IsLockedOut)
-                    return Unauthorized("Your account is locked out");
-                if (result.IsNotAllowed)
-                    return Unauthorized("You are not allowed to login");
-                return Unauthorized("Invalid email or password");
-            }
-            return CreatedAtAction(nameof(Login), new {email = registerDto.Email},
-                new {Id = user.Id, UserName = user.UserName, Email = user.Email, Token = _jwtService.GenerateJwtToken(user)});
+            if (!createdUser.Succeeded) return BadRequest(createdUser.Errors);
+            return Ok( new
+                {
+                    Id = user.Id, 
+                    FirstName = user.FirstName, 
+                    LastName = user.LastName, 
+                    UserName = user.UserName, 
+                    Email = user.Email, 
+                    Token = _jwtService.GenerateJwtToken(user),
+                }
+            );
         }
         catch (Exception ex)
         {
@@ -71,25 +90,28 @@ public class AccountController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
     {
-        if (!ModelState.IsValid)
-        {
-            _logger.LogCritical("Model state is invalid");
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
         var user = await _userManager.FindByEmailAsync(loginDto.Email);
-        if (user == null)
-            return NotFound("user not found");
-        if (!await _userManager.CheckPasswordAsync(user, loginDto.Password))
-            return Unauthorized("Invalid credentials");
-        var token = _jwtService.GenerateJwtToken(user);
-
-        return Ok(new 
+        if (user != null)
         {
-            Id = user.Id,
-            UserName = user.UserName, 
-            Email = user.Email, 
-            Token = token /*_jwtService.GenerateJwtToken(user)*/
-        });
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+            if (result.Succeeded)
+            {
+                var token = _jwtService.GenerateJwtToken(user);
+                return Ok(new 
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    AvatarUrl = user.AvatarUrl,
+                    Token = token
+                });
+            }
+            if (result.IsLockedOut) return StatusCode(423, "Account is locked. Please try again later.");
+        }
+        return Unauthorized("Invalid email or password.");
     }
     [Authorize]
     [HttpPost("logout")]

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
 import './TaskWidget.css';
+import { Flex, Heading, Box, Text, ScrollArea } from '@radix-ui/themes';
 
 export default function TaskWidget() {
   const [tasks, setTasks] = useState([]);
@@ -23,12 +24,7 @@ export default function TaskWidget() {
         if (response.ok) {
           const data = await response.json();
           console.log('Fetched tasks for widget:', data);
-          // Сортируем: сначала срочные (по дате), потом по приоритету
-          // Берем только первые 4 задачи для виджета
-          const sorted = data
-            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-            .slice(0, 4);
-          setTasks(sorted);
+          setTasks(data);
         }
       } catch (e) {
         console.error('Widget load error', e);
@@ -53,50 +49,78 @@ export default function TaskWidget() {
   if (loading) return <div className="widget-container">Loading...</div>;
 
   return (
-    <div className="widget-container">
-      <div className="widget-header">
-        <h3 className="widget-title">🔥 My Focus</h3>
-      </div>
+    <Box height={'100vh'} p={'20px'} className="widget-container">
+      <Flex justify={'between'} align={'center'} mb={'15px'}>
+        <Heading as="h3" weight={'medium'} size={'5'} color="black">
+          My Focus
+        </Heading>
+      </Flex>
 
-      <div className="widget-task-list">
-        {tasks.length > 0 ? (
-          tasks.map(task => (
-            <div
-              key={task.id}
-              className="widget-task-row"
-              onClick={() => goToTask(task)}
-            >
-              <div className="task-row-left">
-                {/* Цветная полоска приоритета */}
-                <div
-                  className="priority-strip"
-                  style={{ background: priorityColors[task.priority || 0] }}
-                ></div>
+      <ScrollArea
+        size={'3'}
+        scrollbars={'vertical'}
+        style={{ height: '53rem' }}
+      >
+        <Flex direction={'column'} gap={'10px'} width={'24rem'}>
+          {tasks.length > 0 ? (
+            tasks.map(task => (
+              <Flex
+                justify={'between'}
+                align={'center'}
+                py={'10px'}
+                px={'12px'}
+                key={task.id}
+                className="widget-task-row"
+                onClick={() => goToTask(task)}
+              >
+                <Flex align={'center'} gap={'12px'} width={'70%'}>
+                  {/* Цветная полоска приоритета */}
+                  <Box
+                    width={'5px'}
+                    height={'32px'}
+                    className="priority-strip"
+                    style={{ background: priorityColors[task.priority || 0] }}
+                  />
 
-                <div className="task-info">
-                  <h4>{task.title}</h4>
-                  <div className="task-context">
-                    {task.tableName} • {task.statusName}
-                  </div>
-                </div>
-              </div>
+                  <Box width={'90%'}>
+                    <Heading
+                      wrap={'nowrap'}
+                      weight={'medium'}
+                      truncate
+                      size={'3'}
+                    >
+                      {task.title}
+                    </Heading>
+                    <Box>
+                      <Text size={'1'} color="gray" mt={'2px'}>
+                        {task.tableName} • {task.statusName}
+                      </Text>
+                    </Box>
+                  </Box>
+                </Flex>
 
-              {task.dueDate && (
-                <div
-                  className={`task-date ${isUrgent(task.dueDate) ? 'urgent' : ''}`}
-                >
-                  {new Date(task.dueDate).toLocaleDateString(undefined, {
-                    day: 'numeric',
-                    month: 'short',
-                  })}
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <div className="empty-state">🎉 No urgent tasks. Good job!</div>
-        )}
-      </div>
-    </div>
+                {task.dueDate && (
+                  <Box
+                    width={'60px'}
+                    className={`task-date ${isUrgent(task.dueDate) ? 'urgent' : ''}`}
+                  >
+                    {new Date(task.dueDate).toLocaleDateString(undefined, {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
+                  </Box>
+                )}
+              </Flex>
+            ))
+          ) : (
+            <Box>
+              <Text align={'center'} color="gray" size={'2'}>
+                🎉 No urgent tasks. Good job!
+              </Text>
+            </Box>
+          )}
+        </Flex>
+      </ScrollArea>
+    </Box>
   );
 }

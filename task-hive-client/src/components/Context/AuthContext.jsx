@@ -8,8 +8,24 @@ export const AuthProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const login = (id, userName, token, email) => {
-    const userData = { id, userName, token, email };
+  const login = (
+    id,
+    firstName,
+    lastName,
+    userName,
+    email,
+    avatarUrl,
+    token,
+  ) => {
+    const userData = {
+      id,
+      firstName,
+      lastName,
+      userName,
+      email,
+      avatarUrl,
+      token,
+    };
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
   };

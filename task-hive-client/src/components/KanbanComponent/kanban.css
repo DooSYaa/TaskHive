@@ -21,11 +21,6 @@
   overflow-y: auto;
 }
 .kanban-column-title {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 4vh;
   border-radius: 10px 10px 0 0;
 }
 .main-kanban-card {
@@ -36,10 +31,7 @@
   flex: 0 0 auto;
 }
 .x {
-  display: flex;
-  flex-direction: column;
   background-color: #cfdded;
-  gap: 10px;
   border-radius: 10px;
 }
 .y {
@@ -47,7 +39,7 @@
   display: flex;
   align-items: start;
   gap: 25px;
-  overflow-x: auto;
+  overflow: auto;
 }
 .add-column-container {
   flex-shrink: 0;

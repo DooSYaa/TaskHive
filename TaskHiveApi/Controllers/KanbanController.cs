@@ -81,7 +81,6 @@ public class KanbanController : ControllerBase
         };
         return Ok(newResult);
     }
-
     [HttpPost("CreateKanbanTable")]
     public async Task<IActionResult> CreateKanbanTable([FromBody] CreateKanbanTableDto kanbanTableDto)
     {
@@ -166,7 +165,7 @@ public class KanbanController : ControllerBase
             // .Include(x => x.KanbanStatus)
             // .Include(x => x.KanbanTable)
             // .Include(x => x.Marks)
-            .Where(card => card.AssignedUserId == userId || card.AssignedUserId == null)
+            .Where(card => card.AssignedUserId == userId)
             .Select(card => new
             {
                 Id = card.Id,
@@ -187,7 +186,8 @@ public class KanbanController : ControllerBase
                     x.HexColor,
                 }).ToList()
             })
-            .OrderBy(t => t.DueDate)
+            .OrderByDescending(t => t.Priority)
+            .ThenByDescending(t => t.DueDate)
             .ToListAsync();
         return Ok(tasks);
 
@@ -259,6 +259,29 @@ public class KanbanController : ControllerBase
             description = newKanbanCard.Description,
             position = newKanbanCard.Position,
         });
+    }
+    [HttpDelete("DeleteKanbanCard")]
+    public async Task<IActionResult> DeleteKanbanCard([FromQuery] DeleteKanbanCardDto deleteKanbanCardDto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        bool isUserInGroup =
+            await _context.GroupUsers.AnyAsync(x => x.UserId == userId && x.GroupId == deleteKanbanCardDto.GroupId);
+
+        if (!isUserInGroup)
+            return Forbid();
+
+        var card = await _context.KanbanCards.FirstOrDefaultAsync(x =>
+            x.Id == deleteKanbanCardDto.CardId && 
+            x.KanbanTableId == deleteKanbanCardDto.KanbanId &&
+            x.KanbanTable.GroupId == deleteKanbanCardDto.GroupId);
+        
+        if (card == null)
+            return NotFound(new { message = "Something went wrong, try again later" });
+    
+        _context.Remove(card);
+        await _context.SaveChangesAsync();
+        return Ok(new {message = "Deleted!"});
     }
 
     [HttpPut("MoveCard")]
@@ -369,6 +392,7 @@ public class KanbanController : ControllerBase
     [HttpPatch("UpdateTaskDate")]
     public async Task<IActionResult> UpdateTaskDate([FromBody] UpdateTaskDateDto updateTaskDateDto)
     {
+        Console.WriteLine($"Received UpdateTaskDateDto: {updateTaskDateDto.DueDateTime}");
         var existKanban =
             await _context.KanbanTables.AnyAsync(x =>
                 x.Id == updateTaskDateDto.KanbanId && 

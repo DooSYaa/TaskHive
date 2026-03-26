@@ -1,9 +1,15 @@
-import { useParams } from 'react-router-dom';
-import Button from '../ButtonComponent/Button';
-import VerticalDotsIcon from '../../assets/VerticalDotsIcon.jsx';
-import { Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../Context/AuthContext.jsx';
+import {
+  Box,
+  Text,
+  DropdownMenu,
+  Flex,
+  Grid,
+  IconButton,
+} from '@radix-ui/themes';
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
 
 function WorkingSpaceDashboards({
   setKanbanTables,
@@ -13,7 +19,6 @@ function WorkingSpaceDashboards({
 }) {
   const { user } = useAuth();
   const { groupId } = useParams();
-  const [kanbanMenu, setKanbanMenu] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
   const handleDeleteKanbanTable = async kanbanId => {
     try {
@@ -42,80 +47,78 @@ function WorkingSpaceDashboards({
     }
   };
   return (
-    <div>
-      <div className="dashboard-grid">
-        <div
-          className="create-dashboard-card"
-          onClick={() =>
-            setShowModal(showModal === 'kanban' ? false : 'kanban')
-          }
-        >
-          <span className="plus-icon">+</span>
-          <span className="font-semibold">Create new dashboard</span>
-        </div>
-        {kanbanTables && kanbanTables.length > 0
-          ? kanbanTables.map(kanban => {
-              const isOpen = kanbanMenu === kanban.id;
-              const isHovered = hoveredCard === kanban.id;
-              return (
-                <Link
-                  style={{ textDecoration: 'none' }}
-                  to={`/group/${groupId}/${kanban.id}`}
-                  key={kanban.id}
-                  className="kanbanTablesList"
-                  onMouseEnter={() => setHoveredCard(kanban.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                >
-                  <div
-                    className="absolute top-2 left-1"
-                    onClick={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setKanbanMenu(isOpen ? null : kanban.id);
-                    }}
-                    style={{ visibility: isHovered ? 'visible' : 'hidden' }}
-                  >
-                    <VerticalDotsIcon />
-                  </div>
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="">{kanban.kanbanTableName}</div>
-                  </div>
-                  {isOpen && (
-                    <div
-                      className="
-                        absolute
-                        top-1
-                        right-15
-                        w-40
-                        rounded-md
-                        border
-                        bg-white
-                        shadow-lg
-                        z-50"
+    <Grid
+      columns={'repeat(auto-fill, 15rem)'}
+      rows={'repeat(2, 120px)'}
+      gap={'4'}
+      p={'4'}
+    >
+      <Flex
+        direction={'column'}
+        align={'center'}
+        justify={'center'}
+        className="create-dashboard-card"
+        onClick={() => setShowModal(showModal === 'kanban' ? false : 'kanban')}
+      >
+        <span className="plus-icon">+</span>
+        <span className="font-semibold">Create new dashboard</span>
+      </Flex>
+      {kanbanTables && kanbanTables.length > 0
+        ? kanbanTables.map(kanban => {
+            const isHovered = hoveredCard === kanban.id;
+            return (
+              <Link
+                style={{ textDecoration: 'none' }}
+                to={`/group/${groupId}/${kanban.id}`}
+                key={kanban.id}
+                className="kanbanTablesList"
+                onMouseEnter={() => setHoveredCard(kanban.id)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                <Box position={'absolute'} top={'1'} right={'1'}>
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger
+                      style={{ visibility: isHovered ? 'visible' : 'hidden' }}
                     >
-                      <div
-                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer rounded-md"
-                        onClick={e => e.preventDefault()}
+                      <IconButton
+                        variant={'surface'}
+                        onClick={e => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
                       >
-                        Переименовать
-                      </div>
-                      <div
-                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer rounded-md"
+                        <DotsVerticalIcon />
+                      </IconButton>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      <DropdownMenu.Item onClick={e => e.preventDefault()}>
+                        Rename
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        color="red"
                         onClick={e => {
                           e.preventDefault();
                           handleDeleteKanbanTable(kanban.id);
                         }}
                       >
-                        Удалить
-                      </div>
-                    </div>
-                  )}
-                </Link>
-              );
-            })
-          : null}
-      </div>
-    </div>
+                        Delete
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                </Box>
+                <Flex
+                  justify={'center'}
+                  align={'center'}
+                  width={'100%'}
+                  height={'100%'}
+                >
+                  <Text>{kanban.kanbanTableName}</Text>
+                </Flex>
+              </Link>
+            );
+          })
+        : null}
+    </Grid>
   );
 }
 

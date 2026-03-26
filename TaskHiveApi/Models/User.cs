@@ -4,6 +4,9 @@ namespace TaskHiveApi.Models;
 
 public class User : IdentityUser
 {
+   public string FirstName { get; set; }
+   public string LastName { get; set; }
+   public string? AvatarUrl { get; set; }
    public List<Friends> Friends { get; set; }
    public List<GroupUser> GroupUsers { get; set; } = new();
 }

@@ -1,24 +1,65 @@
 import './account.model.css';
-import Avatar from '@mui/material/Avatar';
 import { useAuth } from '../Context/AuthContext';
-import { ColorPicker } from 'primereact/colorpicker';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Box, Flex, Avatar, Text, Button } from '@radix-ui/themes';
 export default function BasicDemo() {
-  const [color, setColor] = useState(null);
+  const [avatar, setAvatar] = useState(null);
   const { user } = useAuth();
 
+  useEffect(() => {
+    if (user) {
+      try {
+        const fetchUserData = async () => {
+          const response = await fetch(
+            `http://localhost:5292/api/Account/get-user?userId=${user.id}`,
+          );
+          const userData = await response.json();
+          console.log('Fetched user data:', userData);
+          setAvatar(userData.avatarUrl);
+        };
+        fetchUserData();
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    }
+  }, [user]);
+
   return (
-    <div className="flex">
-      <div className="border border-black w-72 h-[55rem]"></div>
-      <div className="border border-amber-400 w-full">
-        {
-          <Avatar sx={{ width: '200px', height: '200px', fontSize: '100px' }}>
-            D
-          </Avatar>
-        }
-        {user.userName}
-      </div>
-      <ColorPicker value={color} onChange={e => setColor(e.value)} />
-    </div>
+    <Flex
+      justify={'center'}
+      style={{ border: '1px solid black' }}
+      height={'93vh'}
+    >
+      <Flex
+        mt={'2'}
+        justify={'center'}
+        style={{ border: '1px solid blue' }}
+        width={'800px'}
+        height={'200px'}
+        gap={'5'}
+      >
+        <Box style={{ border: '1px solid black' }}>
+          <Avatar
+            size={'8'}
+            radius={'full'}
+            src={`http://localhost:5292/${avatar}`}
+            alt="User Avatar"
+          />
+        </Box>
+        <Flex direction={'column'} style={{ border: '1px solid black' }}>
+          <Text weight={'bold'}>{user.userName}</Text>
+          <Flex>
+            <Text size={'2'}>
+              {user.firstName} {user.lastName}
+            </Text>
+          </Flex>
+        </Flex>
+      </Flex>
+      <Dialog.Root open>
+        <Dialog.Content>
+          <Dialog.Title>Change Avatar</Dialog.Title>
+        </Dialog.Content>
+      </Dialog.Root>
+    </Flex>
   );
 }
