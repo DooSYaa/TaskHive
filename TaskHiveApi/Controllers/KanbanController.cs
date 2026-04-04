@@ -162,9 +162,6 @@ public class KanbanController : ControllerBase
         var tasks = await _context.KanbanTables
             .Where(x => groupLists.Contains(x.GroupId))
             .SelectMany(x => x.Cards)
-            // .Include(x => x.KanbanStatus)
-            // .Include(x => x.KanbanTable)
-            // .Include(x => x.Marks)
             .Where(card => card.AssignedUserId == userId)
             .Select(card => new
             {
@@ -186,8 +183,10 @@ public class KanbanController : ControllerBase
                     x.HexColor,
                 }).ToList()
             })
-            .OrderByDescending(t => t.Priority)
-            .ThenByDescending(t => t.DueDate)
+            .OrderBy(t => t.DueDate == null)
+            .ThenByDescending(t => t.DueDate < DateTime.Now)
+            .ThenBy(t => t.DueDate)
+            .ThenByDescending(t => t.Priority)
             .ToListAsync();
         return Ok(tasks);
 

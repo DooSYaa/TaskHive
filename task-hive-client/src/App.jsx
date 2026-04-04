@@ -19,7 +19,7 @@ export default function App() {
     <div>
       <Header />
       <Routes>
-        {user ? (
+        {user?.token ? (
           <Route path="/" element={<Home />} />
         ) : (
           <Route path="/" element={<WelcomePage />} />
