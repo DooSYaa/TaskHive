@@ -170,9 +170,11 @@ export default function Registration() {
               </Button>
               <Flex justify={'center'} align={'center'} gap={'2'} mt={'2'}>
                 <Text size={'3'}>Already have an account?</Text>
-                <Button type={'button'} variant={'solid'}>
-                  Sign in
-                </Button>
+                <Link to={'/login'}>
+                  <Button type={'button'} variant={'solid'}>
+                    Sign in
+                  </Button>
+                </Link>
               </Flex>
             </Flex>
           </Flex>

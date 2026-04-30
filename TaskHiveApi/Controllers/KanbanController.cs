@@ -1,10 +1,7 @@
 ﻿using System.Security.Claims;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using TaskHiveApi.Data;
 using TaskHiveApi.Models.DTO.Kanban;
 using TaskHiveApi.Models.Kanban;

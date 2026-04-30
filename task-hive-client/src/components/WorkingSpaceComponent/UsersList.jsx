@@ -122,6 +122,7 @@ function UsersList({ users, showModal, setShowModal }) {
               <Flex
                 direction={'column'}
                 justify={'between'}
+                align={'center'}
                 pt={'4'}
                 pb={'4'}
                 height={'100%'}
@@ -138,7 +139,10 @@ function UsersList({ users, showModal, setShowModal }) {
                   width={'100%'}
                 >
                   <Box>
-                    <Text>{user.userName}</Text>
+                    <Text>{user.firstName} {user.lastName}</Text>
+                  </Box>
+                  <Box>
+                    <Text>@{user.userName}</Text>
                   </Box>
                   <Badge
                     size={'2'}
@@ -157,9 +161,9 @@ function UsersList({ users, showModal, setShowModal }) {
           </div>
         )}
       </Flex>
-      <div className="border h-96 mt-6 rounded-xl bg-gray-50 p-4 text-gray-500">
-        Activity Log (Placeholder)
-      </div>
+      {/*<div className="border h-96 mt-6 rounded-xl bg-gray-50 p-4 text-gray-500">*/}
+      {/*  Activity Log (Placeholder)*/}
+      {/*</div>*/}
     </Flex>
   );
 }

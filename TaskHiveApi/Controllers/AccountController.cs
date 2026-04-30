@@ -35,14 +35,14 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("get-user")]
-    public async Task<IActionResult> GetUser([FromQuery] string userId)
+    public async Task<IActionResult> GetUser([FromQuery] string? userId)
     {
         if (userId == null) return Unauthorized();
         
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return NotFound("User not found.");
 
-        return Ok(new
+        return Ok(new UserDto
         {
             Id = user.Id,
             FirstName = user.FirstName,
@@ -70,7 +70,7 @@ public class AccountController : ControllerBase
             };
             var createdUser = await _userManager.CreateAsync(user, registerDto.Password);
             if (!createdUser.Succeeded) return BadRequest(createdUser.Errors);
-            return Ok( new
+            return Ok( new NewUserDto
                 {
                     Id = user.Id, 
                     FirstName = user.FirstName, 
@@ -98,7 +98,7 @@ public class AccountController : ControllerBase
             if (result.Succeeded)
             {
                 var token = _jwtService.GenerateJwtToken(user);
-                return Ok(new 
+                return Ok(new LoginUserDto
                 {
                     Id = user.Id,
                     FirstName = user.FirstName,

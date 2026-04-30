@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import Registration from './components/RegistrationComponent/Registration.jsx';
 import Login from './components/LoginComponent/Login.jsx';
 import Home from './components/HomeComponent/Home.jsx';
-import Account from './components/AccountComponent/Account.jsx';
+import Account from './components/AccountComponent/UserProfile.jsx';
 import Friend from './components/FriendComponent/Friend.jsx';
 import Chat from './components/ChatComponent/Chat.jsx';
 import Kanban from './components/KanbanComponent/Kanban.jsx';

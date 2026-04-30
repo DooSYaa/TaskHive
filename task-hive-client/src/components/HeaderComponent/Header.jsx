@@ -2,9 +2,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext.jsx';
 import './header.css';
 import { Avatar, DropdownMenu, Flex, Button, Text } from '@radix-ui/themes';
+import UserProfile from '../AccountComponent/UserProfile.jsx';
+import { useState } from 'react';
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const [isUserProfileOpen, setIsUserProfileOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -25,39 +28,47 @@ export default function Header() {
           </Link>
         </div>
         {user ? (
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <Button variant={'ghost'}>
-                <Flex align={'center'} gap={'2'}>
-                  <Text size={'3'}>{user.userName}</Text>
-                  <Avatar
-                    variant={'solid'}
-                    size={'2'}
-                    src={`http://localhost:5292/${user.avatarUrl}`}
-                    fallback={user.userName[0]}
-                  />
-                </Flex>
-              </Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content variant={'soft'}>
-              <DropdownMenu.Label>
-                <Flex direction={'column'}>
-                  <Text size={'1'}>{user.firstName + ' ' + user.lastName}</Text>
-                  <Text size={'1'}>{user.email}</Text>
-                </Flex>
-              </DropdownMenu.Label>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item onSelect={() => navigate('/user')}>
-                Profile
-              </DropdownMenu.Item>
-              <DropdownMenu.Item>Settings</DropdownMenu.Item>
-              <DropdownMenu.Item color={'red'} onSelect={handleLogout}>
-                Logout
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
+          <>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <Button variant={'ghost'}>
+                  <Flex align={'center'} gap={'2'}>
+                    <Text size={'3'}>{user.userName}</Text>
+                    <Avatar
+                      variant={'solid'}
+                      size={'2'}
+                      src={`http://localhost:5292/${user.avatarUrl}`}
+                      fallback={user.userName[0]}
+                    />
+                  </Flex>
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content variant={'soft'}>
+                <DropdownMenu.Label>
+                  <Flex direction={'column'}>
+                    <Text size={'1'}>
+                      {user.firstName + ' ' + user.lastName}
+                    </Text>
+                    <Text size={'1'}>{user.email}</Text>
+                  </Flex>
+                </DropdownMenu.Label>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item onSelect={() => setIsUserProfileOpen(true)}>
+                  UserProfile
+                </DropdownMenu.Item>
+                <DropdownMenu.Item>Settings</DropdownMenu.Item>
+                <DropdownMenu.Item color={'red'} onSelect={handleLogout}>
+                  Logout
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+            <UserProfile
+              isUserProfileOpen={isUserProfileOpen}
+              onClose={() => setIsUserProfileOpen(false)}
+            />
+          </>
         ) : (
-          <nav className="flex gap-4">
+          <Flex gap={'2'} align={'center'}>
             <Link
               className="text-gray-600 hover:text-blue-600 font-medium"
               to="/login"
@@ -65,12 +76,12 @@ export default function Header() {
               Sign In
             </Link>
             <Link
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+              // className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
               to="/registration"
             >
-              Get Started
+              <Button variant={'soft'}>Get Started</Button>
             </Link>
-          </nav>
+          </Flex>
         )}
       </div>
     </header>
