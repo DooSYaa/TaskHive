@@ -22,7 +22,7 @@ function Priority({
     if (setPriority) setPriority(newValueNum);
     try {
       const response = await fetch(
-        'http://localhost:5292/api/Kanban/UpdateTaskPriority',
+        'http://localhost:5292/api/kanban-tables/UpdateTaskPriority',
         {
           method: 'PATCH',
           headers: {

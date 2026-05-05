@@ -13,44 +13,19 @@ namespace TaskHiveApi.Controllers;
 [Route("api/[controller]")]
 public class AccountController : ControllerBase
 { 
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
-    private readonly IConfiguration _configuration;
-    private readonly IJwtService _jwtService;
-    private readonly ILogger<AccountController> _logger;
-    public AccountController
-    (
-        UserManager<User> userManager, 
-        SignInManager<User> signInManager, 
-        IConfiguration configuration,
-        IJwtService jwtService,
-        ILogger<AccountController> logger
-    )
+    private readonly IAccountService _accountService;
+    public AccountController(IAccountService accountService)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _configuration = configuration;
-        _jwtService = jwtService;
-        _logger = logger;
+        _accountService = accountService;
     }
 
     [HttpGet("get-user")]
     public async Task<IActionResult> GetUser([FromQuery] string? userId)
     {
         if (userId == null) return Unauthorized();
-        
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _accountService.GetUserByIdAsync(userId);
         if (user == null) return NotFound("User not found.");
-
-        return Ok(new UserDto
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            UserName = user.UserName,
-            Email = user.Email,
-            AvatarUrl = user.AvatarUrl
-        });
+        return Ok(user);
     }
 
     [HttpPost("registration")]
@@ -60,28 +35,11 @@ public class AccountController : ControllerBase
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            var user = new User
-            {
-                FirstName = registerDto.FirstName,
-                LastName = registerDto.LastName,
-                UserName = registerDto.UserName,
-                Email = registerDto.Email,
-            };
-            var createdUser = await _userManager.CreateAsync(user, registerDto.Password);
-            if (!createdUser.Succeeded) return BadRequest(createdUser.Errors);
-            return Ok( new NewUserDto
-                {
-                    Id = user.Id, 
-                    FirstName = user.FirstName, 
-                    LastName = user.LastName, 
-                    UserName = user.UserName, 
-                    Email = user.Email, 
-                    Token = _jwtService.GenerateJwtToken(user),
-                }
-            );
+            var result = await _accountService.RegisterAsync(registerDto);
+            if(!result.Succeeded) return BadRequest(result.Errors);
+            return Ok(result.User);
         }
-        catch (Exception ex)
+        catch
         {
             return StatusCode(500, "An error occurred during registration.");
         }
@@ -90,34 +48,24 @@ public class AccountController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody]LoginDto loginDto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        var user = await _userManager.FindByEmailAsync(loginDto.Email);
-        if (user != null)
+        try
         {
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-            if (result.Succeeded)
-            {
-                var token = _jwtService.GenerateJwtToken(user);
-                return Ok(new LoginUserDto
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    AvatarUrl = user.AvatarUrl,
-                    Token = token
-                });
-            }
-            if (result.IsLockedOut) return StatusCode(423, "Account is locked. Please try again later.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+                var result = await _accountService.LoginAsync(loginDto);
+                if (result.IsLockedOut) return StatusCode(423, "Account is locked. Please try again later.");
+                if (!result.Succeeded)
+                    return Unauthorized("Incorrect login or password.");
+            return Ok(result.User);
         }
-        return Unauthorized("Invalid email or password.");
+        catch
+        {
+            return StatusCode(500, "An error occurred during login.");
+        }
     }
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
-        await _signInManager.SignOutAsync();
         return Ok();
     }
 }

@@ -23,7 +23,7 @@ export default function TaskCard({ card, handleDeleteCard, index, onClick }) {
   const handleRemoveCard = async cardId => {
     try {
       const response = await fetch(
-        `http://localhost:5292/api/Kanban/DeleteKanbanCard?GroupId=${groupId}&KanbanId=${kanbanId}&CardId=${cardId}`,
+        `http://localhost:5292/api/kanban-tables/DeleteKanbanCard?GroupId=${groupId}&KanbanId=${kanbanId}&CardId=${cardId}`,
         {
           method: 'DELETE',
           headers: {

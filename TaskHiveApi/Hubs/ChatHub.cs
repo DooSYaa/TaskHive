@@ -30,9 +30,6 @@ namespace TaskHiveApi.Hubs
 
         public async Task SendPrivateMessage(string receiverId, string message)
         {
-            _logger.LogInformation("Send Private Message");
-            _logger.LogInformation(receiverId);
-            _logger.LogInformation(message);
             if(string.IsNullOrEmpty(receiverId))
                 throw new NullReferenceException("receiverId");
             
@@ -115,28 +112,21 @@ namespace TaskHiveApi.Hubs
         public async Task JoinGroup(string groupId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
-            _logger.LogInformation("Joining group {groupId}", groupId);
         }
 
         public async Task LeaveGroup(string groupId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
-            _logger.LogInformation("Leaving group {groupId}", groupId);
         }
 
         public async Task SendComment(string cardId, string message)
         {
-            _logger.LogInformation("Sending comment {cardId}", cardId);
             try
             {
-                _logger.LogInformation("Send Comment");
                 var userId = Context.UserIdentifier;
                 if (string.IsNullOrEmpty(userId))
                     throw new NullReferenceException("User is null");
-                
-                _logger.Log(LogLevel.Information, "Saving message to database");
                 await _commentService.AddCommentAsync(cardId, userId, message);
-                _logger.Log(LogLevel.Information, "Saved message to database");
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
                 var commentDto = new
                 {

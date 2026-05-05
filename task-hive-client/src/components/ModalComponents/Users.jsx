@@ -59,7 +59,7 @@ function Users({
     if (selectedUser) {
       try {
         const response = await fetch(
-          'http://localhost:5292/api/Kanban/UpdateTaskAssignedUser',
+          'http://localhost:5292/api/kanban-tables/UpdateTaskAssignedUser',
           {
             method: 'PATCH',
             headers: {

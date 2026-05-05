@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../Context/AuthContext.jsx';
 import Button from '../ButtonComponent/Button.jsx';
 import KanbanInput from './KanbanInput.jsx';
-import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils.js';
 
 export default function Kanban() {
   const { kanbanId } = useParams();
@@ -16,7 +15,7 @@ export default function Kanban() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
-        `http://localhost:5292/api/Kanban/GetCurrentKanbanTable?kanbanId=${kanbanId}`,
+        `http://localhost:5292/api/kanban-tables/current?kanbanId=${kanbanId}`,
         {
           method: 'GET',
           headers: {
@@ -35,19 +34,22 @@ export default function Kanban() {
   }, [user?.token, kanbanId]);
   const handleUpdateCardPosition = async cardToUpdate => {
     try {
-      const request = await fetch('http://localhost:5292/api/Kanban/MoveCard', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
+      const request = await fetch(
+        'http://localhost:5292/api/kanban-tables/MoveCard',
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`,
+          },
+          body: JSON.stringify({
+            sourceKanbanBlockId: cardToUpdate.sourceColumnId,
+            targetKanbanBlockId: cardToUpdate.destColumnId,
+            kanbanCardId: cardToUpdate.cardId,
+            position: cardToUpdate.position,
+          }),
         },
-        body: JSON.stringify({
-          sourceKanbanBlockId: cardToUpdate.sourceColumnId,
-          targetKanbanBlockId: cardToUpdate.destColumnId,
-          kanbanCardId: cardToUpdate.cardId,
-          position: cardToUpdate.position,
-        }),
-      });
+      );
       if (!request.ok) throw new Error(request.status);
     } catch (error) {
       console.error('Error request', error);
@@ -56,7 +58,7 @@ export default function Kanban() {
   const handleUpdateColumnPosition = async columnToMove => {
     try {
       const request = await fetch(
-        'http://localhost:5292/api/Kanban/MoveColumn',
+        'http://localhost:5292/api/kanban-tables/MoveColumn',
         {
           method: 'PUT',
           headers: {

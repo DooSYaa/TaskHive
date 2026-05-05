@@ -18,7 +18,7 @@ function MyTasks() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
-        'http://localhost:5292/api/Kanban/GetMyTasks',
+        'http://localhost:5292/api/kanban-tables/GetMyTasks',
         {
           method: 'GET',
           headers: {

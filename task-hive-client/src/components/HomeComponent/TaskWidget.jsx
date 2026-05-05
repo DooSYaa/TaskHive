@@ -16,7 +16,7 @@ export default function TaskWidget() {
     const fetchTasks = async () => {
       try {
         const response = await fetch(
-          'http://localhost:5292/api/Kanban/GetMyTasks',
+          'http://localhost:5292/api/kanban-tables/GetMyTasks',
           {
             headers: { Authorization: `Bearer ${user.token}` },
           },

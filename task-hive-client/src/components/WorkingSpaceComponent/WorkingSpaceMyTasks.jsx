@@ -18,7 +18,7 @@ function WorkingSpaceMyTasks({ groupId }) {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
-        `http://localhost:5292/api/Kanban/GetMyGroupTasks?GroupId=${groupId}`,
+        `http://localhost:5292/api/kanban-tables/GetMyGroupTasks?GroupId=${groupId}`,
         {
           method: 'GET',
           headers: {

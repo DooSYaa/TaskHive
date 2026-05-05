@@ -9,7 +9,8 @@ using TaskHiveApi.Models.Kanban;
 namespace TaskHiveApi.Controllers;
 
 [Authorize]
-[Route("api/[controller]")]
+[ApiController]
+[Route("api/kanban-tables")]
 public class KanbanController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
@@ -19,19 +20,19 @@ public class KanbanController : ControllerBase
         _context = context;
     }
 
-    [HttpGet("GetKanbanTables")]
-    public IActionResult GetKanbanTables([FromQuery] GetKanbanTablesDto id)
+    [HttpGet("{groupId}")]
+    public IActionResult GetKanbanTables(string groupId)
     {
         var kanbanTables = _context.KanbanTables
-            .Where(x => x.GroupId == id.groupId);
+            .Where(x => x.GroupId == groupId);
         return Ok(kanbanTables);
     }
 
-    [HttpGet("GetCurrentKanbanTable")]
-    public async Task<IActionResult> GetCurrentKanbanTable([FromQuery] GetCurrentKanbanTableDto id)
+    [HttpGet("current/{kanbanId}")]
+    public async Task<IActionResult> GetCurrentKanbanTable(string kanbanId)
     {
         var currentKanbanTable = await _context.KanbanTables
-            .Where(i => i.Id == id.kanbanId)
+            .Where(i => i.Id == kanbanId)
             .Include(ks => ks.Statuses)
             .ThenInclude(c => c.Cards)
             .ThenInclude(m => m.Marks)
@@ -78,7 +79,7 @@ public class KanbanController : ControllerBase
         };
         return Ok(newResult);
     }
-    [HttpPost("CreateKanbanTable")]
+    [HttpPost]
     public async Task<IActionResult> CreateKanbanTable([FromBody] CreateKanbanTableDto kanbanTableDto)
     {
         if (!ModelState.IsValid)
@@ -114,8 +115,8 @@ public class KanbanController : ControllerBase
         });
     }
 
-    [HttpPost("CreateCanbanBlock")]
-    public async Task<IActionResult> CreateCanbanBlock(
+    [HttpPost("CreateKanbanBlock")]
+    public async Task<IActionResult> CreateKanbanBlock(
         [FromQuery] string kanbanTableId,
         [FromBody] CreateKanbanBlockDto kanbanBlockDto)
     {
@@ -261,8 +262,9 @@ public class KanbanController : ControllerBase
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        bool isUserInGroup =
-            await _context.GroupUsers.AnyAsync(x => x.UserId == userId && x.GroupId == deleteKanbanCardDto.GroupId);
+        bool isUserInGroup = await _context.GroupUsers
+                .AnyAsync(x => x.UserId == userId && 
+                               x.GroupId == deleteKanbanCardDto.GroupId);
 
         if (!isUserInGroup)
             return Forbid();
@@ -274,10 +276,10 @@ public class KanbanController : ControllerBase
         
         if (card == null)
             return NotFound(new { message = "Something went wrong, try again later" });
-    
-        _context.Remove(card);
+        _context.KanbanCards.Remove(card);
         await _context.SaveChangesAsync();
-        return Ok(new {message = "Deleted!"});
+        
+        return NoContent();
     }
 
     [HttpPut("MoveCard")]
@@ -586,7 +588,7 @@ public class KanbanController : ControllerBase
             await _context.GroupUsers.AnyAsync(x => x.UserId == userId && x.GroupId == deleteKanbanTableDto.GroupId);
 
         if (!isUserInGroup)
-            return BadRequest(new { message = "Something went wront, try again later" });
+            return BadRequest(new { message = "Something went wrong, try again later" });
 
         var kanbanTableToDelete = await _context.KanbanTables.FirstOrDefaultAsync(x =>
             x.Id == deleteKanbanTableDto.KanbanId && x.GroupId == deleteKanbanTableDto.GroupId);
@@ -599,7 +601,7 @@ public class KanbanController : ControllerBase
 
         return Ok(new
         {
-            message = "delete succesfull",
+            message = "delete successful",
         });
     }
 

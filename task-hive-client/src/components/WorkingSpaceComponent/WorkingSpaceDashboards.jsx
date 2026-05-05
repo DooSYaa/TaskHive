@@ -23,7 +23,7 @@ function WorkingSpaceDashboards({
   const handleDeleteKanbanTable = async kanbanId => {
     try {
       const response = await fetch(
-        'http://localhost:5292/api/Kanban/DeleteKanbanTable',
+        'http://localhost:5292/api/kanban-tables/DeleteKanbanTable',
         {
           method: 'DELETE',
           headers: {

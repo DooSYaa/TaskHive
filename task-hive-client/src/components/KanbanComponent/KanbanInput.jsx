@@ -24,7 +24,7 @@ export default function KanbanInput({
   const handleCreateCard = async () => {
     try {
       const request = await fetch(
-        `http://localhost:5292/api/Kanban/CreateKanbanCard?kanbanTableId=${kanbanId}&kanbanStatusId=${kanbanColumnId}`,
+        `http://localhost:5292/api/kanban-tables/CreateKanbanCard?kanbanTableId=${kanbanId}&kanbanStatusId=${kanbanColumnId}`,
         {
           method: 'POST',
           headers: {
@@ -50,7 +50,7 @@ export default function KanbanInput({
   const handleCreateColumn = async () => {
     try {
       const request = await fetch(
-        `http://localhost:5292/api/Kanban/CreateCanbanBlock?kanbanTableId=${kanbanId}`,
+        `http://localhost:5292/api/kanban-tables/CreateKanbanBlock?kanbanTableId=${kanbanId}`,
         {
           method: 'POST',
           headers: {

@@ -55,7 +55,7 @@ export default function WorkingSpace() {
   const handleCreateKanbanTable = async e => {
     e.preventDefault();
     const response = await fetch(
-      'http://localhost:5292/api/Kanban/CreateKanbanTable',
+      'http://localhost:5292/api/kanban-tables',
       {
         method: 'POST',
         headers: {
@@ -100,7 +100,7 @@ export default function WorkingSpace() {
 
   const fetchTables = async () => {
     const response = await fetch(
-      `http://localhost:5292/api/Kanban/GetKanbanTables?groupId=${groupId}`,
+      `http://localhost:5292/api/kanban-tables/${groupId}`,
       {
         method: 'GET',
         headers: {

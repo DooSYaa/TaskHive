@@ -53,7 +53,7 @@ function CalendarComponent({
     const dateStr = format(range.from, "yyyy-MM-dd'T'HH:mm:ss");
     try {
       const response = await fetch(
-        'http://localhost:5292/api/Kanban/UpdateTaskDate',
+        'http://localhost:5292/api/kanban-tables/UpdateTaskDate',
         {
           method: 'PATCH',
           headers: {

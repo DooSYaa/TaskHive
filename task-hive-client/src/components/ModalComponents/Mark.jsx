@@ -54,7 +54,7 @@ function Mark({
   const [color, setColor] = useState('');
   const fetchMarks = async () => {
     const response = await fetch(
-      `http://localhost:5292/api/Kanban/GetMarks?GroupId=${groupId}&KanbanId=${kanbanId}`,
+      `http://localhost:5292/api/kanban-tables/GetMarks?GroupId=${groupId}&KanbanId=${kanbanId}`,
       {
         method: 'GET',
         headers: {
@@ -74,7 +74,7 @@ function Mark({
     console.log(color);
     console.log(newMarkName);
     const response = await fetch(
-      'http://localhost:5292/api/Kanban/CreateTaskMark',
+      'http://localhost:5292/api/kanban-tables/CreateTaskMark',
       {
         method: 'POST',
         headers: {
@@ -101,7 +101,7 @@ function Mark({
   const handleUpdateTaskMarks = async (markId, action) => {
     if (action === 'update') {
       const response = await fetch(
-        'http://localhost:5292/api/Kanban/UpdateTaskMarks',
+        'http://localhost:5292/api/kanban-tables/UpdateTaskMarks',
         {
           method: 'PATCH',
           headers: {
@@ -123,7 +123,7 @@ function Mark({
     }
     if (action === 'remove') {
       const response = await fetch(
-        'http://localhost:5292/api/Kanban/RemoveTaskMarks',
+        'http://localhost:5292/api/kanban-tables/RemoveTaskMarks',
         {
           method: 'PATCH',
           headers: {

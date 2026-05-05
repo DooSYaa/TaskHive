@@ -53,10 +53,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddScoped<IJwtService, TokenService>();
-builder.Services.AddScoped<PrivateChatService>();
-builder.Services.AddScoped<GroupChatService>();
-builder.Services.AddScoped<CommentService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new Exception("Connection string not found");
 
@@ -65,8 +61,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0 ,34)));
 });
 
+builder.Services.AddScoped<IJwtService, TokenService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<PrivateChatService>();
+builder.Services.AddScoped<GroupChatService>();
+builder.Services.AddScoped<CommentService>();
+
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
 
 builder.Services.AddAuthentication(options =>
 {
