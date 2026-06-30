@@ -1,101 +1,61 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TaskHiveApi.Data;
-using TaskHiveApi.Models;
-using TaskHiveApi.Models.Enums;
+using TaskHiveApi.Interfaces;
 
 namespace TaskHiveApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/friends")]
+    [Authorize]
     [ApiController]
     public class FriendsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IFriendService _friendService;
         private readonly ILogger<FriendsController> _logger;
-        public FriendsController(ApplicationDbContext context, ILogger<FriendsController> logger)
+        public FriendsController(IFriendService friendService, ILogger<FriendsController> logger)
         {
-            _context = context;
+            _friendService = friendService;
             _logger = logger;
         }
-        [HttpGet("getFriends")]
-        public async Task<IActionResult> GetFriends()
+        [HttpGet]
+        public async Task<IActionResult> GetFriend()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            _logger.LogInformation($"userId: {userId}, \n {DateTime.Now}");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("User not found in token");
-            }
-            var friends = await _context.Friends
-                .Where(f => f.UserId == userId && f.Status == Status.Accepted)
-                .Select(f => new
-                {
-                    Id = f.FriendId,
-                    f.FriendData.UserName,
-                    f.FriendData.AvatarUrl
-                })
-                .ToListAsync();
-            
+                return BadRequest();
+            var friends = await _friendService.GetFriendsListAsync(userId);
             return Ok(friends);
         }
-        [Authorize]
-        [HttpPost("addFriend")]
-        public async Task<IActionResult> AddFriend([FromBody] string friendName)
-        {
-            var friend = await _context.Users.FirstOrDefaultAsync(f => f.UserName == friendName);
-            var userName = User.FindFirstValue(ClaimTypes.Name);
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
-            
-            if (friend == null)
-                return NotFound(friendName);
-            if (currentUser == null)
-                return NotFound(currentUser);
-            var existingRecord = await _context.Friends.FirstOrDefaultAsync(f => (f.UserId == currentUser.Id &&
-                                                                             f.FriendId == friend.Id &&
-                                                                             f.Status == Status.Pending) || 
-                                                                            (f.UserId == friend.Id && 
-                                                                             f.FriendId == currentUser.Id &&
-                                                                             f.Status == Status.Pending)
-                                                                            );
-            if (existingRecord != null)
-            {
-                existingRecord.Status = Status.Accepted;
-                var newFriend = new Friend
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    UserId = currentUser.Id,
-                    FriendId = friend.Id,
-                    Status = Status.Accepted
-                };
-                _context.Update(existingRecord);
-                await _context.Friends.AddAsync(newFriend);
-                await _context.SaveChangesAsync();
-                return Ok(new {message = "Friend added"});
-            }
-            else
-            {
-                var q = new Friend
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    UserId = currentUser.Id,
-                    FriendId = friend.Id,
-                    Status = Status.Pending
-                };
-                await _context.Friends.AddAsync(q);
-                await _context.SaveChangesAsync();
-                return Ok(new {message = "Friend added. Wait for answer"});
-            }
-        }
-        [Authorize]
-        [HttpGet("getFriendsRequest")]
-        public async Task<IActionResult> GetFriendsRequest()
+        [HttpGet("{friendId}")]
+        public async Task<IActionResult> GetFriends(string friendId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var friendsRequests = _context.Friends.Where(f => f.FriendId == userId &&
-                                                              f.Status == Status.Pending)
-                .Select(f => f.User.UserName);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not found in token");
+            var friend = await _friendService.GetFriendAsync(userId, friendId);
+            
+            return Ok(friend);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddFriend([FromBody] string friendUserName)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(friendUserName))
+                return BadRequest();
+            var result = await _friendService.SendFriendRequestAsync(userId, friendUserName);
+            if (!result)
+                return BadRequest();
+            return Ok(new {message = "Friend added"});
+        }
+        [HttpGet("requests")]
+        public async Task<IActionResult> GetFriendsRequest()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return BadRequest();
+            var friendsRequests = await _friendService.GetFriendRequestsAsync(userId);
+            if (friendsRequests == null)
+                return BadRequest();
             return Ok(friendsRequests);
         }
     }

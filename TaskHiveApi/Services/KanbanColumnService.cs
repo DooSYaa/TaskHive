@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TaskHiveApi.Data;
 using TaskHiveApi.Interfaces;
 using TaskHiveApi.Models.DTO.Kanban;
@@ -14,7 +15,7 @@ public class KanbanColumnService : IKanbanColumnService
     {
         _context = context;
     }
-    public async Task<List<KanbanColumn>> GetKanbanColumns(string groupId, string kanbanBoardId)
+    public async Task<List<KanbanColumn>> GetKanbanColumns(string kanbanBoardId)
     {
         var kanbanColumns = await _context.KanbanColumns
             .Where(x => x.KanbanBoardId == kanbanBoardId)
@@ -39,15 +40,14 @@ public class KanbanColumnService : IKanbanColumnService
         return newKanbanColumn;
     }
 
-    public async Task<bool> MoveKanbanColumnAsync(string kanbanBoardId, string kanbanColumnId, int position)
+    public async Task<bool> MoveKanbanColumnAsync(string kanbanColumnId, int position)
     {
         var sourceColumn = await _context.KanbanColumns
-            .FirstOrDefaultAsync(x => x.Id == kanbanColumnId &&
-                                      x.KanbanBoardId == kanbanBoardId);
+            .FirstOrDefaultAsync(x => x.Id == kanbanColumnId);
         if (sourceColumn == null)
             return false;
         var columns = await _context.KanbanColumns
-            .Where(x => x.KanbanBoardId == kanbanBoardId)
+            .Where(x => x.KanbanBoardId == sourceColumn.KanbanBoardId)
             .OrderBy(p => p.Position)
             .ToListAsync();
         columns.Remove(sourceColumn);
@@ -61,18 +61,16 @@ public class KanbanColumnService : IKanbanColumnService
         return true;
     }
 
-    public async Task<bool> DeleteKanbanColumnAsync(string kanbanBoardId, string kanbanColumnId)
+    public async Task<bool> DeleteKanbanColumnAsync(string kanbanColumnId)
     {
+        var column = await _context.KanbanColumns
+            .FirstOrDefaultAsync(x => x.Id == kanbanColumnId);
         var columns = await _context.KanbanColumns
-            .Where(x => x.KanbanBoardId == kanbanBoardId)
+            .Where(b => b.KanbanBoardId == column.KanbanBoardId)
             .OrderBy(p => p.Position)
             .ToListAsync();
-        var columnToDelete = columns.FirstOrDefault(c => c.Id == kanbanColumnId);
-    
-        if (columnToDelete == null)
-            return false;
-        _context.KanbanColumns.Remove(columnToDelete);
-        columns.Remove(columnToDelete);
+        _context.KanbanColumns.Remove(column);
+        columns.Remove(column);
         for (int i = 0; i < columns.Count; i++)
         {
             columns[i].Position = i; 

@@ -65,6 +65,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IJwtService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IFriendService, FriendService>();
 builder.Services.AddScoped<IDirectMessagesSevice, DirectMessagesService>();
 builder.Services.AddScoped<IGroupMessagesService, GroupMessagesService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();

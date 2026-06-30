@@ -5,15 +5,15 @@ namespace TaskHiveApi.Models;
 
 public class Friend
 {
-    public string Id { get; set; }
-    public string UserId { get; set; } // ID пользователя, который добавил в друзья
-    public string FriendId { get; set; } // ID друга
+    public string? Id { get; set; } = Guid.NewGuid().ToString();
+    public string? UserId { get; set; } // ID пользователя, который добавил в друзья
+    public string? FriendId { get; set; } // ID друга
 
     [ForeignKey(nameof(UserId))]
-    public User User { get; set; }
+    public User? User { get; set; }
 
     [ForeignKey(nameof(FriendId))]
-    public User FriendData { get; set; }
+    public User? FriendData { get; set; }
     
     public Status Status { get; set; }
 }

@@ -7,9 +7,8 @@ namespace TaskHiveApi.Models.DTO.Kanban
 {
     public class MoveKanbanCardDto
     {
-        public string SourceKanbanBlockId { get; set; }
-        public string TargetKanbanBlockId { get; set; }
-        public string KanbanCardId { get; set; }
+        public string? SourceKanbanColumnId { get; set; }
+        public string? TargetKanbanColumnId { get; set; }
         public int Position { get; set; }
     }
 }

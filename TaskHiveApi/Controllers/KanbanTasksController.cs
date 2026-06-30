@@ -20,13 +20,14 @@ namespace TaskHiveApi.Controllers
         [HttpPost("{kanbanBoardId}")]
         public async Task<IActionResult> CreateKanbanTaskAsync(
             string kanbanBoardId,
-            [FromBody] string kanbanColumnId,
             [FromBody] CreateKanbanCardDto kanbanTaskDto)
         {
             if (string.IsNullOrEmpty(kanbanBoardId))
                 return BadRequest();
+            if (kanbanTaskDto == null)
+                return BadRequest();
             var newKanbanTask =
-                await _kanbanTaskService.CreateKanbanTaskAsync(kanbanBoardId, kanbanColumnId, kanbanTaskDto);
+                await _kanbanTaskService.CreateKanbanTaskAsync(kanbanBoardId, kanbanTaskDto.kanbanColumnId, kanbanTaskDto);
             if (newKanbanTask == null)
                 return BadRequest();
             return Ok(newKanbanTask);
@@ -52,6 +53,22 @@ namespace TaskHiveApi.Controllers
             if (!isKanbanTaskDeleted)
                 return BadRequest();
             return NoContent();
+        }
+        [HttpPut("{kanbanTaskId}/move")]
+        public async Task<IActionResult> Move(string kanbanTaskId, [FromBody] MoveKanbanCardDto moveKanbanCardDto)
+        {
+            if (!string.IsNullOrEmpty(kanbanTaskId))
+                return BadRequest();
+            if (moveKanbanCardDto.SourceKanbanColumnId == moveKanbanCardDto.TargetKanbanColumnId)
+                await _kanbanTaskService.UpdateTaskPositionAsync(
+                    kanbanTaskId, 
+                    moveKanbanCardDto.SourceKanbanColumnId, 
+                    moveKanbanCardDto.Position);
+            
+            await _kanbanTaskService.ChangeColumnAsync(
+                    kanbanTaskId, 
+                    moveKanbanCardDto);
+            return Ok( new {message = "Success!"});
         }
     }
 }
@@ -144,62 +161,6 @@ namespace TaskHiveApi.Controllers
 //         //     }
 //         //     return Ok();
 //         // }
-//         [HttpPut("MoveCard")]
-//         public async Task<IActionResult> MoveCard(
-//             [FromBody] MoveKanbanCardDto kanbanCardDto
-//         )
-//         {
-//             if (!ModelState.IsValid)
-//                 return BadRequest(ModelState);
-//             var sourceColumn = await _context.KanbanColumns
-//                 .Include(c => c.Cards)
-//                 .FirstOrDefaultAsync(x => x.Id == kanbanCardDto.SourceKanbanBlockId);
-//             if (sourceColumn == null)
-//                 return BadRequest("Kanban table not found");
-//
-//             var card = sourceColumn.Cards
-//                 .FirstOrDefault(x => x.Id == kanbanCardDto.KanbanCardId);
-//             if (card == null)
-//                 return NotFound("Card not found");
-//
-//             var targetColumn = await _context.KanbanColumns
-//                 .Include(c => c.Cards)
-//                 .FirstOrDefaultAsync(x => x.Id == kanbanCardDto.TargetKanbanBlockId);
-//             if (targetColumn == null)
-//                 return NotFound("Target not found");
-//
-//             if (kanbanCardDto.SourceKanbanBlockId == kanbanCardDto.TargetKanbanBlockId)
-//             {
-//                 var cards = sourceColumn.Cards.OrderBy(c => c.Position).ToList();
-//
-//                 cards.Remove(card);
-//                 var insertIndex = Math.Clamp(kanbanCardDto.Position, 0, cards.Count);
-//                 cards.Insert(insertIndex, card);
-//
-//                 for (int i = 0; i < cards.Count; i++)
-//                     cards[i].Position = i;
-//
-//                 await _context.SaveChangesAsync();
-//                 return Ok("Success!");
-//             }
-//
-//             sourceColumn.Cards.Remove(card);
-//             card.KanbanColumnId = kanbanCardDto.TargetKanbanBlockId;
-//
-//             var targetCards = targetColumn.Cards.OrderBy(c => c.Position).ToList();
-//             var targetIndex = Math.Clamp(kanbanCardDto.Position - 1, 0, targetCards.Count);
-//             targetCards.Insert(targetIndex, card);
-//
-//             for (int i = 0; i < targetCards.Count; i++)
-//                 targetCards[i].Position = i;
-//             for (int i = 0; i < sourceColumn.Cards.Count; i++)
-//                 sourceColumn.Cards[i].Position = i;
-//
-//             await _context.SaveChangesAsync();
-//
-//             return Ok("Success!");
-//         }
-//
 //         [HttpGet("GetMyGroupTasks")]
 //         public async Task<IActionResult> GetMyGroupTasks(GetMyGroupTasksDto getMyGroupTasksDto)
 //         {

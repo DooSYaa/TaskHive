@@ -62,4 +62,51 @@ public class KanbanTaskService : IKanbanTaskService
         await _context.SaveChangesAsync();
         return true;
     }
+    public async Task ChangeColumnAsync(string kanbanTaskId, MoveKanbanCardDto dto)
+    {
+        var sourceColumn = await _context.KanbanColumns
+            .FirstOrDefaultAsync(x => x.Id == dto.SourceKanbanColumnId);
+        if (sourceColumn == null)
+            return;
+        var targetColumn = await _context.KanbanColumns
+            .FirstOrDefaultAsync(x => x.Id == dto.TargetKanbanColumnId);
+        if (targetColumn == null)
+            return;
+        var targetCard = sourceColumn.Cards.FirstOrDefault(x => x.Id == kanbanTaskId);
+        if (targetCard == null)
+            return;
+        sourceColumn.Cards.Remove(targetCard);
+        targetCard.KanbanColumnId = dto.TargetKanbanColumnId;
+        var targetCards = targetColumn
+            .Cards.OrderBy(c => c.Position).ToList();
+        var targetIndex = Math.Clamp(dto.Position - 1, 0, targetCards.Count);
+        targetCards.Insert(targetIndex, targetCard);
+        
+        for (int i = 0; i < targetCards.Count; i++)
+            targetCards[i].Position = i;
+        for (int i = 0; i < targetColumn.Cards.Count; i++)
+            sourceColumn.Cards[i].Position = i;
+        
+        await _context.SaveChangesAsync();
+    }
+    public async Task UpdateTaskPositionAsync(string kanbanTaskId, string kanbanColumnId, int position)
+    {
+        var targetColumn = await _context.KanbanColumns
+            .Include(c => c.Cards)
+            .FirstOrDefaultAsync(x => x.Id == kanbanColumnId);
+        if (targetColumn == null)
+            return;
+        var targetCard = targetColumn.Cards.FirstOrDefault(x => x.Id == kanbanTaskId);
+        if (targetCard == null)
+            return;
+        var cards = targetColumn.Cards.OrderBy(c => c.Position).ToList();
+        cards.Remove(targetCard);
+        var insertIndex = Math.Clamp(position, 0, cards.Count);
+        cards.Insert(insertIndex, targetCard);
+
+        for(int i = 0; i < cards.Count; i++)
+            cards[i].Position = i;
+
+        await _context.SaveChangesAsync();
+    }
 }

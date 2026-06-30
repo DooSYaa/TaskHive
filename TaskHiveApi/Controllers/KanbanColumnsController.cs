@@ -1,11 +1,6 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TaskHiveApi.Data;
 using TaskHiveApi.Interfaces;
-using TaskHiveApi.Models.DTO.Group;
 using TaskHiveApi.Models.DTO.Kanban;
-using TaskHiveApi.Models.Kanban;
 
 namespace TaskHiveApi.Controllers
 {
@@ -19,15 +14,15 @@ namespace TaskHiveApi.Controllers
         {
             _kanbanColumnService = kanbanColumnService;
         }
-        [HttpGet("{groupId}/{kanbanBoardId}")]
-        public async Task<IActionResult> Get(string groupId, string kanbanBoardId)
+        [HttpGet("{kanbanBoardId}")]
+        public async Task<IActionResult> Get(string kanbanBoardId)
         {
-            if (string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(kanbanBoardId))
+            if (string.IsNullOrEmpty(kanbanBoardId))
                 return BadRequest();
-            var result = await _kanbanColumnService.GetKanbanColumns(groupId, kanbanBoardId);
+            var result = await _kanbanColumnService.GetKanbanColumns(kanbanBoardId);
             return Ok(result);
         }
-        [HttpPost]
+        [HttpPost("{kanbanBoardId}")]
         public async Task<IActionResult> CreateKanbanColumn(
             [FromQuery] string kanbanBoardId,
             [FromBody] CreateKanbanBlockDto kanbanBlockDto)
@@ -39,27 +34,26 @@ namespace TaskHiveApi.Controllers
                 return NotFound("Column not found!");
             return Ok(newKanbanColumn);
         }
-        [HttpPut]
+        [HttpPut("{kanbanColumnId}/move")]
         public async Task<IActionResult> MoveColumn(
+            string kanbanColumnId,
             [FromBody] MoveColumnDto columnDto)
         {
             var result = await _kanbanColumnService
-                .MoveKanbanColumnAsync(columnDto.kanbanTableId, columnDto.columnId, columnDto.position);
+                .MoveKanbanColumnAsync(kanbanColumnId, columnDto.position);
             if (!result)
                 return BadRequest();
             return Ok("Success!");
         }
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteKanbanColumn(string kanbanBoardId, [FromBody] string kanbanColumnId)
+        [HttpDelete("{kanbanColumnId}")]
+        public async Task<IActionResult> DeleteKanbanColumn(string kanbanColumnId)
         {
-            if (string.IsNullOrEmpty(kanbanBoardId))
+            if (string.IsNullOrEmpty(kanbanColumnId))
                 return BadRequest();
-            var isCardDeleted = await _kanbanColumnService.DeleteKanbanColumnAsync(kanbanBoardId,  kanbanColumnId);
+            var isCardDeleted = await _kanbanColumnService.DeleteKanbanColumnAsync(kanbanColumnId);
             if (!isCardDeleted)
                 return BadRequest();
             return NoContent();
         }
-
     }
 }
