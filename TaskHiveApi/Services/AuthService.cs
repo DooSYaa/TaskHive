@@ -1,38 +1,24 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TaskHiveApi.Interfaces;
 using TaskHiveApi.Models;
 using TaskHiveApi.Models.DTO;
 
 namespace TaskHiveApi.Service;
 
-public class AccountService : IAccountService
+public class AuthService : IAuthService
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IJwtService _jwtService;
 
-    public AccountService(UserManager<User> userManager, SignInManager<User> signInManager,IJwtService jwtService)
+    public AuthService(UserManager<User> userManager, SignInManager<User> signInManager,IJwtService jwtService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _jwtService = jwtService;
     }
-    public async Task<UserDto> GetUserByIdAsync(string userId)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null) return null;
-        return new UserDto
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            UserName = user.UserName,
-            Email = user.Email,
-            AvatarUrl = user.AvatarUrl,
-        };
-    }
-
     public async Task<RegistrationResult> RegisterAsync(RegisterDto userDto)
     {
         var newUser = new User
@@ -98,4 +84,11 @@ public class AccountService : IAccountService
             }
         };
     }
+    // public async Task<IdentityResult?> DeleteUserAsync(string userId)
+    // {
+    //     var user = await _userManager.FindByIdAsync(userId);
+    //     if (user == null)
+    //         return null;
+    //     return await _userManager.DeleteAsync(user);
+    // }
 }

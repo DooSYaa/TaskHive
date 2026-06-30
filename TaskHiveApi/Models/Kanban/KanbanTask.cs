@@ -3,12 +3,12 @@ using TaskHiveApi.Models.Enums;
 
 namespace TaskHiveApi.Models.Kanban;
 
-public class KanbanData
+public class KanbanTask
 {
     public string Id { get; set; } = $"card-{Guid.NewGuid()}";
-    public string KanbanTableId { get; set; }
-    public string KanbanStatusId { get; set; }
-
+    public string KanbanBoardId { get; set; }
+    // public string KanbanStatusId { get; set; }
+    public string KanbanColumnId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; } = string.Empty;
     public int Position { get; set; }
@@ -24,8 +24,8 @@ public class KanbanData
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdateAt { get; set; }
 
-    public KanbanTable KanbanTable { get; set; }
-    public KanbanStatus KanbanStatus { get; set; }
+    public KanbanBoard KanbanBoard { get; set; }
+    public KanbanColumn KanbanColumn { get; set; }
 
     public List<Mark> Marks { get; set; } = new List<Mark>();
 }

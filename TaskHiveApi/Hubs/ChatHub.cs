@@ -9,15 +9,15 @@ namespace TaskHiveApi.Hubs
     [Authorize]
     public class ChatHub : Hub
     {
-        private readonly PrivateChatService _privateChatService;
+        private readonly DirectMessagesService _directMessagesService;
         private readonly GroupChatService _groupChatService;
         private readonly CommentService _commentService;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ChatHub> _logger;
 
-        public ChatHub(PrivateChatService privateChatService, GroupChatService groupChatService, CommentService commentService, ApplicationDbContext context, ILogger<ChatHub> logger)
+        public ChatHub(DirectMessagesService directMessagesService, GroupChatService groupChatService, CommentService commentService, ApplicationDbContext context, ILogger<ChatHub> logger)
         {
-            _privateChatService = privateChatService;
+            _directMessagesService = directMessagesService;
             _groupChatService = groupChatService;
             _commentService = commentService;
             _context = context;
@@ -36,7 +36,7 @@ namespace TaskHiveApi.Hubs
             var senderId = Context.UserIdentifier;
             if (string.IsNullOrEmpty(senderId))
                 throw new NullReferenceException("User is null");
-            await _privateChatService.SaveMessageAsync(senderId, receiverId, message);
+            await _directMessagesService.SaveMessageAsync(senderId, receiverId, message);
             var sender = await _context.Users
                 .Where(x => x.Id == senderId)
                 .Select(x => new

@@ -8,6 +8,6 @@ public class Group
     public string GroupName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public List<GroupUser> GroupUsers { get; set; } = new();
-    public List<KanbanTable> KanbanTables { get; set; } = new();
+    public List<KanbanBoard> KanbanTables { get; set; } = new();
 
 }

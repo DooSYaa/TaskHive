@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TaskHiveApi.Models.Chat
 {
-    public class PrivateMessage
+    public class DirectMessage
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string SenderId { get; set; }

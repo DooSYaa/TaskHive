@@ -145,7 +145,7 @@ export default function Chat() {
         ' to friend: ',
         selectedFriend.id,
       );
-      await connection.invoke('SendPrivateMessage', selectedFriend.id, message);
+      
       setMessage('');
     } catch (error) {
       console.error('Error sending message: ', error);

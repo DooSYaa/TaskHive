@@ -9,6 +9,7 @@ using TaskHiveApi.Hubs;
 using TaskHiveApi.Interfaces;
 using TaskHiveApi.Models;
 using TaskHiveApi.Service;
+using TaskHiveApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,10 +63,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddScoped<IJwtService, TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<PrivateChatService>();
-builder.Services.AddScoped<GroupChatService>();
-builder.Services.AddScoped<CommentService>();
+builder.Services.AddScoped<IDirectMessagesSevice, DirectMessagesService>();
+builder.Services.AddScoped<IGroupMessagesService, GroupMessagesService>();
+builder.Services.AddScoped<ICommentsService, CommentsService>();
+builder.Services.AddScoped<IGroupsService, GroupsService>();
+builder.Services.AddScoped<IKanbanBoardService, KanbanBoardService>();
+builder.Services.AddScoped<IKanbanColumnService, KanbanColumnService>();
+builder.Services.AddScoped<IKanbanTaskService, KanbanTaskService>();
 
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();

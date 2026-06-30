@@ -14,6 +14,6 @@ namespace TaskHiveApi.Models.Kanban
         public string GroupId { get; set; }
         public string KanbanId { get; set; }
         [JsonIgnore] 
-        public List<KanbanData> Cards { get; set; } = new List<KanbanData>();
+        public List<KanbanTask> Cards { get; set; } = new List<KanbanTask>();
     }
 }

@@ -12,10 +12,10 @@ namespace TaskHiveApi.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class AvatarController : ControllerBase
+    public class AvatarsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public AvatarController(ApplicationDbContext context)
+        public AvatarsController(ApplicationDbContext context)
         {
             _context = context;
         }

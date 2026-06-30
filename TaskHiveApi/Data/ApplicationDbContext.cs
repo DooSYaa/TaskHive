@@ -10,33 +10,33 @@ public class ApplicationDbContext : IdentityDbContext<User>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) {}
-    public DbSet<Friends> Friends { get; set; }
-    public DbSet<PrivateMessage> PrivateMessages { get; set; }
+    public DbSet<Friend> Friends { get; set; }
+    public DbSet<DirectMessage> DirectMessages { get; set; }
     public DbSet<GroupMessage> GroupMessages { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupUser> GroupUsers { get; set; }
-    public DbSet<KanbanTable> KanbanTables { get; set; }
-    public DbSet<KanbanData> KanbanCards { get; set; }
-    public DbSet<KanbanStatus> KanbanStatuses { get; set; }
+    public DbSet<KanbanBoard> KanbanBoards { get; set; }
+    public DbSet<KanbanTask> KanbanTasks { get; set; }
+    public DbSet<KanbanColumn> KanbanColumns { get; set; }
     public DbSet<Mark> Marks { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Entity<Friends>()
+        modelBuilder.Entity<Friend>()
             .HasKey(x=> x.Id);
-        modelBuilder.Entity<Friends>()
+        modelBuilder.Entity<Friend>()
             .HasOne(f => f.User)
             .WithMany(u => u.Friends)
             .HasForeignKey(f => f.UserId)
             .OnDelete(DeleteBehavior.NoAction);
-        modelBuilder.Entity<Friends>()
-            .HasOne(f => f.Friend)
+        modelBuilder.Entity<Friend>()
+            .HasOne(f => f.FriendData)
             .WithMany()
             .HasForeignKey(f => f.FriendId)
             .OnDelete(DeleteBehavior.NoAction);
-        modelBuilder.Entity<Friends>()
+        modelBuilder.Entity<Friend>()
             .HasIndex(f => new { f.UserId, f.FriendId })
             .IsUnique();
         modelBuilder.Entity<GroupUser>(entity =>
@@ -51,7 +51,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
                 .HasForeignKey(gu => gu.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        modelBuilder.Entity<KanbanData>()
+        modelBuilder.Entity<KanbanTask>()
             .HasMany(card => card.Marks)
             .WithMany(mark => mark.Cards)
             .UsingEntity(j => j.ToTable("CardMarks"));

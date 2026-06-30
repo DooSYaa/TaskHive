@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TaskHiveApi.Data;
 
@@ -11,9 +12,11 @@ using TaskHiveApi.Data;
 namespace TaskHiveApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260531120402_RenameModels")]
+    partial class RenameModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -199,35 +202,6 @@ namespace TaskHiveApi.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("TaskHiveApi.Models.Chat.DirectMessage", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("DirectMessages");
-                });
-
             modelBuilder.Entity("TaskHiveApi.Models.Chat.GroupMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -256,6 +230,35 @@ namespace TaskHiveApi.Migrations
                     b.HasIndex("SenderId");
 
                     b.ToTable("GroupMessages");
+                });
+
+            modelBuilder.Entity("TaskHiveApi.Models.Chat.PrivateMessage", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("PrivateMessages");
                 });
 
             modelBuilder.Entity("TaskHiveApi.Models.Friend", b =>
@@ -355,7 +358,11 @@ namespace TaskHiveApi.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("KanbanBoardId")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
+
+                    b.Property<string>("KanbanTableId")
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Position")
                         .HasColumnType("int");
@@ -607,25 +614,6 @@ namespace TaskHiveApi.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TaskHiveApi.Models.Chat.DirectMessage", b =>
-                {
-                    b.HasOne("TaskHiveApi.Models.User", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TaskHiveApi.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("TaskHiveApi.Models.Chat.GroupMessage", b =>
                 {
                     b.HasOne("TaskHiveApi.Models.Group", "Group")
@@ -641,6 +629,25 @@ namespace TaskHiveApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Group");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("TaskHiveApi.Models.Chat.PrivateMessage", b =>
+                {
+                    b.HasOne("TaskHiveApi.Models.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskHiveApi.Models.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
 
                     b.Navigation("Sender");
                 });
@@ -698,7 +705,9 @@ namespace TaskHiveApi.Migrations
                 {
                     b.HasOne("TaskHiveApi.Models.Kanban.KanbanBoard", "KanbanBoard")
                         .WithMany("Columns")
-                        .HasForeignKey("KanbanBoardId");
+                        .HasForeignKey("KanbanBoardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("KanbanBoard");
                 });

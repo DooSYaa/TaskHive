@@ -58,7 +58,7 @@ public class ChatController : Controller
         var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
         if (user == null)
             return BadRequest();
-        var messages = await _context.PrivateMessages
+        var messages = await _context.DirectMessages
             .Where(x => 
                 (x.SenderId == user.Id && x.ReceiverId == friendId) ||
                 (x.SenderId == friendId && x.ReceiverId == user.Id))

@@ -10,11 +10,11 @@ namespace TaskHiveApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FriendController : ControllerBase
+    public class FriendsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<FriendController> _logger;
-        public FriendController(ApplicationDbContext context, ILogger<FriendController> logger)
+        private readonly ILogger<FriendsController> _logger;
+        public FriendsController(ApplicationDbContext context, ILogger<FriendsController> logger)
         {
             _context = context;
             _logger = logger;
@@ -33,8 +33,8 @@ namespace TaskHiveApi.Controllers
                 .Select(f => new
                 {
                     Id = f.FriendId,
-                    f.Friend.UserName,
-                    f.Friend.AvatarUrl
+                    f.FriendData.UserName,
+                    f.FriendData.AvatarUrl
                 })
                 .ToListAsync();
             
@@ -62,7 +62,7 @@ namespace TaskHiveApi.Controllers
             if (existingRecord != null)
             {
                 existingRecord.Status = Status.Accepted;
-                var newFriend = new Friends
+                var newFriend = new Friend
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserId = currentUser.Id,
@@ -76,7 +76,7 @@ namespace TaskHiveApi.Controllers
             }
             else
             {
-                var q = new Friends
+                var q = new Friend
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserId = currentUser.Id,
