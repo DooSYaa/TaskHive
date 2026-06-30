@@ -27,8 +27,8 @@
     "@tiptap/extension-task-list": "^3.13.0",
     "@tiptap/react": "^3.13.0",
     "@tiptap/starter-kit": "^3.13.0",
-
     "@uiw/react-md-editor": "^4.0.8",
+    "axios": "^1.18.1",
     "cmdk": "^1.1.1",
     "dayjs": "^1.11.19",
     "lexical": "^0.38.2",

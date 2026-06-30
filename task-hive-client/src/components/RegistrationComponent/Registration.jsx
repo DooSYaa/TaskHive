@@ -1,4 +1,5 @@
 import './Registration.css';
+import axios from "axios";
 import { Box, Button, Flex, Text, TextField } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../Context/AuthContext.jsx';
@@ -15,32 +16,34 @@ export default function Registration() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    fetch('http://localhost:5292/api/Account/registration', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+  const handleSubmit = async (e) => {
+    try{
+      e.preventDefault();
+      const response = await axios.post('http://localhost:5292/api/auth/registration',{
         firstName: firstName,
         lastName: lastName,
         userName: userName,
         email: email,
         password: password,
-      }),
-    })
-      .then(res => res.json())
-      .then(data => {
-        login(
-          data.id,
-          data.firstName,
-          data.lastName,
-          data.userName,
-          data.token,
-          data.email,
-        );
-        navigate('/');
-      })
-      .catch(err => console.log(err));
+      });
+      const data = response.data;
+      console.log(data);
+      if (data)
+        {
+          login(
+            data.id,
+            data.firstName,
+            data.lastName,
+            data.userName,
+            data.email,
+            data.avatarUrl,
+            data.token,
+          );
+          navigate('/');
+        }
+    } catch (error) {
+      console.error(error);
+    }
   }
   useEffect(() => {
     const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{10,20}$/;

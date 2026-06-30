@@ -121,4 +121,21 @@ public class GroupsService : IGroupsService
             groupId = group.Id,
         };
     }
+
+    public async Task<List<User>> GetGroupUserAsync(string userId, string groupId)
+    {
+        var groupUsers = await _context.GroupUsers
+            .Where(x => x.GroupId == groupId && 
+            x.UserId == userId)
+            .Select(x => new User
+            {
+                Id = x.User.Id,
+                FirstName = x.User.FirstName,
+                LastName = x.User.LastName,
+            })
+            .ToListAsync();
+        if (groupUsers == null)
+            return null;
+        return groupUsers;
+    }
 }

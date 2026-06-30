@@ -1,4 +1,5 @@
 import './home.css';
+import {api} from "../../utils/util.js";
 import ChatIcon from '../../assets/ChatIcon.jsx';
 import FriendsIcon from '../../assets/FriendsIcon.jsx';
 import TaskWidget from './TaskWidget';
@@ -17,20 +18,9 @@ function Home() {
   const { user } = useAuth();
   const fetchData = async () => {
     try {
-      const response = await fetch(
-        'http://localhost:5292/api/Group/getMyGroups',
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`,
-          },
-        },
-      );
-      if (!response.ok) {
-        throw new Error(`Error occurred: ${response.status}`);
-      }
-      const data = await response.json();
+      const res = await api.get('http://localhost:5292/api/groups');
+      const data = res.data;
+      console.log(data)
       setGroupData(data);
     } catch (error) {
       console.error('Failed to fetch groups:', error);

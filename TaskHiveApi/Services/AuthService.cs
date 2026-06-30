@@ -45,6 +45,7 @@ public class AuthService : IAuthService
             LastName = newUser.LastName,
             UserName = newUser.UserName,
             Email = newUser.Email,
+            AvatarUrl = newUser.AvatarUrl,
             Token = _jwtService.GenerateJwtToken(newUser)
         };
         return new RegistrationResult

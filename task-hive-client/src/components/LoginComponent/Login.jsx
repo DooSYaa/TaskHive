@@ -1,4 +1,6 @@
 import './Login.css';
+
+import axios from "axios";
 import { Flex, Box, Text, TextField, Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../Context/AuthContext.jsx';
@@ -13,43 +15,36 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async e => {
-    e.preventDefault();
-    if (!email || !password) {
-      setEmailError(!email ? 'email is required!' : null);
-      setPasswordError(!password ? 'password required' : null);
-      return;
-    }
-    if (!emailError && !passwordError) {
-      const response = await fetch('http://localhost:5292/api/Account/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    try {
+      e.preventDefault();
+      if (!email || !password) {
+        setEmailError(!email ? 'email is required!' : null);
+        setPasswordError(!password ? 'password required' : null);
+        return;
+      }
+      if (!emailError && !passwordError) {
+        const response = await axios.post('http://localhost:5292/api/auth/login', {
           email: email,
           password: password,
-        }),
-      });
-      if (!response.ok) {
-        localStorage.clear();
-        navigate('/');
-        throw new Error(`Error occured: ${response.status}`);
+        });
+        const data = response.data;
+        if (data) {
+          login(
+            data.id,
+            data.firstName,
+            data.lastName,
+            data.userName,
+            data.email,
+            data.avatarUrl,
+            data.token,
+          );
+          navigate('/');
+        }
       }
-      const data = await response.json();
-      if (data) {
-        login(
-          data.id,
-          data.firstName,
-          data.lastName,
-          data.userName,
-          data.email,
-          data.avatarUrl,
-          data.token,
-        );
-        navigate('/');
-      } else {
-        throw new Error('Username not found in this response');
-      }
+    } catch (error) {
+      console.error(error);
     }
-  };
+  }    
   useEffect(() => {
     const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{10,20}$/;
     if (password && !pattern.test(password)) {
